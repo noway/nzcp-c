@@ -32,6 +32,10 @@ int main(void) {
   printf("version_identifier %s %lu\n", version_identifier, token2_len);
   printf("base32_encoded_cwt %s %lu\n", base32_encoded_cwt, token3_len);
 
+  unsigned char *binary_cwt = malloc(strlen((char*) base32_encoded_cwt) + 1);
+  base32_decode(base32_encoded_cwt, binary_cwt);
+
+  printf("binary_cwt %s \n", binary_cwt);
 
   return 0;
 }
