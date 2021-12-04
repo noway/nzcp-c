@@ -180,6 +180,7 @@ int main(void) {
     cbor_value_advance(&cwt_claim_element_value);
   } while(!cbor_value_at_end(&cwt_claim_element_value)); // TODO: map is not exausted
 
+  free(binary_cwt);
   free(protected);
   free(payload);
   free(jti);
