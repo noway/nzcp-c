@@ -28,14 +28,18 @@ int main(void) {
   const unsigned char* version_identifier = EXAMPLE_PASS + token1_len + 1;
   const unsigned char* base32_encoded_cwt = EXAMPLE_PASS + token1_len + 1 + token2_len + 1;
 
+  // TODO: check payload prefix and version identifier
   printf("payload_prefix %s %lu\n", payload_prefix, token1_len);
   printf("version_identifier %s %lu\n", version_identifier, token2_len);
   printf("base32_encoded_cwt %s %lu\n", base32_encoded_cwt, token3_len);
-
-  unsigned char *binary_cwt = malloc(strlen((char*) base32_encoded_cwt) + 1);
+  
+  // TODO: add base32 padding
+  size_t binary_cwt_max = strlen((char*) base32_encoded_cwt) + 1;
+  unsigned char *binary_cwt = malloc(binary_cwt_max);
   base32_decode(base32_encoded_cwt, binary_cwt);
-
+  size_t binary_cwt_len = strlen((char*) binary_cwt);
   printf("binary_cwt %s \n", binary_cwt);
+  printf("strlen(binary_cwt) %zu \n", binary_cwt_len);
 
   return 0;
 }
