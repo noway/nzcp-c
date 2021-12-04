@@ -8,10 +8,11 @@ const unsigned char *EXAMPLE_PASS =
   (unsigned char *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
 
   
+#define mmalloc(size) calloc(1, size)
 
 unsigned long next_token_len(const unsigned char *uri, unsigned long skip_pos) {
-  // TODO: don't need malloc
-  char *str_copy = malloc(strlen((char*) uri) + 1);
+  // TODO: don't need mmalloc
+  char *str_copy = mmalloc(strlen((char*) uri) + 1);
   strcpy(str_copy, (char*) uri);
   char *skipped_str_copy = (char*) (str_copy + skip_pos);
   char *token = strtok(skipped_str_copy, "/");
@@ -38,7 +39,7 @@ int main(void) {
   
   // TODO: add base32 padding
   size_t binary_cwt_max = strlen((char*) base32_encoded_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
-  unsigned char *binary_cwt = malloc(binary_cwt_max);
+  unsigned char *binary_cwt = mmalloc(binary_cwt_max);
   base32_decode(base32_encoded_cwt, binary_cwt);
   size_t binary_cwt_len = strlen((char*) binary_cwt);
   printf("binary_cwt %s \n", binary_cwt);
@@ -76,7 +77,7 @@ int main(void) {
 
   size_t protected_len;
   cbor_value_calculate_string_length(&element_value, &protected_len);
-  uint8_t *protected = malloc(protected_len + 1); // tinycbor adds null byte at the end
+  uint8_t *protected = mmalloc(protected_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value); // TODO: i'd rather advance on my own
   printf("protected_len: %lu\n", protected_len);
   // TODO: check kid and alg
@@ -92,7 +93,7 @@ int main(void) {
 
   size_t payload_len;
   cbor_value_calculate_string_length(&element_value, &payload_len);
-  uint8_t *payload = malloc(payload_len + 1); // tinycbor adds null byte at the end
+  uint8_t *payload = mmalloc(payload_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, payload, &payload_len, &element_value); // TODO: i'd rather advance on my own
   printf("payload_len: %lu\n", payload_len);
 
@@ -107,6 +108,9 @@ int main(void) {
   int valid_from;
   int expires_at;
   uint8_t *jti;
+  char *givenName;
+  char *familyName;
+  char *dob;
 
   CborValue cwt_claim_element_value;
   cbor_value_enter_container(&payload_value, &cwt_claim_element_value);
@@ -156,7 +160,10 @@ int main(void) {
 
         size_t jti_len;
         cbor_value_calculate_string_length(&cwt_claim_element_value, &jti_len);
-        jti = malloc(jti_len + 1); // tinycbor adds null byte at the end
+        if (jti != NULL) {
+          free(jti);
+        }
+        jti = mmalloc(jti_len + 1); // tinycbor adds null byte at the end
         cbor_value_copy_byte_string(&cwt_claim_element_value, jti, &jti_len, NULL);
 
         printf("jti: %s\n",jti);
@@ -173,16 +180,115 @@ int main(void) {
         assert(cwt_claim_element_type == CborMapType);
         printf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
-        // TODO: verify vc and get credential subject
+        CborValue vc_element_value;
+        cbor_value_enter_container(&cwt_claim_element_value, &vc_element_value);
+
+        do {
+          CborType vc_element_type = cbor_value_get_type(&vc_element_value);
+          printf("vc_element_type: %d\n",vc_element_type);
+          assert(vc_element_type == CborTextStringType);
+          
+          size_t vc_element_key_len;
+          cbor_value_calculate_string_length(&vc_element_value, &vc_element_key_len);
+          char *vc_element_key = mmalloc(vc_element_key_len + 1); // tinycbor adds null byte at the end
+          cbor_value_copy_text_string(&vc_element_value, vc_element_key, &vc_element_key_len, NULL);
+          printf("vc_element_key: %s\n", vc_element_key);
+          printf("vc_element_key_len: %lu\n", vc_element_key_len);
+
+          if (strcmp(vc_element_key, "@context") == 0) {
+            // TODO: save & verify
+            cbor_value_advance(&vc_element_value);
+          }
+          else if (strcmp(vc_element_key, "version") == 0) {
+            // TODO: save & verify
+            cbor_value_advance(&vc_element_value);
+          }
+          else if (strcmp(vc_element_key, "type") == 0) {
+            // TODO: save & verify
+            cbor_value_advance(&vc_element_value);
+          }
+          else if (strcmp(vc_element_key, "credentialSubject") == 0) {
+
+            cbor_value_advance(&vc_element_value);
+            vc_element_type = cbor_value_get_type(&vc_element_value);
+            assert(vc_element_type == CborMapType);
+            printf("vc_element_type: %d\n",vc_element_type);
+
+            CborValue credential_subject_element_value;
+            cbor_value_enter_container(&vc_element_value, &credential_subject_element_value);
+
+            do {
+              CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
+              printf("credential_subject_element_type: %d\n",credential_subject_element_type);
+
+              size_t subject_credential_element_key_len;
+              cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_key_len);
+              char *subject_credential_element_key = mmalloc(subject_credential_element_key_len + 1); // tinycbor adds null byte at the end
+              cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_key, &subject_credential_element_key_len, NULL);
+              printf("subject_credential_element_key: %s\n", subject_credential_element_key);
+              printf("subject_credential_element_key_len: %lu\n", subject_credential_element_key_len);
+              cbor_value_advance(&credential_subject_element_value);
+
+
+              if (strcmp(subject_credential_element_key, "givenName") == 0) {
+                if (givenName == NULL) {
+                  free(givenName);
+                }
+                size_t subject_credential_element_value_len;
+                cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
+                char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
+                cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
+                givenName = subject_credential_element_value;
+              }
+              if (strcmp(subject_credential_element_key, "familyName") == 0) {
+                if (familyName == NULL) {
+                  free(familyName);
+                }
+                size_t subject_credential_element_value_len;
+                cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
+                char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
+                cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
+                familyName = subject_credential_element_value;
+              }
+              if (strcmp(subject_credential_element_key, "dob") == 0) {
+                if (dob == NULL) {
+                  free(dob);
+                }
+                size_t subject_credential_element_value_len;
+                cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
+                char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
+                cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
+                dob = subject_credential_element_value;
+              }
+
+              free(subject_credential_element_key);
+
+              cbor_value_advance(&credential_subject_element_value);
+            } while(!cbor_value_at_end(&credential_subject_element_value));
+
+          }
+
+          free(vc_element_key);
+
+          cbor_value_advance(&vc_element_value);
+        } while (!cbor_value_at_end(&vc_element_value));
       }
 
     }
     cbor_value_advance(&cwt_claim_element_value);
   } while(!cbor_value_at_end(&cwt_claim_element_value)); // TODO: map is not exausted
 
+  printf("jti: %s\n", jti);
+  printf("givenName: %s\n", givenName);
+  printf("familyName: %s\n", familyName);
+  printf("dob: %s\n", dob);
+
   free(binary_cwt);
   free(protected);
   free(payload);
   free(jti);
+  free(givenName);
+  free(familyName);
+  free(dob);
   return 0;
 }
