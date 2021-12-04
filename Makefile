@@ -1,2 +1,2 @@
 build:
-	clang -pthread -o main main.c base32.c
+	clang -ltinycbor -pthread -o main main.c base32.c
