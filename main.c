@@ -278,6 +278,8 @@ int main(void) {
     cbor_value_advance(&cwt_claim_element_value);
   } while(!cbor_value_at_end(&cwt_claim_element_value)); // TODO: map is not exausted
 
+  printf("valid_from: %d\n", valid_from);
+  printf("expires_at: %d\n", expires_at);
   printf("jti: %s\n", jti);
   printf("givenName: %s\n", givenName);
   printf("familyName: %s\n", familyName);
