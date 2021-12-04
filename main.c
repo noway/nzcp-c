@@ -220,40 +220,52 @@ int main(void) {
             do {
               CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
               printf("credential_subject_element_type: %d\n",credential_subject_element_type);
+              assert(credential_subject_element_type == CborTextStringType);
 
-              size_t subject_credential_element_key_len;
-              cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_key_len);
-              char *subject_credential_element_key = mmalloc(subject_credential_element_key_len + 1); // tinycbor adds null byte at the end
-              cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_key, &subject_credential_element_key_len, NULL);
-              printf("subject_credential_element_key: %s\n", subject_credential_element_key);
-              printf("subject_credential_element_key_len: %lu\n", subject_credential_element_key_len);
+              size_t credential_subject_element_key_len;
+              cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_element_key_len);
+              char *credential_subject_element_key = mmalloc(credential_subject_element_key_len + 1); // tinycbor adds null byte at the end
+              cbor_value_copy_text_string(&credential_subject_element_value, credential_subject_element_key, &credential_subject_element_key_len, NULL);
+              printf("credential_subject_element_key: %s\n", credential_subject_element_key);
+              printf("credential_subject_element_key_len: %lu\n", credential_subject_element_key_len);
               cbor_value_advance(&credential_subject_element_value);
 
-
-              if (strcmp(subject_credential_element_key, "givenName") == 0) {
+              if (strcmp(credential_subject_element_key, "givenName") == 0) {
                 if (givenName == NULL) {
                   free(givenName);
                 }
+                CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
+                printf("credential_subject_element_type: %d\n",credential_subject_element_type);
+                assert(credential_subject_element_type == CborTextStringType);
+
                 size_t subject_credential_element_value_len;
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
                 char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
                 cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
                 givenName = subject_credential_element_value;
               }
-              if (strcmp(subject_credential_element_key, "familyName") == 0) {
+              if (strcmp(credential_subject_element_key, "familyName") == 0) {
                 if (familyName == NULL) {
                   free(familyName);
                 }
+                CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
+                printf("credential_subject_element_type: %d\n",credential_subject_element_type);
+                assert(credential_subject_element_type == CborTextStringType);
+
                 size_t subject_credential_element_value_len;
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
                 char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
                 cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
                 familyName = subject_credential_element_value;
               }
-              if (strcmp(subject_credential_element_key, "dob") == 0) {
+              if (strcmp(credential_subject_element_key, "dob") == 0) {
                 if (dob == NULL) {
                   free(dob);
                 }
+                CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
+                printf("credential_subject_element_type: %d\n",credential_subject_element_type);
+                assert(credential_subject_element_type == CborTextStringType);
+
                 size_t subject_credential_element_value_len;
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
                 char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
@@ -261,15 +273,13 @@ int main(void) {
                 dob = subject_credential_element_value;
               }
 
-              free(subject_credential_element_key);
-
+              free(credential_subject_element_key);
               cbor_value_advance(&credential_subject_element_value);
             } while(!cbor_value_at_end(&credential_subject_element_value));
 
           }
 
           free(vc_element_key);
-
           cbor_value_advance(&vc_element_value);
         } while (!cbor_value_at_end(&vc_element_value));
       }
