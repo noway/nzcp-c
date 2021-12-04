@@ -10,6 +10,7 @@ const unsigned char *EXAMPLE_PASS =
   
 
 unsigned long next_token_len(const unsigned char *uri, unsigned long skip_pos) {
+  // TODO: don't need malloc
   char *str_copy = malloc(strlen((char*) uri) + 1);
   strcpy(str_copy, (char*) uri);
   char *skipped_str_copy = (char*) (str_copy + skip_pos);
@@ -20,6 +21,7 @@ unsigned long next_token_len(const unsigned char *uri, unsigned long skip_pos) {
 }
 
 int main(void) {
+  // TODO: check for every CborError and return error code
 
   unsigned long token1_len = next_token_len(EXAMPLE_PASS, 0);
   unsigned long token2_len = next_token_len(EXAMPLE_PASS, token1_len + 1);
@@ -35,7 +37,7 @@ int main(void) {
   printf("base32_encoded_cwt %s %lu\n", base32_encoded_cwt, token3_len);
   
   // TODO: add base32 padding
-  size_t binary_cwt_max = strlen((char*) base32_encoded_cwt) + 1;
+  size_t binary_cwt_max = strlen((char*) base32_encoded_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
   unsigned char *binary_cwt = malloc(binary_cwt_max);
   base32_decode(base32_encoded_cwt, binary_cwt);
   size_t binary_cwt_len = strlen((char*) binary_cwt);
@@ -74,8 +76,8 @@ int main(void) {
 
   size_t protected_len;
   cbor_value_calculate_string_length(&element_value, &protected_len);
-  uint8_t *protected = malloc(protected_len);
-  cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value);
+  uint8_t *protected = malloc(protected_len + 1); // tinycbor adds null byte at the end
+  cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value); // TODO: i'd rather advance on my own
   printf("protected_len: %lu\n", protected_len);
   // TODO: check kid and alg
 
@@ -90,8 +92,8 @@ int main(void) {
 
   size_t payload_len;
   cbor_value_calculate_string_length(&element_value, &payload_len);
-  uint8_t *payload = malloc(payload_len);
-  cbor_value_copy_byte_string(&element_value, payload, &payload_len, &element_value);
+  uint8_t *payload = malloc(payload_len + 1); // tinycbor adds null byte at the end
+  cbor_value_copy_byte_string(&element_value, payload, &payload_len, &element_value); // TODO: i'd rather advance on my own
   printf("payload_len: %lu\n", payload_len);
 
   free(protected);
