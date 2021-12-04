@@ -288,6 +288,13 @@ int main(void) {
     cbor_value_advance(&cwt_claim_element_value);
   } while(!cbor_value_at_end(&cwt_claim_element_value)); // TODO: map is not exausted
 
+  size_t signature_len;
+  cbor_value_calculate_string_length(&element_value, &signature_len);
+  uint8_t *signature = mmalloc(signature_len + 1); // tinycbor adds null byte at the end
+  cbor_value_copy_byte_string(&element_value, signature, &signature_len, &element_value); // TODO: i'd rather advance on my own
+  printf("signature_len: %lu\n", signature_len);
+  printf("signature: %s\n", signature);
+
   printf("valid_from: %d\n", valid_from);
   printf("expires_at: %d\n", expires_at);
   printf("jti: %s\n", jti);
