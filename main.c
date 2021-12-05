@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "base32.h"
 #include <tinycbor/cbor.h>
+#include <sb_sw_lib.h>
+#include <sb_sw_context.h>
 
 const uint8_t *EXAMPLE_PASS =
   (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
@@ -305,6 +307,24 @@ int main(void) {
   printf("givenName: %s\n", givenName);
   printf("familyName: %s\n", familyName);
   printf("dob: %s\n", dob);
+
+
+  sb_sha256_state_t *sha256_state = mmalloc(sizeof(struct sb_sha256_state_t));
+  sb_byte_t *output = mmalloc(sizeof(sb_byte_t));
+  sb_byte_t *input = (uint8_t*)"hello world";
+  size_t len = strlen((char*)input);
+
+  printf("input: %s\n", input);
+  printf("len: %lu\n", len);
+  
+  sb_sha256_message(sha256_state, output, input, len);
+
+  printf("output: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", *output, *(output+1), *(output+2), *(output+3), *(output+4), *(output+5), *(output+6), *(output+7), *(output+8), *(output+9), *(output+10), *(output+11), *(output+12), *(output+13), *(output+14), *(output+15), *(output+16), *(output+17), *(output+18), *(output+19), *(output+20), *(output+21), *(output+22), *(output+23), *(output+24), *(output+25), *(output+26), *(output+27), *(output+28), *(output+29), *(output+30), *(output+31));
+
+  // sb_sw_context_t *context = mmalloc(sizeof(sb_sw_context_t));
+  // extern sb_error_t sb_sw_verify_signature_sha256(context, sb_sw_message_digest_t digest[static 1], const sb_sw_signature_t signature[static 1], 
+  //   const sb_sw_public_t public[static 1], const sb_byte_t* input, size_t input_len, sb_hmac_drbg_state_t* drbg, sb_sw_curve_id_t curve, sb_data_endian_t e);
+
 
   free(binary_cwt);
   free(protected);
