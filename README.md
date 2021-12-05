@@ -1,7 +1,7 @@
 # NZCP.c
-Implementation of NZCP spec in C. Uses TinyCBOR and Sweet B.
+Implementation of the NZCP spec in C. Uses TinyCBOR and Sweet B.
 
-Not production ready. Stability is not guaranteed.
+Not production ready. Stability or memory safety is not guaranteed.
 
 ## Installation
 - Install https://github.com/intel/tinycbor as a system library
