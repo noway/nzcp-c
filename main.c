@@ -52,7 +52,7 @@ int main(void) {
   uint8_t *binary_cwt = mmalloc(binary_cwt_max);
   base32_decode(base32_encoded_cwt, binary_cwt);
   size_t binary_cwt_len = strlen((char*) binary_cwt);
-  printf("binary_cwt %s \n", binary_cwt);
+  // printf("binary_cwt %s \n", binary_cwt);
   printf("strlen(binary_cwt) %zu \n", binary_cwt_len);
 
 
