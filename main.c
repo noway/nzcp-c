@@ -337,7 +337,9 @@ int main(void) {
   uint8_t *signature = mmalloc(signature_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, signature, &signature_len, &element_value); // TODO: i'd rather advance on my own
   printf("signature_len: %lu\n", signature_len);
-  printf("signature: %s\n", signature);
+  printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", *signature, *(signature+1), *(signature+2), *(signature+3), *(signature+4), *(signature+5), *(signature+6), *(signature+7), *(signature+8), *(signature+9), *(signature+10), *(signature+11), *(signature+12), *(signature+13), *(signature+14), *(signature+15), *(signature+16), *(signature+17), *(signature+18), *(signature+19), *(signature+20), *(signature+21), *(signature+22), *(signature+23), *(signature+24), *(signature+25), *(signature+26), *(signature+27), *(signature+28), *(signature+29), *(signature+30), *(signature+31));
+  printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", *(signature+32), *(signature+33), *(signature+34), *(signature+35), *(signature+36), *(signature+37), *(signature+38), *(signature+39), *(signature+40), *(signature+41), *(signature+42), *(signature+43), *(signature+44), *(signature+45), *(signature+46), *(signature+47), *(signature+48), *(signature+49), *(signature+50), *(signature+51), *(signature+52), *(signature+53), *(signature+54), *(signature+55), *(signature+56), *(signature+57), *(signature+58), *(signature+59), *(signature+60), *(signature+61), *(signature+62), *(signature+63));
+  printf("\n", signature);
 
   printf("valid_from: %d\n", valid_from);
   printf("expires_at: %d\n", expires_at);
@@ -361,7 +363,7 @@ int main(void) {
   cbor_encode_byte_string(&array_encoder, payload, payload_len);
   cbor_encoder_close_container_checked(&encoder, &array_encoder);
 
-  printf("tobe_signed_buf: %s\n", tobe_signed_buf);
+  // printf("tobe_signed_buf: %s\n", tobe_signed_buf);
 
   size_t tobe_signed_buflen_actual = cbor_encoder_get_buffer_size(&encoder, tobe_signed_buf);
   printf("tobe_signed_buflen_actual: %zu\n", tobe_signed_buflen_actual);
@@ -375,11 +377,32 @@ int main(void) {
   printf("msg_hash: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", *msg_hash, *(msg_hash+1), *(msg_hash+2), *(msg_hash+3), *(msg_hash+4), *(msg_hash+5), *(msg_hash+6), *(msg_hash+7), *(msg_hash+8), *(msg_hash+9), *(msg_hash+10), *(msg_hash+11), *(msg_hash+12), *(msg_hash+13), *(msg_hash+14), *(msg_hash+15), *(msg_hash+16), *(msg_hash+17), *(msg_hash+18), *(msg_hash+19), *(msg_hash+20), *(msg_hash+21), *(msg_hash+22), *(msg_hash+23), *(msg_hash+24), *(msg_hash+25), *(msg_hash+26), *(msg_hash+27), *(msg_hash+28), *(msg_hash+29), *(msg_hash+30), *(msg_hash+31));
   printf("msg_hash_len: %zu\n", msg_hash_len);
 
-  sb_sw_context_t *context = mmalloc(sizeof(sb_sw_context_t));
-  sb_sw_message_digest_t *dig = mmalloc(sizeof(sb_sw_message_digest_t));
+  // sb_sw_context_t *context = mmalloc(sizeof(struct sb_sw_context_t));
+  // sb_sw_message_digest_t *dig = mmalloc(sizeof(sb_sw_message_digest_t));
 
-  sb_sw_signature_t sw_signature = { *signature };
-  sb_error_t error = sb_sw_verify_signature_sha256(context, dig, &sw_signature, &TEST_PUB_2, msg_hash, msg_hash_len, NULL, SB_SW_CURVE_P256, SB_DATA_ENDIAN_BIG);
+  sb_sw_context_t context;
+  // sb_sw_message_digest_t dig;
+
+  // sb_sw_signature_t sw_signature = { {*signature} };
+  // sb_sw_message_digest_t TEST_MESSAGE = { {*msg_hash} };
+  // sb_sw_signature_t sw_signature = { {
+  //   0xd2, 0xe0, 0x7b, 0x1d, 0xd7, 0x26, 0x3d, 0x83, 0x31, 0x66, 0xbd, 0xbb, 0x4f, 0x1a, 0x09, 0x38, 0x37, 0xa9, 0x05, 0xd7, 0xec, 0xa2, 0xee, 0x83, 0x6b, 0x6b, 0x2a, 0xda, 0x23, 0xc2, 0x31, 0x54, 0xfb, 0xa8, 0x8a, 0x52, 0x9f, 0x67, 0x5d, 0x66, 0x86, 0xee, 0x63, 0x2b, 0x09, 0xec, 0x58, 0x1a, 0xb0, 0x8f, 0x72, 0xb4, 0x58, 0x90, 0x4b, 0xb3, 0x39, 0x6d, 0x10, 0xfa, 0x66, 0xd1, 0x14, 0x77,
+  // } };
+  sb_sw_signature_t sw_signature = { {
+    *signature, *(signature+1), *(signature+2), *(signature+3), *(signature+4), *(signature+5), *(signature+6), *(signature+7), *(signature+8), *(signature+9), *(signature+10), *(signature+11), *(signature+12), *(signature+13), *(signature+14), *(signature+15), *(signature+16), *(signature+17), *(signature+18), *(signature+19), *(signature+20), *(signature+21), *(signature+22), *(signature+23), *(signature+24), *(signature+25), *(signature+26), *(signature+27), *(signature+28), *(signature+29), *(signature+30), *(signature+31),
+    *(signature+32), *(signature+33), *(signature+34), *(signature+35), *(signature+36), *(signature+37), *(signature+38), *(signature+39), *(signature+40), *(signature+41), *(signature+42), *(signature+43), *(signature+44), *(signature+45), *(signature+46), *(signature+47), *(signature+48), *(signature+49), *(signature+50), *(signature+51), *(signature+52), *(signature+53), *(signature+54), *(signature+55), *(signature+56), *(signature+57), *(signature+58), *(signature+59), *(signature+60), *(signature+61), *(signature+62), *(signature+63)
+  } };
+
+  // sb_sw_message_digest_t TEST_MESSAGE = { {
+  //   0x27, 0x1c, 0xe3, 0x3d, 0x67, 0x1a, 0x2d, 0x3b, 0x81, 0x6d, 0x78, 0x81, 0x35, 0xf4, 0x34, 0x3e, 0x14, 0xbc, 0x66, 0x80, 0x2f, 0x8c, 0xd8, 0x41, 0xfa, 0xac, 0x93, 0x9e, 0x8c, 0x11, 0xf3, 0xee,
+  // } };
+  sb_sw_message_digest_t TEST_MESSAGE = { {
+    *msg_hash, *(msg_hash+1), *(msg_hash+2), *(msg_hash+3), *(msg_hash+4), *(msg_hash+5), *(msg_hash+6), *(msg_hash+7), *(msg_hash+8), *(msg_hash+9), *(msg_hash+10), *(msg_hash+11), *(msg_hash+12), *(msg_hash+13), *(msg_hash+14), *(msg_hash+15), *(msg_hash+16), *(msg_hash+17), *(msg_hash+18), *(msg_hash+19), *(msg_hash+20), *(msg_hash+21), *(msg_hash+22), *(msg_hash+23), *(msg_hash+24), *(msg_hash+25), *(msg_hash+26), *(msg_hash+27), *(msg_hash+28), *(msg_hash+29), *(msg_hash+30), *(msg_hash+31)
+  } };
+
+  sb_error_t error = sb_sw_verify_signature(&context, &sw_signature, &TEST_PUB_2, &TEST_MESSAGE, 
+                                            NULL, SB_SW_CURVE_P256, 
+                                            SB_DATA_ENDIAN_BIG);
 
   printf("error: %d\n", error);
 
