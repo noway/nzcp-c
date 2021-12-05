@@ -314,15 +314,29 @@ int main(void) {
   printf("dob: %s\n", dob);
 
 
-  sb_sha256_state_t *sha256_state = mmalloc(sizeof(struct sb_sha256_state_t));
-  sb_byte_t *output = mmalloc(sizeof(sb_byte_t));
-  sb_byte_t *input = (uint8_t*)"hello world";
-  size_t len = strlen((char*)input);
-
-  printf("input: %s\n", input);
-  printf("len: %lu\n", len);
   
-  sb_sha256_message(sha256_state, output, input, len);
+  CborEncoder encoder;
+  CborEncoder array_encoder;
+  size_t tobe_signed_buflen = 1024; // TODO: dynamic? usually 320 bytes or so depending on familyName and givenName
+  uint8_t *tobe_signed_buf = mmalloc(tobe_signed_buflen); 
+  cbor_encoder_init(&encoder, tobe_signed_buf, tobe_signed_buflen, 0);
+  cbor_encoder_create_array(&encoder, &array_encoder, 4);
+  uint8_t* buffer0 = (uint8_t*) "\0";
+  cbor_encode_text_stringz(&array_encoder, "Signature1");
+  cbor_encode_byte_string(&array_encoder, protected, protected_len);
+  cbor_encode_byte_string(&array_encoder, buffer0, 0);
+  cbor_encode_byte_string(&array_encoder, payload, payload_len);
+  cbor_encoder_close_container_checked(&encoder, &array_encoder);
+
+  printf("tobe_signed_buf: %s\n", tobe_signed_buf);
+
+  size_t tobe_signed_buflen_actual = cbor_encoder_get_buffer_size(&encoder, tobe_signed_buf);
+  printf("tobe_signed_buflen_actual: %zu\n", tobe_signed_buflen_actual);
+
+  sb_sha256_state_t *sha256_state = mmalloc(sizeof(struct sb_sha256_state_t)); // TODO: put on stack?
+  sb_byte_t *output = mmalloc(sizeof(sb_byte_t)); // TODO: put on stack?
+
+  sb_sha256_message(sha256_state, output, tobe_signed_buf, tobe_signed_buflen_actual);
 
   printf("output: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", *output, *(output+1), *(output+2), *(output+3), *(output+4), *(output+5), *(output+6), *(output+7), *(output+8), *(output+9), *(output+10), *(output+11), *(output+12), *(output+13), *(output+14), *(output+15), *(output+16), *(output+17), *(output+18), *(output+19), *(output+20), *(output+21), *(output+22), *(output+23), *(output+24), *(output+25), *(output+26), *(output+27), *(output+28), *(output+29), *(output+30), *(output+31));
 
