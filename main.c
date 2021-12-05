@@ -53,8 +53,8 @@ void pprintf(const char* fmt, ...) {
 
 void print_cti(uint8_t* jti) {
   printf("urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
-    *jti, *(jti+1), *(jti+2), *(jti+3), *(jti+4), *(jti+5), *(jti+6), *(jti+7), 
-    *(jti+8), *(jti+9), *(jti+10), *(jti+11), *(jti+12), *(jti+13), *(jti+14), *(jti+15));
+    *(jti+0),  *(jti+1),  *(jti+2),  *(jti+3),  *(jti+4),  *(jti+5),  *(jti+6),  *(jti+7), 
+    *(jti+8),  *(jti+9), *(jti+10), *(jti+11), *(jti+12), *(jti+13), *(jti+14), *(jti+15));
 }
 
 size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
