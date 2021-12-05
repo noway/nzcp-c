@@ -117,10 +117,10 @@ int main(void) {
 
   int valid_from;
   int expires_at;
-  uint8_t *jti;
-  char *givenName;
-  char *familyName;
-  char *dob;
+  uint8_t *jti = NULL;
+  char *givenName = NULL;
+  char *familyName = NULL;
+  char *dob = NULL;
 
   CborValue cwt_claim_element_value;
   cbor_value_enter_container(&payload_value, &cwt_claim_element_value);
@@ -241,7 +241,7 @@ int main(void) {
               cbor_value_advance(&credential_subject_element_value);
 
               if (strcmp(credential_subject_element_key, "givenName") == 0) {
-                if (givenName == NULL) {
+                if (givenName != NULL) {
                   free(givenName);
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
@@ -255,7 +255,7 @@ int main(void) {
                 givenName = subject_credential_element_value;
               }
               if (strcmp(credential_subject_element_key, "familyName") == 0) {
-                if (familyName == NULL) {
+                if (familyName != NULL) {
                   free(familyName);
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
@@ -269,7 +269,7 @@ int main(void) {
                 familyName = subject_credential_element_value;
               }
               if (strcmp(credential_subject_element_key, "dob") == 0) {
-                if (dob == NULL) {
+                if (dob != NULL) {
                   free(dob);
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
