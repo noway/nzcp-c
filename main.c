@@ -14,7 +14,11 @@ char* PUBLIC_KEY_Y = "Iv5SU6FuW-TRYh5_GOrJlcV_gpF_GpFQhCOD8LSk3T0";
 char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
 
 
-#define mmalloc(size) calloc(1, size)
+void* mmalloc(size_t size) {
+  void* ptr = malloc(size);
+  memset(ptr, 0, size);
+  return ptr;
+}
 
 size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
   // TODO: don't need mmalloc
