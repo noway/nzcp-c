@@ -331,7 +331,7 @@ int main(void) {
 
     }
     cbor_value_advance(&cwt_claim_element_value);
-  } while(!cbor_value_at_end(&cwt_claim_element_value)); // TODO: map is not exausted
+  } while(!cbor_value_at_end(&cwt_claim_element_value));
 
   size_t sign_len;
   cbor_value_calculate_string_length(&element_value, &sign_len);
