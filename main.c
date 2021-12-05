@@ -90,7 +90,6 @@ int main(void) {
   size_t binary_cwt_len = strlen((char*) binary_cwt);
   pprintf("strlen(binary_cwt) %zu \n", binary_cwt_len);
 
-
   CborParser parser;
   CborValue value;
   int result;
@@ -151,8 +150,8 @@ int main(void) {
   pprintf("payload_type: %d\n",payload_type);
 
 
-  int valid_from;
-  int expires_at;
+  int valid_from = 0;
+  int expires_at = 0;
   uint8_t *jti = NULL;
   char *givenName = NULL;
   char *familyName = NULL;
@@ -348,8 +347,6 @@ int main(void) {
   printf("givenName: %s\n", givenName);
   printf("familyName: %s\n", familyName);
   printf("dob: %s\n", dob);
-
-
   
   CborEncoder encoder;
   CborEncoder array_encoder;
@@ -424,5 +421,9 @@ int main(void) {
   free(givenName);
   free(familyName);
   free(dob);
+  free(sign);
+  free(tobe_signed_buf);
+  free(sha256_state);
+  free(hash);
   return 0;
 }
