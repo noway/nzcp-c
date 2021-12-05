@@ -93,7 +93,6 @@ int main(void) {
 
   CborParser parser;
   CborValue value;
-  int result;
   cbor_parser_init(binary_cwt, binary_cwt_len, 0, &parser, &value);
   bool is_tag = cbor_value_is_tag(&value);
   assert(is_tag);
