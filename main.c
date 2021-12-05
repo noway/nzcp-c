@@ -89,6 +89,7 @@ int main(void) {
   cbor_value_calculate_string_length(&element_value, &protected_len);
   uint8_t *protected = mmalloc(protected_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value); // TODO: i'd rather advance on my own
+  printf("protected: %s\n", protected);
   printf("protected_len: %lu\n", protected_len);
   // TODO: check kid and alg
 
