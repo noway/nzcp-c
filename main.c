@@ -16,16 +16,35 @@ char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
 
 
 static const sb_sw_public_t TEST_PUB_2 = {
-    {
-        0x60, 0xFE, 0xD4, 0xBA, 0x25, 0x5A, 0x9D, 0x31,
-        0xC9, 0x61, 0xEB, 0x74, 0xC6, 0x35, 0x6D, 0x68,
-        0xC0, 0x49, 0xB8, 0x92, 0x3B, 0x61, 0xFA, 0x6C,
-        0xE6, 0x69, 0x62, 0x2E, 0x60, 0xF2, 0x9F, 0xB6,
-        0x79, 0x03, 0xFE, 0x10, 0x08, 0xB8, 0xBC, 0x99,
-        0xA4, 0x1A, 0xE9, 0xE9, 0x56, 0x28, 0xBC, 0x64,
-        0xF2, 0xF1, 0xB2, 0x0C, 0x2D, 0x7E, 0x9F, 0x51,
-        0x77, 0xA3, 0xC2, 0x94, 0xD4, 0x46, 0x22, 0x99
-    }
+  {
+        // 0x60, 0xFE, 0xD4, 0xBA, 0x25, 0x5A, 0x9D, 0x31,
+        // 0xC9, 0x61, 0xEB, 0x74, 0xC6, 0x35, 0x6D, 0x68,
+        // 0xC0, 0x49, 0xB8, 0x92, 0x3B, 0x61, 0xFA, 0x6C,
+        // 0xE6, 0x69, 0x62, 0x2E, 0x60, 0xF2, 0x9F, 0xB6,
+        // 0x79, 0x03, 0xFE, 0x10, 0x08, 0xB8, 0xBC, 0x99,
+        // 0xA4, 0x1A, 0xE9, 0xE9, 0x56, 0x28, 0xBC, 0x64,
+        // 0xF2, 0xF1, 0xB2, 0x0C, 0x2D, 0x7E, 0x9F, 0x51,
+        // 0x77, 0xA3, 0xC2, 0x94, 0xD4, 0x46, 0x22, 0x99
+
+      0xCD, 0x14, 0x7E, 0x5C,
+      0x6B, 0x02, 0xA7, 0x5D,
+      0x95, 0xBD, 0xB8, 0x2E,
+      0x8B, 0x80, 0xC3, 0xE8,
+      0xEE, 0x9C, 0xAA, 0x68,
+      0x5F, 0x3E, 0xE5, 0xCC,
+      0x86, 0x2D, 0x4E, 0xC4,
+      0xF9, 0x7C, 0xEF, 0xAD,
+
+      0x22, 0xFE, 0x52, 0x53,
+      0xA1, 0x6E, 0x5B, 0xE4,
+      0xD1, 0x62, 0x1E, 0x7F,
+      0x18, 0xEA, 0xC9, 0x95,
+      0xC5, 0x7F, 0x82, 0x91,
+      0x7F, 0x1A, 0x91, 0x50,
+      0x84, 0x23, 0x83, 0xF0,
+      0xB4, 0xA4, 0xDD, 0x3D,
+      
+  }
 };
 
 void* mmalloc(size_t size) {
@@ -348,29 +367,39 @@ int main(void) {
   printf("tobe_signed_buflen_actual: %zu\n", tobe_signed_buflen_actual);
 
   sb_sha256_state_t *sha256_state = mmalloc(sizeof(struct sb_sha256_state_t)); // TODO: put on stack?
-  sb_byte_t *msg_hash = mmalloc(sizeof(sb_byte_t)); // TODO: put on stack?
-  size_t msg_hash_len = sizeof(sb_byte_t);
+  size_t msg_hash_len = 32;
+  sb_byte_t *msg_hash = mmalloc(msg_hash_len); // TODO: put on stack?
 
   sb_sha256_message(sha256_state, msg_hash, tobe_signed_buf, tobe_signed_buflen_actual);
 
   printf("msg_hash: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", *msg_hash, *(msg_hash+1), *(msg_hash+2), *(msg_hash+3), *(msg_hash+4), *(msg_hash+5), *(msg_hash+6), *(msg_hash+7), *(msg_hash+8), *(msg_hash+9), *(msg_hash+10), *(msg_hash+11), *(msg_hash+12), *(msg_hash+13), *(msg_hash+14), *(msg_hash+15), *(msg_hash+16), *(msg_hash+17), *(msg_hash+18), *(msg_hash+19), *(msg_hash+20), *(msg_hash+21), *(msg_hash+22), *(msg_hash+23), *(msg_hash+24), *(msg_hash+25), *(msg_hash+26), *(msg_hash+27), *(msg_hash+28), *(msg_hash+29), *(msg_hash+30), *(msg_hash+31));
+  printf("msg_hash_len: %zu\n", msg_hash_len);
 
   sb_sw_context_t *context = mmalloc(sizeof(sb_sw_context_t));
   sb_sw_message_digest_t *dig = mmalloc(sizeof(sb_sw_message_digest_t));
-  sb_error_t error = sb_sw_verify_signature_sha256(context, dig, signature, &TEST_PUB_2, msg_hash, msg_hash_len, NULL, SB_SW_CURVE_P256, SB_DATA_ENDIAN_BIG);
+
+  sb_sw_signature_t sw_signature = { *signature };
+  sb_error_t error = sb_sw_verify_signature_sha256(context, dig, &sw_signature, &TEST_PUB_2, msg_hash, msg_hash_len, NULL, SB_SW_CURVE_P256, SB_DATA_ENDIAN_BIG);
 
   printf("error: %d\n", error);
-  printf("SB_ERROR_SIGNATURE_INVALID: %d\n", SB_ERROR_SIGNATURE_INVALID);
 
-  if (error == SB_SUCCESS) {
-    printf("Result: NZ COVID Pass is valid\n");
-  }
-  else if (error == SB_ERROR_SIGNATURE_INVALID) {
-    printf("Result: NZ COVID Pass is invalid. Invalid signature.\n");
-  }
-  else {
-    printf("Result: NZ COVID Pass is invalid. Unkown error.\n");
-  }
+  if (error == SB_SUCCESS) { printf("error: SB_SUCCESS\n"); }
+  if (error == SB_ERROR_INSUFFICIENT_ENTROPY) { printf("error: SB_ERROR_INSUFFICIENT_ENTROPY\n"); }
+  if (error == SB_ERROR_INPUT_TOO_LARGE) { printf("error: SB_ERROR_INPUT_TOO_LARGE\n"); }
+  if (error == SB_ERROR_REQUEST_TOO_LARGE) { printf("error: SB_ERROR_REQUEST_TOO_LARGE\n"); }
+  if (error == SB_ERROR_RESEED_REQUIRED) { printf("error: SB_ERROR_RESEED_REQUIRED\n"); }
+  if (error == SB_ERROR_DRBG_FAILURE) { printf("error: SB_ERROR_DRBG_FAILURE\n"); }
+  if (error == SB_ERROR_CURVE_INVALID) { printf("error: SB_ERROR_CURVE_INVALID\n"); }
+  if (error == SB_ERROR_PRIVATE_KEY_INVALID) { printf("error: SB_ERROR_PRIVATE_KEY_INVALID\n"); }
+  if (error == SB_ERROR_PUBLIC_KEY_INVALID) { printf("error: SB_ERROR_PUBLIC_KEY_INVALID\n"); }
+  if (error == SB_ERROR_SIGNATURE_INVALID) { printf("error: SB_ERROR_SIGNATURE_INVALID\n"); }
+  if (error == SB_ERROR_DRBG_UNINITIALIZED) { printf("error: SB_ERROR_DRBG_UNINITIALIZED\n"); }
+  if (error == SB_ERROR_INCORRECT_OPERATION) { printf("error: SB_ERROR_INCORRECT_OPERATION\n"); }
+  if (error == SB_ERROR_NOT_FINISHED) { printf("error: SB_ERROR_NOT_FINISHED\n"); }
+  if (error == SB_ERROR_ADDITIONAL_INPUT_REQUIRED) { printf("error: SB_ERROR_ADDITIONAL_INPUT_REQUIRED\n"); }
+
+
+  // TODO: validate cwt claims
 
   free(binary_cwt);
   free(protected);
