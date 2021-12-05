@@ -9,41 +9,27 @@
 const uint8_t *EXAMPLE_PASS =
   (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
 
-char* PUBLIC_KEY_X = "zRR-XGsCp12Vvbgui4DD6O6cqmhfPuXMhi1OxPl8760";
-char* PUBLIC_KEY_Y = "Iv5SU6FuW-TRYh5_GOrJlcV_gpF_GpFQhCOD8LSk3T0";
-char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
+static const char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
 
-
-
-static const sb_sw_public_t TEST_PUB_2 = {
+static const sb_sw_public_t MOH_EXAMPLE_PUB_KEY = {
   {
-        // 0x60, 0xFE, 0xD4, 0xBA, 0x25, 0x5A, 0x9D, 0x31,
-        // 0xC9, 0x61, 0xEB, 0x74, 0xC6, 0x35, 0x6D, 0x68,
-        // 0xC0, 0x49, 0xB8, 0x92, 0x3B, 0x61, 0xFA, 0x6C,
-        // 0xE6, 0x69, 0x62, 0x2E, 0x60, 0xF2, 0x9F, 0xB6,
-        // 0x79, 0x03, 0xFE, 0x10, 0x08, 0xB8, 0xBC, 0x99,
-        // 0xA4, 0x1A, 0xE9, 0xE9, 0x56, 0x28, 0xBC, 0x64,
-        // 0xF2, 0xF1, 0xB2, 0x0C, 0x2D, 0x7E, 0x9F, 0x51,
-        // 0x77, 0xA3, 0xC2, 0x94, 0xD4, 0x46, 0x22, 0x99
+    0xCD, 0x14, 0x7E, 0x5C,
+    0x6B, 0x02, 0xA7, 0x5D,
+    0x95, 0xBD, 0xB8, 0x2E,
+    0x8B, 0x80, 0xC3, 0xE8,
+    0xEE, 0x9C, 0xAA, 0x68,
+    0x5F, 0x3E, 0xE5, 0xCC,
+    0x86, 0x2D, 0x4E, 0xC4,
+    0xF9, 0x7C, 0xEF, 0xAD,
 
-      0xCD, 0x14, 0x7E, 0x5C,
-      0x6B, 0x02, 0xA7, 0x5D,
-      0x95, 0xBD, 0xB8, 0x2E,
-      0x8B, 0x80, 0xC3, 0xE8,
-      0xEE, 0x9C, 0xAA, 0x68,
-      0x5F, 0x3E, 0xE5, 0xCC,
-      0x86, 0x2D, 0x4E, 0xC4,
-      0xF9, 0x7C, 0xEF, 0xAD,
-
-      0x22, 0xFE, 0x52, 0x53,
-      0xA1, 0x6E, 0x5B, 0xE4,
-      0xD1, 0x62, 0x1E, 0x7F,
-      0x18, 0xEA, 0xC9, 0x95,
-      0xC5, 0x7F, 0x82, 0x91,
-      0x7F, 0x1A, 0x91, 0x50,
-      0x84, 0x23, 0x83, 0xF0,
-      0xB4, 0xA4, 0xDD, 0x3D,
-      
+    0x22, 0xFE, 0x52, 0x53,
+    0xA1, 0x6E, 0x5B, 0xE4,
+    0xD1, 0x62, 0x1E, 0x7F,
+    0x18, 0xEA, 0xC9, 0x95,
+    0xC5, 0x7F, 0x82, 0x91,
+    0x7F, 0x1A, 0x91, 0x50,
+    0x84, 0x23, 0x83, 0xF0,
+    0xB4, 0xA4, 0xDD, 0x3D,
   }
 };
 
@@ -85,7 +71,6 @@ int main(void) {
   uint8_t *binary_cwt = mmalloc(binary_cwt_max);
   base32_decode(base32_encoded_cwt, binary_cwt);
   size_t binary_cwt_len = strlen((char*) binary_cwt);
-  // printf("binary_cwt %s \n", binary_cwt);
   printf("strlen(binary_cwt) %zu \n", binary_cwt_len);
 
 
@@ -332,14 +317,11 @@ int main(void) {
     cbor_value_advance(&cwt_claim_element_value);
   } while(!cbor_value_at_end(&cwt_claim_element_value)); // TODO: map is not exausted
 
-  size_t signature_len;
-  cbor_value_calculate_string_length(&element_value, &signature_len);
-  uint8_t *signature = mmalloc(signature_len + 1); // tinycbor adds null byte at the end
-  cbor_value_copy_byte_string(&element_value, signature, &signature_len, &element_value); // TODO: i'd rather advance on my own
-  printf("signature_len: %lu\n", signature_len);
-  printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", *signature, *(signature+1), *(signature+2), *(signature+3), *(signature+4), *(signature+5), *(signature+6), *(signature+7), *(signature+8), *(signature+9), *(signature+10), *(signature+11), *(signature+12), *(signature+13), *(signature+14), *(signature+15), *(signature+16), *(signature+17), *(signature+18), *(signature+19), *(signature+20), *(signature+21), *(signature+22), *(signature+23), *(signature+24), *(signature+25), *(signature+26), *(signature+27), *(signature+28), *(signature+29), *(signature+30), *(signature+31));
-  printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", *(signature+32), *(signature+33), *(signature+34), *(signature+35), *(signature+36), *(signature+37), *(signature+38), *(signature+39), *(signature+40), *(signature+41), *(signature+42), *(signature+43), *(signature+44), *(signature+45), *(signature+46), *(signature+47), *(signature+48), *(signature+49), *(signature+50), *(signature+51), *(signature+52), *(signature+53), *(signature+54), *(signature+55), *(signature+56), *(signature+57), *(signature+58), *(signature+59), *(signature+60), *(signature+61), *(signature+62), *(signature+63));
-  printf("\n", signature);
+  size_t sign_len;
+  cbor_value_calculate_string_length(&element_value, &sign_len);
+  uint8_t *sign = mmalloc(sign_len + 1); // tinycbor adds null byte at the end
+  cbor_value_copy_byte_string(&element_value, sign, &sign_len, &element_value); // TODO: i'd rather advance on my own
+  printf("sign_len: %lu\n", sign_len);
 
   printf("valid_from: %d\n", valid_from);
   printf("expires_at: %d\n", expires_at);
@@ -363,44 +345,38 @@ int main(void) {
   cbor_encode_byte_string(&array_encoder, payload, payload_len);
   cbor_encoder_close_container_checked(&encoder, &array_encoder);
 
-  // printf("tobe_signed_buf: %s\n", tobe_signed_buf);
-
   size_t tobe_signed_buflen_actual = cbor_encoder_get_buffer_size(&encoder, tobe_signed_buf);
   printf("tobe_signed_buflen_actual: %zu\n", tobe_signed_buflen_actual);
 
   sb_sha256_state_t *sha256_state = mmalloc(sizeof(struct sb_sha256_state_t)); // TODO: put on stack?
-  size_t msg_hash_len = 32;
-  sb_byte_t *msg_hash = mmalloc(msg_hash_len); // TODO: put on stack?
+  size_t hash_len = 32;
+  sb_byte_t *hash = mmalloc(hash_len); // TODO: put on stack?
 
-  sb_sha256_message(sha256_state, msg_hash, tobe_signed_buf, tobe_signed_buflen_actual);
+  sb_sha256_message(sha256_state, hash, tobe_signed_buf, tobe_signed_buflen_actual);
 
-  printf("msg_hash: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", *msg_hash, *(msg_hash+1), *(msg_hash+2), *(msg_hash+3), *(msg_hash+4), *(msg_hash+5), *(msg_hash+6), *(msg_hash+7), *(msg_hash+8), *(msg_hash+9), *(msg_hash+10), *(msg_hash+11), *(msg_hash+12), *(msg_hash+13), *(msg_hash+14), *(msg_hash+15), *(msg_hash+16), *(msg_hash+17), *(msg_hash+18), *(msg_hash+19), *(msg_hash+20), *(msg_hash+21), *(msg_hash+22), *(msg_hash+23), *(msg_hash+24), *(msg_hash+25), *(msg_hash+26), *(msg_hash+27), *(msg_hash+28), *(msg_hash+29), *(msg_hash+30), *(msg_hash+31));
-  printf("msg_hash_len: %zu\n", msg_hash_len);
+  printf("hash_len: %zu\n", hash_len);
 
-  // sb_sw_context_t *context = mmalloc(sizeof(struct sb_sw_context_t));
-  // sb_sw_message_digest_t *dig = mmalloc(sizeof(sb_sw_message_digest_t));
+  sb_sw_context_t sw_context;
 
-  sb_sw_context_t context;
-  // sb_sw_message_digest_t dig;
-
-  // sb_sw_signature_t sw_signature = { {*signature} };
-  // sb_sw_message_digest_t TEST_MESSAGE = { {*msg_hash} };
-  // sb_sw_signature_t sw_signature = { {
-  //   0xd2, 0xe0, 0x7b, 0x1d, 0xd7, 0x26, 0x3d, 0x83, 0x31, 0x66, 0xbd, 0xbb, 0x4f, 0x1a, 0x09, 0x38, 0x37, 0xa9, 0x05, 0xd7, 0xec, 0xa2, 0xee, 0x83, 0x6b, 0x6b, 0x2a, 0xda, 0x23, 0xc2, 0x31, 0x54, 0xfb, 0xa8, 0x8a, 0x52, 0x9f, 0x67, 0x5d, 0x66, 0x86, 0xee, 0x63, 0x2b, 0x09, 0xec, 0x58, 0x1a, 0xb0, 0x8f, 0x72, 0xb4, 0x58, 0x90, 0x4b, 0xb3, 0x39, 0x6d, 0x10, 0xfa, 0x66, 0xd1, 0x14, 0x77,
-  // } };
   sb_sw_signature_t sw_signature = { {
-    *signature, *(signature+1), *(signature+2), *(signature+3), *(signature+4), *(signature+5), *(signature+6), *(signature+7), *(signature+8), *(signature+9), *(signature+10), *(signature+11), *(signature+12), *(signature+13), *(signature+14), *(signature+15), *(signature+16), *(signature+17), *(signature+18), *(signature+19), *(signature+20), *(signature+21), *(signature+22), *(signature+23), *(signature+24), *(signature+25), *(signature+26), *(signature+27), *(signature+28), *(signature+29), *(signature+30), *(signature+31),
-    *(signature+32), *(signature+33), *(signature+34), *(signature+35), *(signature+36), *(signature+37), *(signature+38), *(signature+39), *(signature+40), *(signature+41), *(signature+42), *(signature+43), *(signature+44), *(signature+45), *(signature+46), *(signature+47), *(signature+48), *(signature+49), *(signature+50), *(signature+51), *(signature+52), *(signature+53), *(signature+54), *(signature+55), *(signature+56), *(signature+57), *(signature+58), *(signature+59), *(signature+60), *(signature+61), *(signature+62), *(signature+63)
+    *(sign+0),  *(sign+1),  *(sign+2),  *(sign+3),  *(sign+4),  *(sign+5),  *(sign+6),  *(sign+7), 
+    *(sign+8),  *(sign+9),  *(sign+10), *(sign+11), *(sign+12), *(sign+13), *(sign+14), *(sign+15), 
+    *(sign+16), *(sign+17), *(sign+18), *(sign+19), *(sign+20), *(sign+21), *(sign+22), *(sign+23), 
+    *(sign+24), *(sign+25), *(sign+26), *(sign+27), *(sign+28), *(sign+29), *(sign+30), *(sign+31),
+    *(sign+32), *(sign+33), *(sign+34), *(sign+35), *(sign+36), *(sign+37), *(sign+38), *(sign+39), 
+    *(sign+40), *(sign+41), *(sign+42), *(sign+43), *(sign+44), *(sign+45), *(sign+46), *(sign+47), 
+    *(sign+48), *(sign+49), *(sign+50), *(sign+51), *(sign+52), *(sign+53), *(sign+54), *(sign+55), 
+    *(sign+56), *(sign+57), *(sign+58), *(sign+59), *(sign+60), *(sign+61), *(sign+62), *(sign+63)
   } };
 
-  // sb_sw_message_digest_t TEST_MESSAGE = { {
-  //   0x27, 0x1c, 0xe3, 0x3d, 0x67, 0x1a, 0x2d, 0x3b, 0x81, 0x6d, 0x78, 0x81, 0x35, 0xf4, 0x34, 0x3e, 0x14, 0xbc, 0x66, 0x80, 0x2f, 0x8c, 0xd8, 0x41, 0xfa, 0xac, 0x93, 0x9e, 0x8c, 0x11, 0xf3, 0xee,
-  // } };
-  sb_sw_message_digest_t TEST_MESSAGE = { {
-    *msg_hash, *(msg_hash+1), *(msg_hash+2), *(msg_hash+3), *(msg_hash+4), *(msg_hash+5), *(msg_hash+6), *(msg_hash+7), *(msg_hash+8), *(msg_hash+9), *(msg_hash+10), *(msg_hash+11), *(msg_hash+12), *(msg_hash+13), *(msg_hash+14), *(msg_hash+15), *(msg_hash+16), *(msg_hash+17), *(msg_hash+18), *(msg_hash+19), *(msg_hash+20), *(msg_hash+21), *(msg_hash+22), *(msg_hash+23), *(msg_hash+24), *(msg_hash+25), *(msg_hash+26), *(msg_hash+27), *(msg_hash+28), *(msg_hash+29), *(msg_hash+30), *(msg_hash+31)
+  sb_sw_message_digest_t sw_message = { {
+    *(hash+0),  *(hash+1),  *(hash+2),  *(hash+3),  *(hash+4),  *(hash+5),  *(hash+6),  *(hash+7), 
+    *(hash+8),  *(hash+9),  *(hash+10), *(hash+11), *(hash+12), *(hash+13), *(hash+14), *(hash+15), 
+    *(hash+16), *(hash+17), *(hash+18), *(hash+19), *(hash+20), *(hash+21), *(hash+22), *(hash+23), 
+    *(hash+24), *(hash+25), *(hash+26), *(hash+27), *(hash+28), *(hash+29), *(hash+30), *(hash+31)
   } };
 
-  sb_error_t error = sb_sw_verify_signature(&context, &sw_signature, &TEST_PUB_2, &TEST_MESSAGE, 
+  sb_error_t error = sb_sw_verify_signature(&sw_context, &sw_signature, &MOH_EXAMPLE_PUB_KEY, &sw_message, 
                                             NULL, SB_SW_CURVE_P256, 
                                             SB_DATA_ENDIAN_BIG);
 
@@ -420,7 +396,6 @@ int main(void) {
   if (error == SB_ERROR_INCORRECT_OPERATION) { printf("error: SB_ERROR_INCORRECT_OPERATION\n"); }
   if (error == SB_ERROR_NOT_FINISHED) { printf("error: SB_ERROR_NOT_FINISHED\n"); }
   if (error == SB_ERROR_ADDITIONAL_INPUT_REQUIRED) { printf("error: SB_ERROR_ADDITIONAL_INPUT_REQUIRED\n"); }
-
 
   // TODO: validate cwt claims
 
