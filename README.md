@@ -9,7 +9,7 @@ Contributions welcome! 🥳
 - Install https://github.com/intel/tinycbor as a system library
 - Install https://github.com/westerndigitalcorporation/sweet-b as a system library
 - `make`
-- `./main`
+- `DYLD_LIBRARY_PATH=$PWD/compiled/usr/local/lib ./main`
 
 ## License
 MIT
