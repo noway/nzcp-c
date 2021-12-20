@@ -24,4 +24,5 @@ build_sweet_b:
 	cd sweet-b ; sed -i -e 's/        LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/        ARCHIVE DESTINATION $${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/g' CMakeLists.txt
 	cd sweet-b ; cmake . ;  make ; DESTDIR=$(PWD)/compiled make install
 build_tinycbor:
+	cd tinycbor ; sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 	cd tinycbor ; make ; DESTDIR=$(PWD)/compiled make install
