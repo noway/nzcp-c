@@ -6,7 +6,7 @@ Not production ready. Stability or memory safety is not guaranteed.
 Contributions welcome! 🥳
 
 ## Requirements
-- Development Tools (gcc, etc)
+- Development Tools (gcc or clang, etc)
 - `cmake` v3
 - `git`
 
