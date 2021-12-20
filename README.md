@@ -6,8 +6,8 @@ Not production ready. Stability or memory safety is not guaranteed.
 Contributions welcome! 🥳
 
 ## Requirements
-- BSD-like system (tested on macOS 12.0)
-- `cmake`
+- Development Tools (gcc, etc)
+- `cmake` v3
 - `git`
 
 ## Installation
@@ -24,4 +24,3 @@ Depends on my availability, but would be nice to:
 - Enforce C99 standard
 - Define an API on how to use the library
 - Package as a library
-- GNU/Linux support
