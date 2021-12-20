@@ -1,9 +1,9 @@
-LIBRARY_PATH=$(PWD)/compiled/usr/local/lib
-CPATH=$(PWD)/compiled/usr/local/include
+LIBRARY_PATH=$(PWD)/compiled-sweet-b/usr/local/lib:$(PWD)/compiled-tinycbor/usr/local/lib
+CPATH=$(PWD)/compiled-sweet-b/usr/local/include:$(PWD)/compiled-tinycbor/usr/local/include
 
-.PHONY: clean build_sweet_b build_tinycbor
+.PHONY: clean
 
-build: build_sweet_b build_tinycbor
+build: compiled-sweet-b compiled-tinycbor
 	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) main.c base32.c -o main -ltinycbor -lsweet_b
 
 sweet-b:
@@ -15,14 +15,15 @@ tinycbor:
 	git clone git@github.com:intel/tinycbor.git
 	cd tinycbor && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
-build_sweet_b: sweet-b
-	cd sweet-b && cmake . && make && DESTDIR=$(PWD)/compiled make install
+compiled-sweet-b: sweet-b
+	cd sweet-b && cmake . && make && DESTDIR=$(PWD)/compiled-sweet-b make install
 
-build_tinycbor: tinycbor
-	cd tinycbor && make && DESTDIR=$(PWD)/compiled make install
+compiled-tinycbor: tinycbor
+	cd tinycbor && make && DESTDIR=$(PWD)/compiled-tinycbor make install
 
 clean:
-	rm -rf $(PWD)/compiled
+	rm -rf $(PWD)/compiled-sweet-b
+	rm -rf $(PWD)/compiled-tinycbor
 	rm -rf $(PWD)/sweet-b
 	rm -rf $(PWD)/tinycbor
 	rm -f $(PWD)/main
