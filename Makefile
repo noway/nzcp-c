@@ -1,15 +1,18 @@
+LIBRARY_PATH=$(PWD)/compiled/usr/local/lib
+C_INCLUDE_PATH=$(PWD)/compiled/usr/local/include
+
 build:
 	make git_clone_sweet_b
 	make git_clone_tinycbor
 	make build_sweet_b
 	make build_tinycbor
-	clang -ltinycbor -lsweet_b -o main main.c base32.c -I $(PWD)/compiled/usr/local/include -L $(PWD)/compiled/usr/local/lib
+	LIBRARY_PATH=$(LIBRARY_PATH) C_INCLUDE_PATH=$(C_INCLUDE_PATH) $(CC) -ltinycbor -lsweet_b -o main main.c base32.c
 
 clean:
 	rm -rf $(PWD)/compiled
 	rm -rf $(PWD)/sweet-b
 	rm -rf $(PWD)/tinycbor
-	rm $(PWD)/main
+	rm -f $(PWD)/main
 
 git_clone_sweet_b:
 	git clone git@github.com:westerndigitalcorporation/sweet-b.git || true
@@ -18,6 +21,7 @@ git_clone_tinycbor:
 
 build_sweet_b:
 	cd sweet-b ; sed -i -e 's/SHARED/STATIC/g' CMakeLists.txt
+	cd sweet-b ; sed -i -e 's/        LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/        ARCHIVE DESTINATION $${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/g' CMakeLists.txt
 	cd sweet-b ; cmake . ;  make ; DESTDIR=$(PWD)/compiled make install
 build_tinycbor:
 	cd tinycbor ; make ; DESTDIR=$(PWD)/compiled make install
