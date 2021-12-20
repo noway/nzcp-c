@@ -1,12 +1,12 @@
 LIBRARY_PATH=$(PWD)/compiled/usr/local/lib
-C_INCLUDE_PATH=$(PWD)/compiled/usr/local/include
+CPATH=$(PWD)/compiled/usr/local/include
 
 build:
 	make git_clone_sweet_b
 	make git_clone_tinycbor
 	make build_sweet_b
 	make build_tinycbor
-	LIBRARY_PATH=$(LIBRARY_PATH) C_INCLUDE_PATH=$(C_INCLUDE_PATH) $(CC) -ltinycbor -lsweet_b -o main main.c base32.c
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) main.c base32.c -o main -ltinycbor -lsweet_b
 
 clean:
 	rm -rf $(PWD)/compiled
