@@ -8,14 +8,41 @@
 #include <sb_sw_context.h>
 
 #define DEBUG false
+#define IS_LIVE false
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on familyName and givenName
 
-static const uint8_t *EXAMPLE_PASS =
+static const uint8_t *PASS_URI =
   (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
 
-static const char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
+#if IS_LIVE
 
-static const sb_sw_public_t MOH_EXAMPLE_PUB_KEY = {
+static const char* TRUSTED_ISSUER = "did:web:nzcp.identity.health.nz";
+static const sb_sw_public_t PUB_KEY = {
+  {
+    0x0D, 0x00, 0x8A, 0x26,
+    0xEB, 0x2A, 0x32, 0xC4,
+    0xF4, 0xBB, 0xB0, 0xA3,
+    0xA6, 0x68, 0x63, 0x54,
+    0x69, 0x07, 0x96, 0x7D,
+    0xC0, 0xDD, 0xF4, 0xBE,
+    0x6B, 0x27, 0x87, 0xE0,
+    0xDB, 0xB9, 0xDA, 0xD7,
+
+    0x97, 0x18, 0x16, 0xCE,
+    0xC2, 0xED, 0x54, 0x8F,
+    0x1F, 0xA9, 0x99, 0x93,
+    0x3C, 0xFA, 0x3D, 0x9D,
+    0x9F, 0xA4, 0xCC, 0x6B,
+    0x3B, 0xC3, 0xB5, 0xCE,
+    0xF3, 0xEA, 0xD4, 0x53,
+    0xAF, 0x0E, 0xC6, 0x62,
+  }
+};
+
+#else
+
+static const char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
+static const sb_sw_public_t PUB_KEY = {
   {
     0xCD, 0x14, 0x7E, 0x5C,
     0x6B, 0x02, 0xA7, 0x5D,
@@ -36,6 +63,8 @@ static const sb_sw_public_t MOH_EXAMPLE_PUB_KEY = {
     0xB4, 0xA4, 0xDD, 0x3D,
   }
 };
+
+#endif
 
 void* mmalloc(size_t size) {
   void* ptr = malloc(size);
@@ -71,13 +100,13 @@ size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
 int main(void) {
   // TODO: check for every CborError and return error code
 
-  size_t token1_len = next_token_len(EXAMPLE_PASS, 0);
-  size_t token2_len = next_token_len(EXAMPLE_PASS, token1_len + 1);
-  size_t token3_len = next_token_len(EXAMPLE_PASS, token1_len + 1 + token2_len + 1);
+  size_t token1_len = next_token_len(PASS_URI, 0);
+  size_t token2_len = next_token_len(PASS_URI, token1_len + 1);
+  size_t token3_len = next_token_len(PASS_URI, token1_len + 1 + token2_len + 1);
 
-  const uint8_t* payload_prefix = EXAMPLE_PASS;
-  const uint8_t* version_identifier = EXAMPLE_PASS + token1_len + 1;
-  const uint8_t* base32_encoded_cwt = EXAMPLE_PASS + token1_len + 1 + token2_len + 1;
+  const uint8_t* payload_prefix = PASS_URI;
+  const uint8_t* version_identifier = PASS_URI + token1_len + 1;
+  const uint8_t* base32_encoded_cwt = PASS_URI + token1_len + 1 + token2_len + 1;
 
   // TODO: check payload prefix and version identifier
   pprintf("payload_prefix %s %lu\n", payload_prefix, token1_len);
@@ -392,7 +421,7 @@ int main(void) {
     *(hash+24), *(hash+25), *(hash+26), *(hash+27), *(hash+28), *(hash+29), *(hash+30), *(hash+31)
   } };
 
-  sb_error_t error = sb_sw_verify_signature(&sw_context, &sw_signature, &MOH_EXAMPLE_PUB_KEY, &sw_message, 
+  sb_error_t error = sb_sw_verify_signature(&sw_context, &sw_signature, &PUB_KEY, &sw_message,
                                             NULL, SB_SW_CURVE_P256, 
                                             SB_DATA_ENDIAN_BIG);
 
