@@ -105,9 +105,11 @@ struct nzcp_state {
   char* jti;
   char *iss;
 
-  char *context[2];
+  char *context_0;
+  char *context_1;
   char *version;
-  char *type[2];
+  char *type_0;
+  char *type_1;
 
   char *given_name;
   char *family_name;
@@ -133,9 +135,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     NULL,
     NULL,
     NULL,
-    {NULL, NULL},
+    NULL, NULL,
     NULL,
-    {NULL, NULL},
+    NULL, NULL,
     NULL,
     NULL,
     NULL,
@@ -393,29 +395,29 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             CborValue context_value;
             cbor_value_enter_container(&vc_element_value, &context_value);
 
-            // get state.context[0]
+            // get state.context_0
             CborType context_0_element_type = cbor_value_get_type(&context_value);
             assert(context_0_element_type == CborTextStringType);
             size_t context_0_element_len;
             cbor_value_calculate_string_length(&context_value, &context_0_element_len);
-            if (state.context[0] != NULL) {
-              free(state.context[0]);
+            if (state.context_0 != NULL) {
+              free(state.context_0);
             }
-            state.context[0] = mmalloc(context_0_element_len + 1); // tinycbor adds null byte at the end
-            cbor_value_copy_text_string(&context_value, state.context[0], &context_0_element_len, NULL);
+            state.context_0 = mmalloc(context_0_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&context_value, state.context_0, &context_0_element_len, NULL);
 
             cbor_value_advance(&context_value);
 
-            // get state.context[1]
+            // get state.context_1
             CborType context_1_element_type = cbor_value_get_type(&context_value);
             assert(context_1_element_type == CborTextStringType);
             size_t context_1_element_len;
             cbor_value_calculate_string_length(&context_value, &context_1_element_len);
-            if (state.context[1] != NULL) {
-              free(state.context[1]);
+            if (state.context_1 != NULL) {
+              free(state.context_1);
             }
-            state.context[1] = mmalloc(context_1_element_len + 1); // tinycbor adds null byte at the end
-            cbor_value_copy_text_string(&context_value, state.context[1], &context_1_element_len, NULL);
+            state.context_1 = mmalloc(context_1_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&context_value, state.context_1, &context_1_element_len, NULL);
 
           }
           else if (strcmp(vc_element_key, "version") == 0) {
@@ -445,29 +447,29 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             CborValue type_value;
             cbor_value_enter_container(&vc_element_value, &type_value);
 
-            // get state.type[0]
+            // get state.type_0
             CborType type_0_element_type = cbor_value_get_type(&type_value);
             assert(type_0_element_type == CborTextStringType);
             size_t type_0_element_len;
             cbor_value_calculate_string_length(&type_value, &type_0_element_len);
-            if (state.type[0] != NULL) {
-              free(state.type[0]);
+            if (state.type_0 != NULL) {
+              free(state.type_0);
             }
-            state.type[0] = mmalloc(type_0_element_len + 1); // tinycbor adds null byte at the end
-            cbor_value_copy_text_string(&type_value, state.type[0], &type_0_element_len, NULL);
+            state.type_0 = mmalloc(type_0_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&type_value, state.type_0, &type_0_element_len, NULL);
 
             cbor_value_advance(&type_value);
 
-            // get state.type[1]
+            // get state.type_1
             CborType type_1_element_type = cbor_value_get_type(&type_value);
             assert(type_1_element_type == CborTextStringType);
             size_t type_1_element_len;
             cbor_value_calculate_string_length(&type_value, &type_1_element_len);
-            if (state.type[1] != NULL) {
-              free(state.type[1]);
+            if (state.type_1 != NULL) {
+              free(state.type_1);
             }
-            state.type[1] = mmalloc(type_1_element_len + 1); // tinycbor adds null byte at the end
-            cbor_value_copy_text_string(&type_value, state.type[1], &type_1_element_len, NULL);
+            state.type_1 = mmalloc(type_1_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&type_value, state.type_1, &type_1_element_len, NULL);
           }
           else if (strcmp(vc_element_key, "credentialSubject") == 0) {
 
@@ -562,10 +564,10 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   pprintf("time(NULL): %ld\n", time(NULL));
   pprintf("state.version: %s\n", state.version);
-  pprintf("state.type[0]: %s\n", state.type[0]);
-  pprintf("state.type[1]: %s\n", state.type[1]);
-  pprintf("state.context[0]: %s\n", state.context[0]);
-  pprintf("state.context[1]: %s\n", state.context[1]);
+  pprintf("state.type_0: %s\n", state.type_0);
+  pprintf("state.type_1: %s\n", state.type_1);
+  pprintf("state.context_0: %s\n", state.context_0);
+  pprintf("state.context_1: %s\n", state.context_1);
 
   
   CborEncoder encoder;
@@ -650,10 +652,10 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   assert(exp != 0);
   assert(time(NULL) >= nbf);
   assert(time(NULL) < exp);
-  assert(state.context[0] != NULL && strcmp(state.context[0], "https://www.w3.org/2018/credentials/v1") == 0);
-  assert(state.context[1] != NULL && strcmp(state.context[1], "https://nzcp.covid19.health.nz/contexts/v1") == 0);
-  assert(state.type[0] != NULL && strcmp(state.type[0], "VerifiableCredential") == 0);
-  assert(state.type[1] != NULL && strcmp(state.type[1], "PublicCovidPass") == 0);
+  assert(state.context_0 != NULL && strcmp(state.context_0, "https://www.w3.org/2018/credentials/v1") == 0);
+  assert(state.context_1 != NULL && strcmp(state.context_1, "https://nzcp.covid19.health.nz/contexts/v1") == 0);
+  assert(state.type_0 != NULL && strcmp(state.type_0, "VerifiableCredential") == 0);
+  assert(state.type_1 != NULL && strcmp(state.type_1, "PublicCovidPass") == 0);
   assert(state.version != NULL && strcmp(state.version, "1.0.0") == 0);
   assert(state.given_name != NULL && strlen(state.given_name) > 0);
   assert(state.dob != NULL && strlen(state.dob) > 0);
@@ -666,11 +668,11 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   // free(state.jti);
   // free(state.iss);
   free(state.cti);
-  free(state.context[0]);
-  free(state.context[1]);
+  free(state.context_0);
+  free(state.context_1);
   free(state.version);
-  free(state.type[0]);
-  free(state.type[1]);
+  free(state.type_0);
+  free(state.type_1);
   // free(state.given_name);
   // free(state.family_name);
   // free(state.dob);
