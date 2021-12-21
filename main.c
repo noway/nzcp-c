@@ -11,9 +11,7 @@
 #define DEBUG false
 #define IS_LIVE false
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
-
-static const uint8_t *PASS_URI =
-  (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
+#define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
 
 #if IS_LIVE
 
@@ -67,8 +65,8 @@ void pprintf(const char* fmt, ...) {
   }
 }
 
-void print_jti(uint8_t* cti) {
-  printf("urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
+void sprint_jti(uint8_t* cti, char* out) {
+  sprintf(out, "urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
     *(cti+0),  *(cti+1),  *(cti+2),  *(cti+3),  *(cti+4),  *(cti+5),  *(cti+6),  *(cti+7), 
     *(cti+8),  *(cti+9), *(cti+10), *(cti+11), *(cti+12), *(cti+13), *(cti+14), *(cti+15));
 }
@@ -84,16 +82,29 @@ size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
   return token_len;
 }
 
-int main(void) {
+#define nzcp_error int
+
+// caller is responsible for free()ing the strings
+struct nzcp_verification_result {
+  char* jti;
+  char* iss;
+  int nbf;
+  int exp;
+  char* given_name;
+  char* family_name;
+  char* dob;
+};
+
+nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_result* verification_result) {
   // TODO: check for every CborError and return error code
 
-  size_t token1_len = next_token_len(PASS_URI, 0);
-  size_t token2_len = next_token_len(PASS_URI, token1_len + 1);
-  size_t token3_len = next_token_len(PASS_URI, token1_len + 1 + token2_len + 1);
+  size_t token1_len = next_token_len(pass_uri, 0);
+  size_t token2_len = next_token_len(pass_uri, token1_len + 1);
+  size_t token3_len = next_token_len(pass_uri, token1_len + 1 + token2_len + 1);
 
-  const uint8_t* payload_prefix = PASS_URI;
-  const uint8_t* version_identifier = PASS_URI + token1_len + 1;
-  const uint8_t* base32_encoded_cwt = PASS_URI + token1_len + 1 + token2_len + 1;
+  const uint8_t* payload_prefix = pass_uri;
+  const uint8_t* version_identifier = pass_uri + token1_len + 1;
+  const uint8_t* base32_encoded_cwt = pass_uri + token1_len + 1 + token2_len + 1;
 
   // TODO: check payload prefix and version identifier
   pprintf("payload_prefix %s %lu\n", payload_prefix, token1_len);
@@ -229,6 +240,8 @@ int main(void) {
 
 
   uint8_t *cti = NULL; // TODO: 16 bytes on stack
+  char* jti = malloc(JTI_LEN + 1);
+  
   char *iss = NULL;
   int nbf = 0;
   int exp = 0;
@@ -299,6 +312,7 @@ int main(void) {
         }
         cti = mmalloc(cti_len + 1); // tinycbor adds null byte at the end
         cbor_value_copy_byte_string(&cwt_claim_element_value, cti, &cti_len, NULL);
+        sprint_jti(cti, jti);
 
         pprintf("cti: %s\n",cti);
       }
@@ -566,6 +580,7 @@ int main(void) {
                                             NULL, SB_SW_CURVE_P256, 
                                             SB_DATA_ENDIAN_BIG);
 
+  /*
   if (error == SB_SUCCESS) { printf("error: SB_SUCCESS\n"); }
   else if (error == SB_ERROR_INSUFFICIENT_ENTROPY) { printf("error: SB_ERROR_INSUFFICIENT_ENTROPY\n"); }
   else if (error == SB_ERROR_INPUT_TOO_LARGE) { printf("error: SB_ERROR_INPUT_TOO_LARGE\n"); }
@@ -591,6 +606,7 @@ int main(void) {
   printf("given_name: %s\n", given_name);
   printf("family_name: %s\n", family_name);
   printf("dob: %s\n", dob);
+  */
 
   // Validate CWT claims
   assert(cti != NULL);
@@ -611,19 +627,44 @@ int main(void) {
   free(protected);
   free(kid);
   free(payload);
-  free(iss);
+  // free(iss);
   free(cti);
   free(context[0]);
   free(context[1]);
   free(version);
   free(type[0]);
   free(type[1]);
-  free(given_name);
-  free(family_name);
-  free(dob);
+  // free(given_name);
+  // free(family_name);
+  // free(dob);
   free(sign);
   free(tobe_signed_buf);
   free(sha256_state);
   free(hash);
+
+  verification_result->jti = jti;
+  verification_result->iss = iss;
+  verification_result->nbf = nbf;
+  verification_result->exp = exp;
+  verification_result->given_name = given_name;
+  verification_result->family_name = family_name;
+  verification_result->dob = dob;
+  return error;
+}
+
+int main(void) {
+  static uint8_t *PASS_URI =
+    (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
+
+  struct nzcp_verification_result verification_result;
+  int error = nzcp_verify_pass_uri(PASS_URI, &verification_result);
+  printf("error: %d\n", error);
+  printf("jti: %s\n", verification_result.jti);
+  printf("iss: %s\n", verification_result.iss);
+  printf("nbf: %d\n", verification_result.nbf);
+  printf("exp: %d\n", verification_result.exp);
+  printf("given_name: %s\n", verification_result.given_name);
+  printf("family_name: %s\n", verification_result.family_name);
+  printf("dob: %s\n", verification_result.dob);
   return 0;
 }
