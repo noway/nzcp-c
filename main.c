@@ -167,9 +167,11 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     NULL,
     NULL,
     NULL,
-    NULL, NULL,
+    NULL, 
     NULL,
-    NULL, NULL,
+    NULL,
+    NULL, 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -649,35 +651,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                                             NULL, SB_SW_CURVE_P256, 
                                             SB_DATA_ENDIAN_BIG);
 
-  /*
-  if (error == SB_SUCCESS) { printf("error: SB_SUCCESS\n"); }
-  else if (error == SB_ERROR_INSUFFICIENT_ENTROPY) { printf("error: SB_ERROR_INSUFFICIENT_ENTROPY\n"); }
-  else if (error == SB_ERROR_INPUT_TOO_LARGE) { printf("error: SB_ERROR_INPUT_TOO_LARGE\n"); }
-  else if (error == SB_ERROR_REQUEST_TOO_LARGE) { printf("error: SB_ERROR_REQUEST_TOO_LARGE\n"); }
-  else if (error == SB_ERROR_RESEED_REQUIRED) { printf("error: SB_ERROR_RESEED_REQUIRED\n"); }
-  else if (error == SB_ERROR_DRBG_FAILURE) { printf("error: SB_ERROR_DRBG_FAILURE\n"); }
-  else if (error == SB_ERROR_CURVE_INVALID) { printf("error: SB_ERROR_CURVE_INVALID\n"); }
-  else if (error == SB_ERROR_PRIVATE_KEY_INVALID) { printf("error: SB_ERROR_PRIVATE_KEY_INVALID\n"); }
-  else if (error == SB_ERROR_PUBLIC_KEY_INVALID) { printf("error: SB_ERROR_PUBLIC_KEY_INVALID\n"); }
-  else if (error == SB_ERROR_SIGNATURE_INVALID) { printf("error: SB_ERROR_SIGNATURE_INVALID\n"); }
-  else if (error == SB_ERROR_DRBG_UNINITIALIZED) { printf("error: SB_ERROR_DRBG_UNINITIALIZED\n"); }
-  else if (error == SB_ERROR_INCORRECT_OPERATION) { printf("error: SB_ERROR_INCORRECT_OPERATION\n"); }
-  else if (error == SB_ERROR_NOT_FINISHED) { printf("error: SB_ERROR_NOT_FINISHED\n"); }
-  else if (error == SB_ERROR_ADDITIONAL_INPUT_REQUIRED) { printf("error: SB_ERROR_ADDITIONAL_INPUT_REQUIRED\n"); }
-  else { printf("error: %d\n", error); }
-
-  printf("state.jti: ");
-  print_jti(state.cti);
-  printf("\n");
-  printf("state.iss: %s\n", state.iss);
-  printf("nbf: %d\n", nbf);
-  printf("exp: %d\n", exp);
-  printf("state.given_name: %s\n", state.given_name);
-  printf("state.family_name: %s\n", state.family_name);
-  printf("state.dob: %s\n", state.dob);
-  */
-
-  // Validate CWT state.claims
+  // Validating CWT state.claims
   assert(state.cti != NULL);
   assert(state.iss != NULL && strlen(state.iss) > 0);
   assert(nbf != 0);
@@ -691,28 +665,6 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   assert(state.version != NULL && strcmp(state.version, "1.0.0") == 0);
   assert(state.given_name != NULL && strlen(state.given_name) > 0);
   assert(state.dob != NULL && strlen(state.dob) > 0);
-
-  /*
-  free(state.cwt);
-  free(state.headers);
-  free(state.kid);
-  free(state.claims);
-  // free(state.jti);
-  // free(state.iss);
-  free(state.cti);
-  free(state.context_0);
-  free(state.context_1);
-  free(state.version);
-  free(state.type_0);
-  free(state.type_1);
-  // free(state.given_name);
-  // free(state.family_name);
-  // free(state.dob);
-  free(state.sign);
-  free(state.tobe_signed_buf);
-  free(state.sha256_state);
-  free(state.hash);
-  */
 
   verification_result->jti = qstrcopy(state.jti);
   verification_result->iss = qstrcopy(state.iss);
