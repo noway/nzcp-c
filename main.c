@@ -102,10 +102,10 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   // memory allocated variables:
   // 
 
-  uint8_t *binary_cwt = NULL;
-  uint8_t *protected = NULL;
+  uint8_t *cwt = NULL;
+  uint8_t *headers = NULL;
   uint8_t *kid = NULL;
-  uint8_t *payload = NULL;
+  uint8_t *claims = NULL;
 
   uint8_t *cti = NULL;
   char* jti = NULL;
@@ -130,25 +130,25 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   size_t token2_len = next_token_len(pass_uri, token1_len + 1);
   size_t token3_len = next_token_len(pass_uri, token1_len + 1 + token2_len + 1);
 
-  const uint8_t* payload_prefix = pass_uri;
+  const uint8_t* claims_prefix = pass_uri;
   const uint8_t* version_identifier = pass_uri + token1_len + 1;
   const uint8_t* base32_encoded_cwt = pass_uri + token1_len + 1 + token2_len + 1;
 
-  // TODO: check payload prefix and version identifier
-  pprintf("payload_prefix %s %lu\n", payload_prefix, token1_len);
+  // TODO: check claims prefix and version identifier
+  pprintf("claims_prefix %s %lu\n", claims_prefix, token1_len);
   pprintf("version_identifier %s %lu\n", version_identifier, token2_len);
   pprintf("base32_encoded_cwt %s %lu\n", base32_encoded_cwt, token3_len);
   
   // TODO: add base32 padding
-  size_t binary_cwt_max = strlen((char*) base32_encoded_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
-  binary_cwt = mmalloc(binary_cwt_max);
-  base32_decode(base32_encoded_cwt, binary_cwt);
-  size_t binary_cwt_len = strlen((char*) binary_cwt);
-  pprintf("strlen(binary_cwt) %zu \n", binary_cwt_len);
+  size_t cwt_max = strlen((char*) base32_encoded_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
+  cwt = mmalloc(cwt_max);
+  base32_decode(base32_encoded_cwt, cwt);
+  size_t cwt_len = strlen((char*) cwt);
+  pprintf("strlen(cwt) %zu \n", cwt_len);
 
   CborParser parser;
   CborValue value;
-  cbor_parser_init(binary_cwt, binary_cwt_len, 0, &parser, &value);
+  cbor_parser_init(cwt, cwt_len, 0, &parser, &value);
   bool is_tag = cbor_value_is_tag(&value);
   assert(is_tag);
   pprintf("is_tag: %d\n",is_tag);
@@ -174,22 +174,22 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   assert(type2 == CborByteStringType);
   pprintf("type2: %d\n",type2);
 
-  size_t protected_len;
-  cbor_value_calculate_string_length(&element_value, &protected_len);
-  protected = mmalloc(protected_len + 1); // tinycbor adds null byte at the end
-  cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value); // TODO: i'd rather advance on my own
-  pprintf("protected: %s\n", protected);
-  pprintf("protected_len: %lu\n", protected_len);
+  size_t headers_len;
+  cbor_value_calculate_string_length(&element_value, &headers_len);
+  headers = mmalloc(headers_len + 1); // tinycbor adds null byte at the end
+  cbor_value_copy_byte_string(&element_value, headers, &headers_len, &element_value); // TODO: i'd rather advance on my own
+  pprintf("headers: %s\n", headers);
+  pprintf("headers_len: %lu\n", headers_len);
 
-  CborParser protected_parser;
-  CborValue protected_value;
-  cbor_parser_init(protected, protected_len, 0, &protected_parser, &protected_value);
-  CborType protected_type = cbor_value_get_type(&protected_value);
-  assert(protected_type == CborMapType);
-  pprintf("protected_type: %d\n",protected_type);
+  CborParser headers_parser;
+  CborValue headers_value;
+  cbor_parser_init(headers, headers_len, 0, &headers_parser, &headers_value);
+  CborType headers_type = cbor_value_get_type(&headers_value);
+  assert(headers_type == CborMapType);
+  pprintf("headers_type: %d\n",headers_type);
 
-  CborValue protected_element_value;
-  cbor_value_enter_container(&protected_value, &protected_element_value);
+  CborValue headers_element_value;
+  cbor_value_enter_container(&headers_value, &headers_element_value);
 
   size_t kid_len = 0;
   kid = NULL;
@@ -199,44 +199,44 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   int header_key;
 
   do {
-    header_type = cbor_value_get_type(&protected_element_value);
+    header_type = cbor_value_get_type(&headers_element_value);
     assert(header_type == CborIntegerType);
     pprintf("header_type: %d\n",header_type);
 
-    cbor_value_get_int_checked(&protected_element_value, &header_key);
+    cbor_value_get_int_checked(&headers_element_value, &header_key);
     pprintf("header_key: %d\n",header_key);
 
     if (header_key == 4) {
       pprintf("cwt_header_kid\n");
-      cbor_value_advance(&protected_element_value);
+      cbor_value_advance(&headers_element_value);
 
-      CborType header_value_type = cbor_value_get_type(&protected_element_value);
+      CborType header_value_type = cbor_value_get_type(&headers_element_value);
       pprintf("header_value_type: %d\n",header_value_type);
       assert(header_value_type == CborByteStringType);
 
-      cbor_value_calculate_string_length(&protected_element_value, &kid_len);
+      cbor_value_calculate_string_length(&headers_element_value, &kid_len);
 
       if (kid != NULL) {
         free(kid);
       }
       kid = mmalloc(kid_len + 1); // tinycbor adds null byte at the end
-      cbor_value_copy_byte_string(&protected_element_value, kid, &kid_len, NULL);
+      cbor_value_copy_byte_string(&headers_element_value, kid, &kid_len, NULL);
     }
     else if (header_key == 1) {
       pprintf("cwt_header_alg\n");
-      cbor_value_advance(&protected_element_value);
+      cbor_value_advance(&headers_element_value);
 
-      CborType header_value_type = cbor_value_get_type(&protected_element_value);
+      CborType header_value_type = cbor_value_get_type(&headers_element_value);
       assert(header_value_type == CborIntegerType);
       pprintf("header_value_type: %d\n",header_value_type);
 
-      cbor_value_get_int_checked(&protected_element_value, &alg);
+      cbor_value_get_int_checked(&headers_element_value, &alg);
     }
     else {
-      cbor_value_advance(&protected_element_value);
+      cbor_value_advance(&headers_element_value);
     }
-    cbor_value_advance(&protected_element_value);
-  } while (!cbor_value_at_end(&protected_element_value));
+    cbor_value_advance(&headers_element_value);
+  } while (!cbor_value_at_end(&headers_element_value));
 
   pprintf("kid: %s\n", kid);
   pprintf("alg: %d\n", alg);
@@ -253,25 +253,25 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   assert(type4 == CborByteStringType); // cwt claims
   pprintf("type4: %d\n",type4);
 
-  size_t payload_len;
-  cbor_value_calculate_string_length(&element_value, &payload_len);
-  payload = mmalloc(payload_len + 1); // tinycbor adds null byte at the end
-  cbor_value_copy_byte_string(&element_value, payload, &payload_len, &element_value); // TODO: i'd rather advance on my own
-  pprintf("payload_len: %lu\n", payload_len);
+  size_t claims_len;
+  cbor_value_calculate_string_length(&element_value, &claims_len);
+  claims = mmalloc(claims_len + 1); // tinycbor adds null byte at the end
+  cbor_value_copy_byte_string(&element_value, claims, &claims_len, &element_value); // TODO: i'd rather advance on my own
+  pprintf("claims_len: %lu\n", claims_len);
 
-  CborParser payload_parser;
-  CborValue payload_value;
-  cbor_parser_init(payload, payload_len, 0, &payload_parser, &payload_value);
-  CborType payload_type = cbor_value_get_type(&payload_value);
-  assert(payload_type == CborMapType);
-  pprintf("payload_type: %d\n",payload_type);
+  CborParser claims_parser;
+  CborValue claims_value;
+  cbor_parser_init(claims, claims_len, 0, &claims_parser, &claims_value);
+  CborType claims_type = cbor_value_get_type(&claims_value);
+  assert(claims_type == CborMapType);
+  pprintf("claims_type: %d\n",claims_type);
 
   
   int nbf = 0;
   int exp = 0;
 
   CborValue cwt_claim_element_value;
-  cbor_value_enter_container(&payload_value, &cwt_claim_element_value);
+  cbor_value_enter_container(&claims_value, &cwt_claim_element_value);
   do {
     CborType cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
     assert(cwt_claim_element_type == CborIntegerType || cwt_claim_element_type == CborTextStringType);
@@ -551,15 +551,14 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   
   CborEncoder encoder;
   CborEncoder array_encoder;
-  size_t tobe_signed_buflen = TO_BE_SIGNED_MAX_LEN;
-  tobe_signed_buf = mmalloc(tobe_signed_buflen); 
-  cbor_encoder_init(&encoder, tobe_signed_buf, tobe_signed_buflen, 0);
+  tobe_signed_buf = mmalloc(TO_BE_SIGNED_MAX_LEN); 
+  cbor_encoder_init(&encoder, tobe_signed_buf, TO_BE_SIGNED_MAX_LEN, 0);
   cbor_encoder_create_array(&encoder, &array_encoder, 4);
   uint8_t* buffer0 = (uint8_t*) "\0";
   cbor_encode_text_stringz(&array_encoder, "Signature1");
-  cbor_encode_byte_string(&array_encoder, protected, protected_len);
+  cbor_encode_byte_string(&array_encoder, headers, headers_len);
   cbor_encode_byte_string(&array_encoder, buffer0, 0);
-  cbor_encode_byte_string(&array_encoder, payload, payload_len);
+  cbor_encode_byte_string(&array_encoder, claims, claims_len);
   cbor_encoder_close_container_checked(&encoder, &array_encoder);
 
   size_t tobe_signed_buflen_actual = cbor_encoder_get_buffer_size(&encoder, tobe_signed_buf);
@@ -640,10 +639,11 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   assert(given_name != NULL && strlen(given_name) > 0);
   assert(dob != NULL && strlen(dob) > 0);
 
-  free(binary_cwt);
-  free(protected);
+  free(cwt);
+  free(headers);
   free(kid);
-  free(payload);
+  free(claims);
+  // free(jti);
   // free(iss);
   free(cti);
   free(context[0]);
