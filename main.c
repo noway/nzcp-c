@@ -17,6 +17,7 @@ static const uint8_t *PASS_URI =
 
 #if IS_LIVE
 
+static const uint8_t* KID = (uint8_t *) "z12Kf7UQ";
 static const char* TRUSTED_ISSUER = "did:web:nzcp.identity.health.nz";
 static const sb_sw_public_t PUB_KEY = {
   {
@@ -34,6 +35,7 @@ static const sb_sw_public_t PUB_KEY = {
 
 #else
 
+static const uint8_t* KID = (uint8_t *) "key-1";
 static const char* TRUSTED_ISSUER = "did:web:nzcp.covid19.health.nz";
 static const sb_sw_public_t PUB_KEY = {
   {
@@ -118,7 +120,7 @@ int main(void) {
   pprintf("tag: %llu\n",tag);
 
   cbor_value_skip_tag(&value);
-  CborType type1 = cbor_value_get_type(&value);
+  CborType type1 = cbor_value_get_type(&value); // TODO: rename type1-type3 to something else
   assert(type1 == CborArrayType);
   pprintf("type1: %d\n",type1);
 
@@ -139,7 +141,69 @@ int main(void) {
   cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value); // TODO: i'd rather advance on my own
   pprintf("protected: %s\n", protected);
   pprintf("protected_len: %lu\n", protected_len);
-  // TODO: check kid and alg
+
+  CborParser protected_parser;
+  CborValue protected_value;
+  cbor_parser_init(protected, protected_len, 0, &protected_parser, &protected_value);
+  CborType protected_type = cbor_value_get_type(&protected_value);
+  assert(protected_type == CborMapType);
+  pprintf("protected_type: %d\n",protected_type);
+
+  CborValue protected_element_value;
+  cbor_value_enter_container(&protected_value, &protected_element_value);
+
+  size_t kid_len = 0;
+  uint8_t *kid = NULL;
+  int alg = 0;
+
+  CborType header_type;
+  int header_key;
+
+  do {
+    header_type = cbor_value_get_type(&protected_element_value);
+    assert(header_type == CborIntegerType);
+    pprintf("header_type: %d\n",header_type);
+
+    cbor_value_get_int_checked(&protected_element_value, &header_key);
+    pprintf("header_key: %d\n",header_key);
+
+    if (header_key == 4) {
+      pprintf("cwt_header_kid\n");
+      cbor_value_advance(&protected_element_value);
+
+      CborType header_value_type = cbor_value_get_type(&protected_element_value);
+      pprintf("header_value_type: %d\n",header_value_type);
+      assert(header_value_type == CborByteStringType);
+
+      cbor_value_calculate_string_length(&protected_element_value, &kid_len);
+
+      if (kid != NULL) {
+        free(kid);
+      }
+      kid = mmalloc(kid_len + 1); // tinycbor adds null byte at the end
+      cbor_value_copy_byte_string(&protected_element_value, kid, &kid_len, NULL);
+    }
+    else if (header_key == 1) {
+      pprintf("cwt_header_alg\n");
+      cbor_value_advance(&protected_element_value);
+
+      CborType header_value_type = cbor_value_get_type(&protected_element_value);
+      assert(header_value_type == CborIntegerType);
+      pprintf("header_value_type: %d\n",header_value_type);
+
+      cbor_value_get_int_checked(&protected_element_value, &alg);
+    }
+    else {
+      cbor_value_advance(&protected_element_value);
+    }
+    cbor_value_advance(&protected_element_value);
+  } while (!cbor_value_at_end(&protected_element_value));
+
+  pprintf("kid: %s\n", kid);
+  pprintf("alg: %d\n", alg);
+
+  assert(memcmp(KID, kid, kid_len) == 0);
+  assert(alg == -7);
 
   CborType type3 = cbor_value_get_type(&element_value);
   assert(type3 == CborMapType); // empty map
@@ -147,7 +211,7 @@ int main(void) {
 
   cbor_value_advance(&element_value);
   CborType type4 = cbor_value_get_type(&element_value);
-  assert(type4 == CborByteStringType);
+  assert(type4 == CborByteStringType); // cwt claims
   pprintf("type4: %d\n",type4);
 
   size_t payload_len;
@@ -237,6 +301,10 @@ int main(void) {
         cbor_value_copy_byte_string(&cwt_claim_element_value, cti, &cti_len, NULL);
 
         pprintf("cti: %s\n",cti);
+      }
+      else {
+        // TODO: in every map, put an else and advance the value further. like here.
+        cbor_value_advance(&cwt_claim_element_value);
       }
     }
     else if (cwt_claim_element_type == CborTextStringType) {
@@ -539,6 +607,7 @@ int main(void) {
 
   free(binary_cwt);
   free(protected);
+  free(kid);
   free(payload);
   free(iss);
   free(cti);
