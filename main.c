@@ -165,7 +165,8 @@ int main(void) {
 
   int valid_from = 0;
   int expires_at = 0;
-  uint8_t *cti = NULL;
+  char *iss = NULL;
+  uint8_t *cti = NULL; // TODO: 16 bytes on stack
   char *givenName = NULL;
   char *familyName = NULL;
   char *dob = NULL;
@@ -188,9 +189,14 @@ int main(void) {
         assert(cwt_claim_element_type == CborTextStringType);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
-        bool is_iss_valid;
-        cbor_value_text_string_equals(&cwt_claim_element_value, TRUSTED_ISSUER, &is_iss_valid); // TODO: dynamic
-        assert(is_iss_valid == true);
+        size_t iss_len;
+        cbor_value_calculate_string_length(&cwt_claim_element_value, &iss_len);
+
+        if (iss != NULL) {
+          free(iss);
+        }
+        iss = mmalloc(iss_len + 1); // tinycbor adds null byte at the end
+        cbor_value_copy_text_string(&cwt_claim_element_value, iss, &iss_len, NULL);
       }
       else if (cwt_claim_key == 5) {
         cbor_value_advance(&cwt_claim_element_value);
@@ -310,7 +316,7 @@ int main(void) {
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 assert(credential_subject_element_type == CborTextStringType);
 
-                size_t subject_credential_element_value_len;
+                size_t subject_credential_element_value_len; // TODO: rename subject_credential to credential_subject
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
                 char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
                 cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
@@ -345,6 +351,9 @@ int main(void) {
     }
     cbor_value_advance(&cwt_claim_element_value);
   } while(!cbor_value_at_end(&cwt_claim_element_value));
+
+  // Validate iss is correct before checking signature.
+  assert(strcmp(iss, TRUSTED_ISSUER) == 0);
 
   size_t sign_len;
   cbor_value_calculate_string_length(&element_value, &sign_len);
@@ -427,9 +436,12 @@ int main(void) {
 
   // TODO: validate cwt claims
 
+  assert(cti != NULL);
+
   free(binary_cwt);
   free(protected);
   free(payload);
+  free(iss);
   free(cti);
   free(givenName);
   free(familyName);
