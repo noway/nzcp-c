@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <time.h>
 #include "base32.h"
 #include <tinycbor/cbor.h>
 #include <sb_sw_lib.h>
@@ -163,10 +164,15 @@ int main(void) {
   pprintf("payload_type: %d\n",payload_type);
 
 
-  int valid_from = 0;
-  int expires_at = 0;
-  char *iss = NULL;
   uint8_t *cti = NULL; // TODO: 16 bytes on stack
+  char *iss = NULL;
+  int nbf = 0;
+  int exp = 0;
+
+  char *context[2] = {NULL, NULL};
+  char *version = NULL;
+  char *type[2] = {NULL, NULL};
+
   char *givenName = NULL;
   char *familyName = NULL;
   char *dob = NULL;
@@ -204,8 +210,8 @@ int main(void) {
         assert(cwt_claim_element_type == CborIntegerType);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
-        cbor_value_get_int_checked(&cwt_claim_element_value, &valid_from);
-        pprintf("valid_from: %d\n",valid_from);
+        cbor_value_get_int_checked(&cwt_claim_element_value, &nbf);
+        pprintf("nbf: %d\n",nbf);
       }
       else if (cwt_claim_key == 4) {
         cbor_value_advance(&cwt_claim_element_value);
@@ -213,8 +219,8 @@ int main(void) {
         assert(cwt_claim_element_type == CborIntegerType);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
-        cbor_value_get_int_checked(&cwt_claim_element_value, &expires_at);
-        pprintf("expires_at: %d\n",expires_at);
+        cbor_value_get_int_checked(&cwt_claim_element_value, &exp);
+        pprintf("exp: %d\n",exp);
       }
       else if (cwt_claim_key == 7) {
         cbor_value_advance(&cwt_claim_element_value);
@@ -260,16 +266,90 @@ int main(void) {
           pprintf("vc_element_key_len: %lu\n", vc_element_key_len);
 
           if (strcmp(vc_element_key, "@context") == 0) {
-            // TODO: save & verify
             cbor_value_advance(&vc_element_value);
+
+            vc_element_type = cbor_value_get_type(&vc_element_value);
+            pprintf("vc_element_type: %d\n",vc_element_type);
+            assert(vc_element_type == CborArrayType);
+
+            CborValue context_value;
+            cbor_value_enter_container(&vc_element_value, &context_value);
+
+            // get context[0]
+            CborType context_0_element_type = cbor_value_get_type(&context_value);
+            assert(context_0_element_type == CborTextStringType);
+            size_t context_0_element_len;
+            cbor_value_calculate_string_length(&context_value, &context_0_element_len);
+            if (context[0] != NULL) {
+              free(context[0]);
+            }
+            context[0] = mmalloc(context_0_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&context_value, context[0], &context_0_element_len, NULL);
+
+            cbor_value_advance(&context_value);
+
+            // get context[1]
+            CborType context_1_element_type = cbor_value_get_type(&context_value);
+            assert(context_1_element_type == CborTextStringType);
+            size_t context_1_element_len;
+            cbor_value_calculate_string_length(&context_value, &context_1_element_len);
+            if (context[1] != NULL) {
+              free(context[1]);
+            }
+            context[1] = mmalloc(context_1_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&context_value, context[1], &context_1_element_len, NULL);
+
           }
           else if (strcmp(vc_element_key, "version") == 0) {
-            // TODO: save & verify
             cbor_value_advance(&vc_element_value);
+
+            vc_element_type = cbor_value_get_type(&vc_element_value);
+            pprintf("vc_element_type: %d\n",vc_element_type);
+            assert(vc_element_type == CborTextStringType);
+
+            size_t version_len;
+            cbor_value_calculate_string_length(&vc_element_value, &version_len);
+
+            if (version != NULL) {
+              free(version);
+            }
+            version = mmalloc(version_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&vc_element_value, version, &version_len, NULL);
+
           }
           else if (strcmp(vc_element_key, "type") == 0) {
-            // TODO: save & verify
             cbor_value_advance(&vc_element_value);
+
+            vc_element_type = cbor_value_get_type(&vc_element_value);
+            pprintf("vc_element_type: %d\n",vc_element_type);
+            assert(vc_element_type == CborArrayType);
+
+            CborValue type_value;
+            cbor_value_enter_container(&vc_element_value, &type_value);
+
+            // get type[0]
+            CborType type_0_element_type = cbor_value_get_type(&type_value);
+            assert(type_0_element_type == CborTextStringType);
+            size_t type_0_element_len;
+            cbor_value_calculate_string_length(&type_value, &type_0_element_len);
+            if (type[0] != NULL) {
+              free(type[0]);
+            }
+            type[0] = mmalloc(type_0_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&type_value, type[0], &type_0_element_len, NULL);
+
+            cbor_value_advance(&type_value);
+
+            // get type[1]
+            CborType type_1_element_type = cbor_value_get_type(&type_value);
+            assert(type_1_element_type == CborTextStringType);
+            size_t type_1_element_len;
+            cbor_value_calculate_string_length(&type_value, &type_1_element_len);
+            if (type[1] != NULL) {
+              free(type[1]);
+            }
+            type[1] = mmalloc(type_1_element_len + 1); // tinycbor adds null byte at the end
+            cbor_value_copy_text_string(&type_value, type[1], &type_1_element_len, NULL);
           }
           else if (strcmp(vc_element_key, "credentialSubject") == 0) {
 
@@ -362,8 +442,15 @@ int main(void) {
   cbor_value_copy_byte_string(&element_value, sign, &sign_len, &element_value); // TODO: i'd rather advance on my own
   pprintf("sign_len: %lu\n", sign_len);
 
-  printf("valid_from: %d\n", valid_from);
-  printf("expires_at: %d\n", expires_at);
+  pprintf("time(NULL): %ld\n", time(NULL));
+  pprintf("version: %s\n", version);
+  pprintf("type[0]: %s\n", type[0]);
+  pprintf("type[1]: %s\n", type[1]);
+  pprintf("context[0]: %s\n", context[0]);
+  pprintf("context[1]: %s\n", context[1]);
+
+  printf("nbf: %d\n", nbf);
+  printf("exp: %d\n", exp);
   printf("jti: ");
   print_jti(cti);
   printf("\n");
@@ -435,15 +522,31 @@ int main(void) {
   else if (error == SB_ERROR_ADDITIONAL_INPUT_REQUIRED) { printf("error: SB_ERROR_ADDITIONAL_INPUT_REQUIRED\n"); }
   else { printf("error: %d\n", error); }
 
-  // TODO: validate cwt claims
-
+  // Validate CWT claims
   assert(cti != NULL);
+  assert(iss != NULL && strlen(iss) > 0);
+  assert(nbf != 0);
+  assert(exp != 0);
+  assert(time(NULL) >= nbf);
+  assert(time(NULL) < exp);
+  assert(context[0] != NULL && strcmp(context[0], "https://www.w3.org/2018/credentials/v1") == 0);
+  assert(context[1] != NULL && strcmp(context[1], "https://nzcp.covid19.health.nz/contexts/v1") == 0);
+  assert(type[0] != NULL && strcmp(type[0], "VerifiableCredential") == 0);
+  assert(type[1] != NULL && strcmp(type[1], "PublicCovidPass") == 0);
+  assert(version != NULL && strcmp(version, "1.0.0") == 0);
+  assert(givenName != NULL && strlen(givenName) > 0);
+  assert(dob != NULL && strlen(dob) > 0);
 
   free(binary_cwt);
   free(protected);
   free(payload);
   free(iss);
   free(cti);
+  free(context[0]);
+  free(context[1]);
+  free(version);
+  free(type[0]);
+  free(type[1]);
   free(givenName);
   free(familyName);
   free(dob);
