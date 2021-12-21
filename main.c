@@ -585,9 +585,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   size_t tobe_signed_buflen_actual = cbor_encoder_get_buffer_size(&encoder, state.tobe_signed_buf);
   pprintf("tobe_signed_buflen_actual: %zu\n", tobe_signed_buflen_actual);
 
-  state.sha256_state = mmalloc(sizeof(struct sb_sha256_state_t)); // TODO: put on stack?
+  state.sha256_state = mmalloc(sizeof(struct sb_sha256_state_t));
   size_t hash_len = 32;
-  state.hash = mmalloc(hash_len); // TODO: put on stack?
+  state.hash = mmalloc(hash_len);
 
   sb_sha256_message(state.sha256_state, state.hash, state.tobe_signed_buf, tobe_signed_buflen_actual);
 
