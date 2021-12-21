@@ -98,6 +98,34 @@ struct nzcp_verification_result {
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_result* verification_result) {
   // TODO: check for every CborError and return error code
 
+  // 
+  // memory allocated variables:
+  // 
+
+  uint8_t *binary_cwt = NULL;
+  uint8_t *protected = NULL;
+  uint8_t *kid = NULL;
+  uint8_t *payload = NULL;
+
+  uint8_t *cti = NULL;
+  char* jti = NULL;
+  char *iss = NULL;
+
+  char *context[2] = {NULL, NULL};
+  char *version = NULL;
+  char *type[2] = {NULL, NULL};
+
+  char *given_name = NULL;
+  char *family_name = NULL;
+  char *dob = NULL;
+
+  uint8_t *sign = NULL;
+  uint8_t *tobe_signed_buf = NULL;
+  sb_sha256_state_t *sha256_state = NULL;
+  sb_byte_t *hash = NULL;
+
+
+
   size_t token1_len = next_token_len(pass_uri, 0);
   size_t token2_len = next_token_len(pass_uri, token1_len + 1);
   size_t token3_len = next_token_len(pass_uri, token1_len + 1 + token2_len + 1);
@@ -113,7 +141,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
   
   // TODO: add base32 padding
   size_t binary_cwt_max = strlen((char*) base32_encoded_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
-  uint8_t *binary_cwt = mmalloc(binary_cwt_max);
+  binary_cwt = mmalloc(binary_cwt_max);
   base32_decode(base32_encoded_cwt, binary_cwt);
   size_t binary_cwt_len = strlen((char*) binary_cwt);
   pprintf("strlen(binary_cwt) %zu \n", binary_cwt_len);
@@ -148,7 +176,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
 
   size_t protected_len;
   cbor_value_calculate_string_length(&element_value, &protected_len);
-  uint8_t *protected = mmalloc(protected_len + 1); // tinycbor adds null byte at the end
+  protected = mmalloc(protected_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, protected, &protected_len, &element_value); // TODO: i'd rather advance on my own
   pprintf("protected: %s\n", protected);
   pprintf("protected_len: %lu\n", protected_len);
@@ -164,7 +192,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
   cbor_value_enter_container(&protected_value, &protected_element_value);
 
   size_t kid_len = 0;
-  uint8_t *kid = NULL;
+  kid = NULL;
   int alg = 0;
 
   CborType header_type;
@@ -227,7 +255,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
 
   size_t payload_len;
   cbor_value_calculate_string_length(&element_value, &payload_len);
-  uint8_t *payload = mmalloc(payload_len + 1); // tinycbor adds null byte at the end
+  payload = mmalloc(payload_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, payload, &payload_len, &element_value); // TODO: i'd rather advance on my own
   pprintf("payload_len: %lu\n", payload_len);
 
@@ -238,21 +266,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
   assert(payload_type == CborMapType);
   pprintf("payload_type: %d\n",payload_type);
 
-
-  uint8_t *cti = NULL; // TODO: 16 bytes on stack
-  char* jti = malloc(JTI_LEN + 1);
   
-  char *iss = NULL;
   int nbf = 0;
   int exp = 0;
-
-  char *context[2] = {NULL, NULL};
-  char *version = NULL;
-  char *type[2] = {NULL, NULL};
-
-  char *given_name = NULL;
-  char *family_name = NULL;
-  char *dob = NULL;
 
   CborValue cwt_claim_element_value;
   cbor_value_enter_container(&payload_value, &cwt_claim_element_value);
@@ -312,6 +328,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
         }
         cti = mmalloc(cti_len + 1); // tinycbor adds null byte at the end
         cbor_value_copy_byte_string(&cwt_claim_element_value, cti, &cti_len, NULL);
+        jti = malloc(JTI_LEN + 1);
         sprint_jti(cti, jti);
 
         pprintf("cti: %s\n",cti);
@@ -520,7 +537,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
   // Get signature
   size_t sign_len;
   cbor_value_calculate_string_length(&element_value, &sign_len);
-  uint8_t *sign = mmalloc(sign_len + 1); // tinycbor adds null byte at the end
+  sign = mmalloc(sign_len + 1); // tinycbor adds null byte at the end
   cbor_value_copy_byte_string(&element_value, sign, &sign_len, &element_value); // TODO: i'd rather advance on my own
   pprintf("sign_len: %lu\n", sign_len);
 
@@ -535,7 +552,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
   CborEncoder encoder;
   CborEncoder array_encoder;
   size_t tobe_signed_buflen = TO_BE_SIGNED_MAX_LEN;
-  uint8_t *tobe_signed_buf = mmalloc(tobe_signed_buflen); 
+  tobe_signed_buf = mmalloc(tobe_signed_buflen); 
   cbor_encoder_init(&encoder, tobe_signed_buf, tobe_signed_buflen, 0);
   cbor_encoder_create_array(&encoder, &array_encoder, 4);
   uint8_t* buffer0 = (uint8_t*) "\0";
@@ -548,9 +565,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, struct nzcp_verification_resu
   size_t tobe_signed_buflen_actual = cbor_encoder_get_buffer_size(&encoder, tobe_signed_buf);
   pprintf("tobe_signed_buflen_actual: %zu\n", tobe_signed_buflen_actual);
 
-  sb_sha256_state_t *sha256_state = mmalloc(sizeof(struct sb_sha256_state_t)); // TODO: put on stack?
+  sha256_state = mmalloc(sizeof(struct sb_sha256_state_t)); // TODO: put on stack?
   size_t hash_len = 32;
-  sb_byte_t *hash = mmalloc(hash_len); // TODO: put on stack?
+  hash = mmalloc(hash_len); // TODO: put on stack?
 
   sb_sha256_message(sha256_state, hash, tobe_signed_buf, tobe_signed_buflen_actual);
 
