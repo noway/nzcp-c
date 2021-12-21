@@ -94,6 +94,7 @@ struct nzcp_state {
 
 
 void destroy_state(struct nzcp_state* state) {
+  // TODO: free() and set to NULL
   free(state->cwt);
   free(state->headers);
   free(state->kid);
@@ -313,6 +314,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         size_t iss_len;
         cbor_value_calculate_string_length(&cwt_claim_element_value, &iss_len);
 
+        // TODO: helper function for this pattern
         if (state.iss != NULL) {
           free(state.iss);
         }
