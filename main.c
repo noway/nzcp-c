@@ -354,7 +354,7 @@ int main(void) {
 
   printf("valid_from: %d\n", valid_from);
   printf("expires_at: %d\n", expires_at);
-  printf("cti: ");
+  printf("jti: ");
   print_jti(cti);
   printf("\n");
   printf("givenName: %s\n", givenName);
