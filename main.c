@@ -355,6 +355,7 @@ int main(void) {
   // Validate iss is correct before checking signature.
   assert(strcmp(iss, TRUSTED_ISSUER) == 0);
 
+  // Get signature
   size_t sign_len;
   cbor_value_calculate_string_length(&element_value, &sign_len);
   uint8_t *sign = mmalloc(sign_len + 1); // tinycbor adds null byte at the end
