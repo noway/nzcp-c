@@ -65,6 +65,11 @@ void pprintf(const char* fmt, ...) {
   }
 }
 
+char* qstrcopy(char* src) {
+  char* dest = malloc(strlen(src));
+  return strcpy(dest, src);
+}
+
 void sprint_jti(uint8_t* cti, char* out) {
   sprintf(out, "urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
     *(cti+0),  *(cti+1),  *(cti+2),  *(cti+3),  *(cti+4),  *(cti+5),  *(cti+6),  *(cti+7), 
@@ -120,6 +125,33 @@ struct nzcp_state {
   sb_sha256_state_t *sha256_state;
   sb_byte_t *hash;
 };
+
+
+void destroy_state(struct nzcp_state* state) {
+  free(state->cwt);
+  free(state->headers);
+  free(state->kid);
+  free(state->claims);
+
+  free(state->cti);
+  free(state->jti);
+  free(state->iss);
+
+  free(state->context_0);
+  free(state->context_1);
+  free(state->version);
+  free(state->type_0);
+  free(state->type_1);
+
+  free(state->given_name);
+  free(state->family_name);
+  free(state->dob);
+
+  free(state->sign);
+  free(state->tobe_signed_buf);
+  free(state->sha256_state);
+  free(state->hash);
+}
 
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result) {
   // TODO: check for every CborError and return error code
@@ -682,13 +714,16 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   free(state.hash);
   */
 
-  verification_result->jti = state.jti;
-  verification_result->iss = state.iss;
+  verification_result->jti = qstrcopy(state.jti);
+  verification_result->iss = qstrcopy(state.iss);
   verification_result->nbf = nbf;
   verification_result->exp = exp;
-  verification_result->given_name = state.given_name;
-  verification_result->family_name = state.family_name;
-  verification_result->dob = state.dob;
+  verification_result->given_name = qstrcopy(state.given_name);
+  verification_result->family_name = qstrcopy(state.family_name);
+  verification_result->dob = qstrcopy(state.dob);
+
+  destroy_state(&state);
+
   return error;
 }
 
