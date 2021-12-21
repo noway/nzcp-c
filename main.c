@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include "base32.h"
+#include "errors.h"
 #include <tinycbor/cbor.h>
 #include <sb_sw_lib.h>
 #include <sb_sw_context.h>
@@ -12,6 +13,7 @@
 #define IS_LIVE false
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
 #define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
+#define aassert(a, e) if (!(a)) { destroy_state(&state); return e; }
 
 #if IS_LIVE
 
@@ -159,6 +161,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   // 
   // memory allocated variables:
   // 
+  // TODO: better initialisation?
   struct nzcp_state state = {
     NULL,
     NULL,
@@ -205,28 +208,28 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   CborValue value;
   cbor_parser_init(state.cwt, cwt_len, 0, &parser, &value);
   bool is_tag = cbor_value_is_tag(&value);
-  assert(is_tag);
+  aassert(is_tag, NZCP_E_BAD_TAG);
   pprintf("is_tag: %d\n",is_tag);
 
   CborTag tag;
   cbor_value_get_tag(&value, &tag);
-  assert(tag == 18);
+  aassert(tag == 18, NZCP_E_BAD_TAG);
   pprintf("tag: %llu\n",tag);
 
   cbor_value_skip_tag(&value);
   CborType type1 = cbor_value_get_type(&value); // TODO: rename type1-type3 to something else
-  assert(type1 == CborArrayType);
+  aassert(type1 == CborArrayType, NZCP_E_MALFORMED_CWT);
   pprintf("type1: %d\n",type1);
 
   size_t array_length;
   cbor_value_get_array_length(&value, &array_length);
-  assert(array_length == 4);
+  aassert(array_length == 4, NZCP_E_MALFORMED_CWT);
   pprintf("array_length: %lu\n", array_length);
 
   CborValue element_value;
   cbor_value_enter_container(&value, &element_value);
   CborType type2 = cbor_value_get_type(&element_value);
-  assert(type2 == CborByteStringType);
+  aassert(type2 == CborByteStringType, NZCP_E_MALFORMED_CWT);
   pprintf("type2: %d\n",type2);
 
   size_t headers_len;
@@ -240,7 +243,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   CborValue headers_value;
   cbor_parser_init(state.headers, headers_len, 0, &headers_parser, &headers_value);
   CborType headers_type = cbor_value_get_type(&headers_value);
-  assert(headers_type == CborMapType);
+  aassert(headers_type == CborMapType, NZCP_E_MALFORMED_CWT_HEADER);
   pprintf("headers_type: %d\n",headers_type);
 
   CborValue headers_element_value;
@@ -255,7 +258,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   do {
     header_type = cbor_value_get_type(&headers_element_value);
-    assert(header_type == CborIntegerType);
+    aassert(header_type == CborIntegerType, NZCP_E_MALFORMED_CWT_HEADER);
     pprintf("header_type: %d\n",header_type);
 
     cbor_value_get_int_checked(&headers_element_value, &header_key);
@@ -267,7 +270,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
       CborType header_value_type = cbor_value_get_type(&headers_element_value);
       pprintf("header_value_type: %d\n",header_value_type);
-      assert(header_value_type == CborByteStringType);
+      aassert(header_value_type == CborByteStringType, NZCP_E_MALFORMED_CWT_HEADER);
 
       cbor_value_calculate_string_length(&headers_element_value, &kid_len);
 
@@ -282,7 +285,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       cbor_value_advance(&headers_element_value);
 
       CborType header_value_type = cbor_value_get_type(&headers_element_value);
-      assert(header_value_type == CborIntegerType);
+      aassert(header_value_type == CborIntegerType, NZCP_E_MALFORMED_CWT_HEADER);
       pprintf("header_value_type: %d\n",header_value_type);
 
       cbor_value_get_int_checked(&headers_element_value, &alg);
@@ -296,16 +299,16 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("state.kid: %s\n", state.kid);
   pprintf("alg: %d\n", alg);
 
-  assert(memcmp(KID, state.kid, kid_len) == 0);
-  assert(alg == -7);
+  aassert(memcmp(KID, state.kid, kid_len) == 0, NZCP_E_WRONG_KID);
+  aassert(alg == -7, NZCP_E_WRONG_ALG);
 
   CborType type3 = cbor_value_get_type(&element_value);
-  assert(type3 == CborMapType); // empty map
+  aassert(type3 == CborMapType, NZCP_E_MALFORMED_CWT); // empty map
   pprintf("type3: %d\n",type3);
 
   cbor_value_advance(&element_value);
   CborType type4 = cbor_value_get_type(&element_value);
-  assert(type4 == CborByteStringType); // cwt state.claims
+  aassert(type4 == CborByteStringType, NZCP_E_MALFORMED_CWT); // cwt state.claims
   pprintf("type4: %d\n",type4);
 
   size_t claims_len;
@@ -318,7 +321,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   CborValue claims_value;
   cbor_parser_init(state.claims, claims_len, 0, &claims_parser, &claims_value);
   CborType claims_type = cbor_value_get_type(&claims_value);
-  assert(claims_type == CborMapType);
+  aassert(claims_type == CborMapType, NZCP_E_MALFORMED_CWT_CLAIMS);
   pprintf("claims_type: %d\n",claims_type);
 
   
@@ -329,7 +332,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   cbor_value_enter_container(&claims_value, &cwt_claim_element_value);
   do {
     CborType cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
-    assert(cwt_claim_element_type == CborIntegerType || cwt_claim_element_type == CborTextStringType);
+    aassert(cwt_claim_element_type == CborIntegerType || cwt_claim_element_type == CborTextStringType, NZCP_E_MALFORMED_CWT_CLAIMS);
     pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
     if (cwt_claim_element_type == CborIntegerType) {
@@ -340,7 +343,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       if (cwt_claim_key == 1) {
         cbor_value_advance(&cwt_claim_element_value);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
-        assert(cwt_claim_element_type == CborTextStringType);
+        aassert(cwt_claim_element_type == CborTextStringType, NZCP_E_MALFORMED_CWT_ISSUER);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         size_t iss_len;
@@ -355,7 +358,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       else if (cwt_claim_key == 5) {
         cbor_value_advance(&cwt_claim_element_value);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
-        assert(cwt_claim_element_type == CborIntegerType);
+        aassert(cwt_claim_element_type == CborIntegerType, NZCP_E_MALFORMED_CWT_NBF);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         cbor_value_get_int_checked(&cwt_claim_element_value, &nbf);
@@ -364,7 +367,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       else if (cwt_claim_key == 4) {
         cbor_value_advance(&cwt_claim_element_value);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
-        assert(cwt_claim_element_type == CborIntegerType);
+        aassert(cwt_claim_element_type == CborIntegerType, NZCP_E_MALFORMED_CWT_EXP);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         cbor_value_get_int_checked(&cwt_claim_element_value, &exp);
@@ -373,7 +376,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       else if (cwt_claim_key == 7) {
         cbor_value_advance(&cwt_claim_element_value);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
-        assert(cwt_claim_element_type == CborByteStringType);
+        aassert(cwt_claim_element_type == CborByteStringType, NZCP_E_MALFORMED_CWT_CTI);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         size_t cti_len;
@@ -401,7 +404,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("is_vc: %d\n",is_vc);
         cbor_value_advance(&cwt_claim_element_value);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
-        assert(cwt_claim_element_type == CborMapType);
+        aassert(cwt_claim_element_type == CborMapType, NZCP_E_MALFORMED_CWT_VC);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         CborValue vc_element_value;
@@ -410,7 +413,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         do {
           CborType vc_element_type = cbor_value_get_type(&vc_element_value);
           pprintf("vc_element_type: %d\n",vc_element_type);
-          assert(vc_element_type == CborTextStringType);
+          aassert(vc_element_type == CborTextStringType, NZCP_E_MALFORMED_CWT_VC);
           
           size_t vc_element_key_len;
           cbor_value_calculate_string_length(&vc_element_value, &vc_element_key_len);
@@ -424,14 +427,14 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
             vc_element_type = cbor_value_get_type(&vc_element_value);
             pprintf("vc_element_type: %d\n",vc_element_type);
-            assert(vc_element_type == CborArrayType);
+            aassert(vc_element_type == CborArrayType, NZCP_E_MALFORMED_VC_CONTEXT);
 
             CborValue context_value;
             cbor_value_enter_container(&vc_element_value, &context_value);
 
             // get state.context_0
             CborType context_0_element_type = cbor_value_get_type(&context_value);
-            assert(context_0_element_type == CborTextStringType);
+            aassert(context_0_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_CONTEXT);
             size_t context_0_element_len;
             cbor_value_calculate_string_length(&context_value, &context_0_element_len);
             if (state.context_0 != NULL) {
@@ -444,7 +447,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
             // get state.context_1
             CborType context_1_element_type = cbor_value_get_type(&context_value);
-            assert(context_1_element_type == CborTextStringType);
+            aassert(context_1_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_CONTEXT);
             size_t context_1_element_len;
             cbor_value_calculate_string_length(&context_value, &context_1_element_len);
             if (state.context_1 != NULL) {
@@ -459,7 +462,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
             vc_element_type = cbor_value_get_type(&vc_element_value);
             pprintf("vc_element_type: %d\n",vc_element_type);
-            assert(vc_element_type == CborTextStringType);
+            aassert(vc_element_type == CborTextStringType,  NZCP_E_MALFORMED_VC_VERSION);
 
             size_t version_len;
             cbor_value_calculate_string_length(&vc_element_value, &version_len);
@@ -476,14 +479,14 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
             vc_element_type = cbor_value_get_type(&vc_element_value);
             pprintf("vc_element_type: %d\n",vc_element_type);
-            assert(vc_element_type == CborArrayType);
+            aassert(vc_element_type == CborArrayType, NZCP_E_MALFORMED_VC_TYPE);
 
             CborValue type_value;
             cbor_value_enter_container(&vc_element_value, &type_value);
 
             // get state.type_0
             CborType type_0_element_type = cbor_value_get_type(&type_value);
-            assert(type_0_element_type == CborTextStringType);
+            aassert(type_0_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_TYPE);
             size_t type_0_element_len;
             cbor_value_calculate_string_length(&type_value, &type_0_element_len);
             if (state.type_0 != NULL) {
@@ -496,7 +499,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
             // get state.type_1
             CborType type_1_element_type = cbor_value_get_type(&type_value);
-            assert(type_1_element_type == CborTextStringType);
+            aassert(type_1_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_TYPE);
             size_t type_1_element_len;
             cbor_value_calculate_string_length(&type_value, &type_1_element_len);
             if (state.type_1 != NULL) {
@@ -509,7 +512,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
             cbor_value_advance(&vc_element_value);
             vc_element_type = cbor_value_get_type(&vc_element_value);
-            assert(vc_element_type == CborMapType);
+            aassert(vc_element_type == CborMapType, NZCP_E_MALFORMED_CREDENTIAL_SUBJECT);
             pprintf("vc_element_type: %d\n",vc_element_type);
 
             CborValue credential_subject_element_value;
@@ -518,7 +521,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             do {
               CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
               pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
-              assert(credential_subject_element_type == CborTextStringType);
+              aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_CREDENTIAL_SUBJECT);
 
               size_t credential_subject_element_key_len;
               cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_element_key_len);
@@ -534,7 +537,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
-                assert(credential_subject_element_type == CborTextStringType);
+                aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_GIVEN_NAME);
 
                 size_t subject_credential_element_value_len;
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
@@ -548,7 +551,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
-                assert(credential_subject_element_type == CborTextStringType);
+                aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_FAMILY_NAME);
 
                 size_t subject_credential_element_value_len; // TODO: rename subject_credential to credential_subject
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
@@ -562,7 +565,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
-                assert(credential_subject_element_type == CborTextStringType);
+                aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_DOB);
 
                 size_t subject_credential_element_value_len;
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
@@ -587,7 +590,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   } while(!cbor_value_at_end(&cwt_claim_element_value));
 
   // Validate state.iss is correct before checking signature.
-  assert(strcmp(state.iss, TRUSTED_ISSUER) == 0);
+  aassert(strcmp(state.iss, TRUSTED_ISSUER) == 0, NZCP_E_WRONG_TRUSTED_ISSUER);
 
   // Get signature
   size_t sign_len;
@@ -651,20 +654,22 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                                             NULL, SB_SW_CURVE_P256, 
                                             SB_DATA_ENDIAN_BIG);
 
+  aassert(error == 0, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+
   // Validating CWT state.claims
-  assert(state.cti != NULL);
-  assert(state.iss != NULL && strlen(state.iss) > 0);
-  assert(nbf != 0);
-  assert(exp != 0);
-  assert(time(NULL) >= nbf);
-  assert(time(NULL) < exp);
-  assert(state.context_0 != NULL && strcmp(state.context_0, "https://www.w3.org/2018/credentials/v1") == 0);
-  assert(state.context_1 != NULL && strcmp(state.context_1, "https://nzcp.covid19.health.nz/contexts/v1") == 0);
-  assert(state.type_0 != NULL && strcmp(state.type_0, "VerifiableCredential") == 0);
-  assert(state.type_1 != NULL && strcmp(state.type_1, "PublicCovidPass") == 0);
-  assert(state.version != NULL && strcmp(state.version, "1.0.0") == 0);
-  assert(state.given_name != NULL && strlen(state.given_name) > 0);
-  assert(state.dob != NULL && strlen(state.dob) > 0);
+  aassert(state.cti != NULL, NZCP_E_BAD_CTI);
+  aassert(state.iss != NULL && strlen(state.iss) > 0, NZCP_E_BAD_ISS);
+  aassert(nbf != 0, NZCP_E_BAD_NBF);
+  aassert(exp != 0, NZCP_E_BAD_EXP);
+  aassert(time(NULL) >= nbf, NZCP_E_PASS_NOT_ACTIVE);
+  aassert(time(NULL) < exp, NZCP_E_PASS_EXPIRED);
+  aassert(state.context_0 != NULL && strcmp(state.context_0, "https://www.w3.org/2018/credentials/v1") == 0, NZCP_E_BAD_VC_CONTEXT);
+  aassert(state.context_1 != NULL && strcmp(state.context_1, "https://nzcp.covid19.health.nz/contexts/v1") == 0, NZCP_E_BAD_VC_CONTEXT);
+  aassert(state.type_0 != NULL && strcmp(state.type_0, "VerifiableCredential") == 0, NZCP_E_BAD_VC_TYPE);
+  aassert(state.type_1 != NULL && strcmp(state.type_1, "PublicCovidPass") == 0, NZCP_E_BAD_VC_TYPE);
+  aassert(state.version != NULL && strcmp(state.version, "1.0.0") == 0, NZCP_E_BAD_VC_VERSION);
+  aassert(state.given_name != NULL && strlen(state.given_name) > 0, NZCP_E_BAD_GIVEN_NAME);
+  aassert(state.dob != NULL && strlen(state.dob) > 0, NZCP_E_BAD_DOB);
 
   verification_result->jti = qstrcopy(state.jti);
   verification_result->iss = qstrcopy(state.iss);
@@ -676,7 +681,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   destroy_state(&state);
 
-  return error;
+  return 0;
 }
 
 int main(void) {
@@ -686,12 +691,14 @@ int main(void) {
   nzcp_verification_result verification_result;
   int error = nzcp_verify_pass_uri(PASS_URI, &verification_result);
   printf("error: %d\n", error);
-  printf("jti: %s\n", verification_result.jti);
-  printf("iss: %s\n", verification_result.iss);
-  printf("nbf: %d\n", verification_result.nbf);
-  printf("exp: %d\n", verification_result.exp);
-  printf("given_name: %s\n", verification_result.given_name);
-  printf("family_name: %s\n", verification_result.family_name);
-  printf("dob: %s\n", verification_result.dob);
+  if (error == 0) {
+    printf("jti: %s\n", verification_result.jti);
+    printf("iss: %s\n", verification_result.iss);
+    printf("nbf: %d\n", verification_result.nbf);
+    printf("exp: %d\n", verification_result.exp);
+    printf("given_name: %s\n", verification_result.given_name);
+    printf("family_name: %s\n", verification_result.family_name);
+    printf("dob: %s\n", verification_result.dob);
+  }
   return 0;
 }
