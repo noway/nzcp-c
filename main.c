@@ -64,10 +64,10 @@ void pprintf(const char* fmt, ...) {
   }
 }
 
-void print_cti(uint8_t* jti) {
+void print_jti(uint8_t* cti) {
   printf("urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
-    *(jti+0),  *(jti+1),  *(jti+2),  *(jti+3),  *(jti+4),  *(jti+5),  *(jti+6),  *(jti+7), 
-    *(jti+8),  *(jti+9), *(jti+10), *(jti+11), *(jti+12), *(jti+13), *(jti+14), *(jti+15));
+    *(cti+0),  *(cti+1),  *(cti+2),  *(cti+3),  *(cti+4),  *(cti+5),  *(cti+6),  *(cti+7), 
+    *(cti+8),  *(cti+9), *(cti+10), *(cti+11), *(cti+12), *(cti+13), *(cti+14), *(cti+15));
 }
 
 size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
@@ -165,7 +165,7 @@ int main(void) {
 
   int valid_from = 0;
   int expires_at = 0;
-  uint8_t *jti = NULL;
+  uint8_t *cti = NULL;
   char *givenName = NULL;
   char *familyName = NULL;
   char *dob = NULL;
@@ -216,15 +216,15 @@ int main(void) {
         assert(cwt_claim_element_type == CborByteStringType);
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
-        size_t jti_len;
-        cbor_value_calculate_string_length(&cwt_claim_element_value, &jti_len);
-        if (jti != NULL) {
-          free(jti);
+        size_t cti_len;
+        cbor_value_calculate_string_length(&cwt_claim_element_value, &cti_len);
+        if (cti != NULL) {
+          free(cti);
         }
-        jti = mmalloc(jti_len + 1); // tinycbor adds null byte at the end
-        cbor_value_copy_byte_string(&cwt_claim_element_value, jti, &jti_len, NULL);
+        cti = mmalloc(cti_len + 1); // tinycbor adds null byte at the end
+        cbor_value_copy_byte_string(&cwt_claim_element_value, cti, &cti_len, NULL);
 
-        pprintf("jti: %s\n",jti);
+        pprintf("cti: %s\n",cti);
       }
     }
     else if (cwt_claim_element_type == CborTextStringType) {
@@ -355,7 +355,7 @@ int main(void) {
   printf("valid_from: %d\n", valid_from);
   printf("expires_at: %d\n", expires_at);
   printf("cti: ");
-  print_cti(jti);
+  print_jti(cti);
   printf("\n");
   printf("givenName: %s\n", givenName);
   printf("familyName: %s\n", familyName);
@@ -430,7 +430,7 @@ int main(void) {
   free(binary_cwt);
   free(protected);
   free(payload);
-  free(jti);
+  free(cti);
   free(givenName);
   free(familyName);
   free(dob);
