@@ -10,7 +10,7 @@
 
 #define DEBUG false
 #define IS_LIVE false
-#define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on familyName and givenName
+#define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
 
 static const uint8_t *PASS_URI =
   (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
@@ -237,8 +237,8 @@ int main(void) {
   char *version = NULL;
   char *type[2] = {NULL, NULL};
 
-  char *givenName = NULL;
-  char *familyName = NULL;
+  char *given_name = NULL;
+  char *family_name = NULL;
   char *dob = NULL;
 
   CborValue cwt_claim_element_value;
@@ -443,8 +443,8 @@ int main(void) {
               cbor_value_advance(&credential_subject_element_value);
 
               if (strcmp(credential_subject_element_key, "givenName") == 0) {
-                if (givenName != NULL) {
-                  free(givenName);
+                if (given_name != NULL) {
+                  free(given_name);
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
@@ -454,11 +454,11 @@ int main(void) {
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
                 char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
                 cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
-                givenName = subject_credential_element_value;
+                given_name = subject_credential_element_value;
               }
               if (strcmp(credential_subject_element_key, "familyName") == 0) {
-                if (familyName != NULL) {
-                  free(familyName);
+                if (family_name != NULL) {
+                  free(family_name);
                 }
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
@@ -468,7 +468,7 @@ int main(void) {
                 cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
                 char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
                 cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
-                familyName = subject_credential_element_value;
+                family_name = subject_credential_element_value;
               }
               if (strcmp(credential_subject_element_key, "dob") == 0) {
                 if (dob != NULL) {
@@ -588,8 +588,8 @@ int main(void) {
   printf("iss: %s\n", iss);
   printf("nbf: %d\n", nbf);
   printf("exp: %d\n", exp);
-  printf("givenName: %s\n", givenName);
-  printf("familyName: %s\n", familyName);
+  printf("given_name: %s\n", given_name);
+  printf("family_name: %s\n", family_name);
   printf("dob: %s\n", dob);
 
   // Validate CWT claims
@@ -604,7 +604,7 @@ int main(void) {
   assert(type[0] != NULL && strcmp(type[0], "VerifiableCredential") == 0);
   assert(type[1] != NULL && strcmp(type[1], "PublicCovidPass") == 0);
   assert(version != NULL && strcmp(version, "1.0.0") == 0);
-  assert(givenName != NULL && strlen(givenName) > 0);
+  assert(given_name != NULL && strlen(given_name) > 0);
   assert(dob != NULL && strlen(dob) > 0);
 
   free(binary_cwt);
@@ -618,8 +618,8 @@ int main(void) {
   free(version);
   free(type[0]);
   free(type[1]);
-  free(givenName);
-  free(familyName);
+  free(given_name);
+  free(family_name);
   free(dob);
   free(sign);
   free(tobe_signed_buf);
