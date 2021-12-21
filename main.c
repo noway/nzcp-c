@@ -517,14 +517,6 @@ int main(void) {
   pprintf("context[0]: %s\n", context[0]);
   pprintf("context[1]: %s\n", context[1]);
 
-  printf("nbf: %d\n", nbf);
-  printf("exp: %d\n", exp);
-  printf("jti: ");
-  print_jti(cti);
-  printf("\n");
-  printf("givenName: %s\n", givenName);
-  printf("familyName: %s\n", familyName);
-  printf("dob: %s\n", dob);
   
   CborEncoder encoder;
   CborEncoder array_encoder;
@@ -589,6 +581,16 @@ int main(void) {
   else if (error == SB_ERROR_NOT_FINISHED) { printf("error: SB_ERROR_NOT_FINISHED\n"); }
   else if (error == SB_ERROR_ADDITIONAL_INPUT_REQUIRED) { printf("error: SB_ERROR_ADDITIONAL_INPUT_REQUIRED\n"); }
   else { printf("error: %d\n", error); }
+
+  printf("jti: ");
+  print_jti(cti);
+  printf("\n");
+  printf("iss: %s\n", iss);
+  printf("nbf: %d\n", nbf);
+  printf("exp: %d\n", exp);
+  printf("givenName: %s\n", givenName);
+  printf("familyName: %s\n", familyName);
+  printf("dob: %s\n", dob);
 
   // Validate CWT claims
   assert(cti != NULL);
