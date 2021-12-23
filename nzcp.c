@@ -6,26 +6,13 @@
 #include <sb_sw_context.h>
 
 #include "base32.c"
-#include "errors.h"
+#include "nzcp.h"
 #include "consts.h"
 #include "utils.c"
 
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
 #define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
 #define aassert(a, e) if (!(a)) { nzcp_free_state(&state); return e; }
-
-typedef int nzcp_error;
-
-// caller is responsible for free()ing the strings
-typedef struct nzcp_verification_result {
-  char* jti;
-  char* iss;
-  int nbf;
-  int exp;
-  char* given_name;
-  char* family_name;
-  char* dob;
-} nzcp_verification_result;
 
 struct nzcp_state {
   uint8_t *padded_base32_cwt;
