@@ -21,6 +21,35 @@ given_name: Jack
 family_name: Sparrow
 dob: 1960-04-16
 ```
+## API
+```c
+  // initiate verification result on stack
+  nzcp_verification_result verification_result;
+
+  // verify pass
+  // last argument determines if it's example or live MOH DID document
+  int error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
+
+  // check for error
+  if (error == NZCP_E_SUCCESS) {
+    printf("jti: %s\n", verification_result.jti);
+    printf("iss: %s\n", verification_result.iss);
+    printf("nbf: %d\n", verification_result.nbf);
+    printf("exp: %d\n", verification_result.exp);
+    printf("given_name: %s\n", verification_result.given_name);
+    printf("family_name: %s\n", verification_result.family_name);
+    printf("dob: %s\n", verification_result.dob);
+  }
+  else {
+    printf("error code: %d\n", error);
+  }
+
+  // free memory of verification result properties
+  nzcp_free_verification_result(&verification_result);
+```
+
+See [example/main.c](example/main.c) for more.
+
 ## Requirements
 - Development Tools (gcc or clang, etc)
 - `cmake` v3
@@ -38,5 +67,5 @@ MIT
 Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
 - Enforce C99 standard
-- GNU/Linux support
+- Get GNU/Linux to compile
 - Tests
