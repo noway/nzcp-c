@@ -14,7 +14,7 @@
 #define IS_LIVE false
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
 #define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
-#define aassert(a, e) if (!(a)) { destroy_state(&state); return e; }
+#define aassert(a, e) if (!(a)) { nzcp_free_state(&state); return e; }
 
 #if IS_LIVE
 static const uint8_t* KID = (uint8_t *) MOH_LIVE_KID;
@@ -67,7 +67,7 @@ struct nzcp_state {
 };
 
 
-void destroy_state(struct nzcp_state* state) {
+void nzcp_free_state(struct nzcp_state* state) {
   free_then_null(state->padded_base32_cwt);
   free_then_null(state->cwt);
   free_then_null(state->headers);
@@ -693,7 +693,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   verification_result->family_name = qstrcopy(state.family_name);
   verification_result->dob = qstrcopy(state.dob);
 
-  destroy_state(&state);
+  nzcp_free_state(&state);
 
   return NZCP_E_SUCCESS;
 }
