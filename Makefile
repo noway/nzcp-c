@@ -8,20 +8,24 @@ CPATH=$(PWD)/compiled/usr/local/include
 
 .PHONY: clean build_sweet_b build_tinycbor install uninstall
 
-build: libnzcp.dylib
+build: libnzcp.a
 
 install:
 	install -d $(DESTDIR)$(libdir)
-	install -m 644 libnzcp.dylib $(DESTDIR)$(libdir)/libnzcp.dylib
+	install -m 644 libnzcp.a $(DESTDIR)$(libdir)/libnzcp.a
 	install -d $(DESTDIR)$(includedir)
 	install -m 644 nzcp.h $(DESTDIR)$(includedir)/nzcp.h
 
 uninstall:
-	rm -f $(DESTDIR)$(libdir)/libnzcp.dylib
+	rm -f $(DESTDIR)$(libdir)/libnzcp.a
 	rm -f $(DESTDIR)$(includedir)/nzcp.h
 
-libnzcp.dylib: build_sweet_b build_tinycbor
-	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -dynamiclib -fPIC nzcp.c -o libnzcp.dylib -ltinycbor -lsweet_b
+libnzcp.a: build_sweet_b build_tinycbor
+	mkdir -p objects
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
+	cd objects && ar x $(LIBRARY_PATH)/libsweet_b.a
+	cd objects && ar x $(LIBRARY_PATH)/libtinycbor.a
+	cd objects && ar qc ../libnzcp.a *.o
 
 sweet-b:
 	git clone git@github.com:westerndigitalcorporation/sweet-b.git
@@ -40,7 +44,9 @@ build_tinycbor: tinycbor
 
 clean:
 	rm -rf $(PWD)/compiled
-	rm -rf $(PWD)/build
 	rm -rf $(PWD)/sweet-b
 	rm -rf $(PWD)/tinycbor
+	rm -rf $(PWD)/objects
 	rm -f $(PWD)/main
+	rm -f $(PWD)/libnzcp.dylib
+	rm -f $(PWD)/libnzcp.a

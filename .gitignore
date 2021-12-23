@@ -1,5 +1,15 @@
+# ide
+.vscode
+
+# outs
+libnzcp.dylib
+libnzcp.a
 main
+
+# vendor
 sweet-b
 tinycbor
+
+# build
 compiled
-libnzcp.dylib
+objects
