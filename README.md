@@ -60,6 +60,9 @@ To install `libnzcp.a` and `nzcp.h`:
 - Run `make`
 - Run `make install` to install globally or `DESTDIR=$PWD/mydir make install` to install locally
 
+## Binary size
+[example/main.c](example/main.c) executable compiles to 95Kb on macOS 12 with `-O3` using Clang.
+
 ## License
 MIT
 
