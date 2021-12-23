@@ -407,7 +407,12 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             vc_element_type = cbor_value_get_type(&vc_element_value);
             pprintf("vc_element_type: %d\n",vc_element_type);
             aassert(vc_element_type == CborArrayType, NZCP_E_MALFORMED_VC_CONTEXT);
-            // TODO: check array length
+            
+            size_t context_array_len;
+            cbor_error = cbor_value_get_array_length(&vc_element_value, &context_array_len);
+            aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
+            aassert(context_array_len == 2, NZCP_E_MALFORMED_VC_CONTEXT);
+            pprintf("context_array_len: %lu\n", context_array_len);
 
             CborValue context_value;
             cbor_error = cbor_value_enter_container(&vc_element_value, &context_value);
@@ -461,7 +466,12 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             vc_element_type = cbor_value_get_type(&vc_element_value);
             pprintf("vc_element_type: %d\n",vc_element_type);
             aassert(vc_element_type == CborArrayType, NZCP_E_MALFORMED_VC_TYPE);
-            // TODO: check array length
+            
+            size_t type_array_len;
+            cbor_error = cbor_value_get_array_length(&vc_element_value, &type_array_len);
+            aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
+            aassert(type_array_len == 2, NZCP_E_MALFORMED_VC_TYPE);
+            pprintf("type_array_len: %lu\n", type_array_len);
 
             CborValue type_value;
             cbor_error = cbor_value_enter_container(&vc_element_value, &type_value);
