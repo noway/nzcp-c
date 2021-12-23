@@ -1,15 +1,14 @@
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
+#include <tinycbor/cbor.h>
+#include <sb_sw_lib.h>
+#include <sb_sw_context.h>
+
 #include "base32.c"
 #include "errors.h"
 #include "consts.h"
 #include "utils.c"
-#include <tinycbor/cbor.h>
-#include <sb_sw_lib.h>
-#include <sb_sw_context.h>
 
 #define IS_LIVE false
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
