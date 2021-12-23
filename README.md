@@ -1,7 +1,10 @@
 # NZCP.c
 An implementation of the NZCP spec in C. Uses [TinyCBOR](https://github.com/intel/tinycbor) and [Sweet B](https://github.com/westerndigitalcorporation/sweet-b).
 
-Not production ready. Stability or memory safety is not guaranteed.
+Features
+- A fully implemented NZCP spec
+- A defined API (experimental)
+- The code that is packaged as a library
 
 Contributions welcome! 🥳
 
@@ -65,6 +68,11 @@ To install `libnzcp.a` and `nzcp.h`:
 
 ## License
 MIT
+
+## Caveats
+- Stability or memory safety is not fully guaranteed - best effort is made, but C is a language with an unsafe memory model.
+- The library was not audited.
+- The library was not fuzzed.
 
 ## Roadmap
 Depends on my availability, but would be nice to:
