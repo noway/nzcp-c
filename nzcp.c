@@ -69,6 +69,15 @@ void nzcp_free_state(struct nzcp_state* state) {
   free_then_null(state->hash);
 }
 
+
+void nzcp_free_verification_result(nzcp_verification_result* verification_result) {
+  free_then_null(verification_result->jti);
+  free_then_null(verification_result->iss);
+  free_then_null(verification_result->given_name);
+  free_then_null(verification_result->family_name);
+  free_then_null(verification_result->dob);
+}
+
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, ...) {
 
   va_list args;

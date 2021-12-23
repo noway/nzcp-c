@@ -20,5 +20,6 @@ int main(void) {
   else {
     printf("error code: %d\n", error);
   }
+  nzcp_free_verification_result(&verification_result);
   return 0;
 }
