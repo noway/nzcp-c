@@ -6,6 +6,7 @@
 #define DEBUG false
 
 #define free_then_null(ptr) { if (ptr != NULL) { free(ptr); ptr = NULL; } }
+#define free_then_malloc(ptr, size) { free_then_null(ptr); ptr = mmalloc(size); }
 
 // FYI: allocates memory that consumer is responsible for
 void* mmalloc(size_t size) {
