@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
-#include "base32.h"
+#include "base32.c"
 #include "errors.h"
 #include "consts.h"
 #include "utils.c"

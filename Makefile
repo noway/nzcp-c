@@ -4,7 +4,7 @@ CPATH=$(PWD)/compiled/usr/local/include
 .PHONY: clean build_sweet_b build_tinycbor
 
 build: build_sweet_b build_tinycbor
-	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) main.c base32.c -o main -ltinycbor -lsweet_b
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) main.c -o main -ltinycbor -lsweet_b -O3
 
 sweet-b:
 	git clone git@github.com:westerndigitalcorporation/sweet-b.git
