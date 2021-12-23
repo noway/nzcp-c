@@ -7,8 +7,10 @@ libnzcp.a
 main
 
 # vendor
-sweet-b
-tinycbor
+sweet-b-master
+tinycbor-main
+sweet-b.zip
+tinycbor.zip
 
 # build
 compiled
