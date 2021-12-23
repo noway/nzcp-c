@@ -1,10 +1,19 @@
-LIBRARY_PATH=$(PWD)/compiled/usr/local/lib
-CPATH=$(PWD)/compiled/usr/local/include
+CFLAGS = -Wall -Wextra -O3
+LIBRARY_PATH=$(PWD)/compiled/usr/local/lib:$(PWD)/build/lib
+CPATH=$(PWD)/compiled/usr/local/include:$(PWD)/build/include
 
 .PHONY: clean build_sweet_b build_tinycbor
 
-build: build_sweet_b build_tinycbor
-	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) nzcp.c main.c -o main -ltinycbor -lsweet_b
+build: build/lib/libnzcp.dylib build/include/nzcp.h
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) main.c -o main -lnzcp
+
+build/lib/libnzcp.dylib: build_sweet_b build_tinycbor
+	mkdir -p build/lib
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -dynamiclib -fPIC nzcp.c -o build/lib/libnzcp.dylib -ltinycbor -lsweet_b
+
+build/include/nzcp.h:
+	mkdir -p build/include
+	cp nzcp.h build/include/nzcp.h
 
 sweet-b:
 	git clone git@github.com:westerndigitalcorporation/sweet-b.git
@@ -23,6 +32,7 @@ build_tinycbor: tinycbor
 
 clean:
 	rm -rf $(PWD)/compiled
+	rm -rf $(PWD)/build
 	rm -rf $(PWD)/sweet-b
 	rm -rf $(PWD)/tinycbor
 	rm -f $(PWD)/main

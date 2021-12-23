@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "nzcp.h"
+#include <nzcp.h>
 
 int main(void) {
   static uint8_t *PASS_URI =
