@@ -21,7 +21,9 @@ void pprintf(const char* fmt, ...) {
 }
 
 char* qstrcopy(char* src) {
-  char* dest = malloc(strlen(src));
+  int len = strlen(src) + 1;
+  char* dest = mmalloc(len);
+  memset(dest, '\0', len);
   return strcpy(dest, src);
 }
 
