@@ -543,13 +543,13 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_GIVEN_NAME);
 
-                size_t subject_credential_element_value_len;
-                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
+                size_t credential_subject_field_len;
+                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_field_len);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-                char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
-                cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
+                char *credential_subject_field = mmalloc(credential_subject_field_len + 1); // tinycbor adds null byte at the end
+                cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, credential_subject_field, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-                state.given_name = subject_credential_element_value;
+                state.given_name = credential_subject_field;
               }
               if (strcmp(credential_subject_element_key, "familyName") == 0) {
                 if (state.family_name != NULL) {
@@ -559,13 +559,13 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_FAMILY_NAME);
 
-                size_t subject_credential_element_value_len; // TODO: rename subject_credential to credential_subject
-                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
+                size_t credential_subject_field_len;
+                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_field_len);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-                char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
-                cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
+                char *credential_subject_field = mmalloc(credential_subject_field_len + 1); // tinycbor adds null byte at the end
+                cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, credential_subject_field, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-                state.family_name = subject_credential_element_value;
+                state.family_name = credential_subject_field;
               }
               if (strcmp(credential_subject_element_key, "dob") == 0) {
                 if (state.dob != NULL) {
@@ -575,13 +575,13 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_DOB);
 
-                size_t subject_credential_element_value_len;
-                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &subject_credential_element_value_len);
+                size_t credential_subject_field_len;
+                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_field_len);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-                char *subject_credential_element_value = mmalloc(subject_credential_element_value_len + 1); // tinycbor adds null byte at the end
-                cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, subject_credential_element_value, &subject_credential_element_value_len, NULL);
+                char *credential_subject_field = mmalloc(credential_subject_field_len + 1); // tinycbor adds null byte at the end
+                cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, credential_subject_field, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-                state.dob = subject_credential_element_value;
+                state.dob = credential_subject_field;
               }
 
               free(credential_subject_element_key);
