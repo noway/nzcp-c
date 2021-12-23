@@ -8,8 +8,7 @@ int main(void) {
 
   nzcp_verification_result verification_result;
   int error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
-  printf("error: %d\n", error);
-  if (error == 0) {
+  if (error == NZCP_E_SUCCESS) {
     printf("jti: %s\n", verification_result.jti);
     printf("iss: %s\n", verification_result.iss);
     printf("nbf: %d\n", verification_result.nbf);
@@ -17,6 +16,9 @@ int main(void) {
     printf("given_name: %s\n", verification_result.given_name);
     printf("family_name: %s\n", verification_result.family_name);
     printf("dob: %s\n", verification_result.dob);
+  }
+  else {
+    printf("error code: %d\n", error);
   }
   return 0;
 }
