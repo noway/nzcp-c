@@ -121,7 +121,8 @@ void destroy_state(struct nzcp_state* state) {
 }
 
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result) {
-  // TODO: check for every CborError and return error code
+  // TODO: check for every CborError and return errorcode
+  // TODO: check for sweet-b errors
 
   // 
   // memory allocated variables:
@@ -616,11 +617,11 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     *(state.hash+24), *(state.hash+25), *(state.hash+26), *(state.hash+27), *(state.hash+28), *(state.hash+29), *(state.hash+30), *(state.hash+31)
   } };
 
-  sb_error_t error = sb_sw_verify_signature(&sw_context, &sw_signature, &PUB_KEY, &sw_message,
+  sb_error_t sign_error = sb_sw_verify_signature(&sw_context, &sw_signature, &PUB_KEY, &sw_message,
                                             NULL, SB_SW_CURVE_P256, 
                                             SB_DATA_ENDIAN_BIG);
 
-  aassert(error == 0, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  aassert(sign_error == 0, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
 
   // Validating CWT state.claims
   aassert(state.cti != NULL, NZCP_E_BAD_CTI);
@@ -655,9 +656,10 @@ int main(void) {
     (uint8_t *) "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX";
 
   nzcp_verification_result verification_result;
-  int error = nzcp_verify_pass_uri(PASS_URI, &verification_result);
-  printf("error: %d\n", error);
-  if (error == 0) {
+  // TODO: rename
+  int nzcp_err = nzcp_verify_pass_uri(PASS_URI, &verification_result);
+  printf("nzcp_err: %d\n", nzcp_err);
+  if (nzcp_err == 0) {
     printf("jti: %s\n", verification_result.jti);
     printf("iss: %s\n", verification_result.iss);
     printf("nbf: %d\n", verification_result.nbf);
