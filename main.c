@@ -94,7 +94,6 @@ void destroy_state(struct nzcp_state* state) {
 }
 
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result) {
-  // TODO: check for sweet-b errors
 
   // 
   // memory allocated variables:
