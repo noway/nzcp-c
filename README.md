@@ -53,7 +53,7 @@ See [example/main.c](example/main.c) for more.
 ## Requirements
 - Development Tools (gcc or clang, etc)
 - `cmake` v3
-- `git`
+- `unzip`
 
 ## Installation
 To install `libnzcp.a` and `nzcp.h`:
