@@ -72,3 +72,5 @@ Depends on my availability, but would be nice to:
 - Enforce C99 standard
 - Get GNU/Linux to compile
 - Tests
+- Check in Valgrind
+- Lint/static code analysis
