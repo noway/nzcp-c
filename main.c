@@ -695,7 +695,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   destroy_state(&state);
 
-  return 0;
+  return NZCP_E_SUCCESS;
 }
 
 int main(void) {
