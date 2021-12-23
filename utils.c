@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
-#define DEBUG false
+#define DEBUG 0
 
 #define free_then_null(ptr) { if (ptr != NULL) { free(ptr); ptr = NULL; } }
 #define free_then_malloc(ptr, size) { free_then_null(ptr); ptr = mmalloc(size); }

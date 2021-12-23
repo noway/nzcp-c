@@ -11,4 +11,4 @@ typedef struct nzcp_verification_result {
   char* dob;
 } nzcp_verification_result;
 
-nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result);
+nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, ...);

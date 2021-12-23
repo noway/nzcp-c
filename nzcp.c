@@ -10,20 +10,9 @@
 #include "consts.h"
 #include "utils.c"
 
-#define IS_LIVE false
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
 #define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
 #define aassert(a, e) if (!(a)) { nzcp_free_state(&state); return e; }
-
-#if IS_LIVE
-static const uint8_t* KID = (uint8_t *) MOH_LIVE_KID;
-static const char* TRUSTED_ISSUER = MOH_LIVE_TRUSTED_ISSUER;
-static const sb_sw_public_t PUB_KEY = MOH_LIVE_PUB_KEY;
-#else
-static const uint8_t* KID = (uint8_t *) MOH_EXAMPLE_KID;
-static const char* TRUSTED_ISSUER = MOH_EXAMPLE_TRUSTED_ISSUER;
-static const sb_sw_public_t PUB_KEY = MOH_EXAMPLE_PUB_KEY;
-#endif
 
 typedef int nzcp_error;
 
@@ -93,7 +82,18 @@ void nzcp_free_state(struct nzcp_state* state) {
   free_then_null(state->hash);
 }
 
-nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result) {
+nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, ...) {
+
+  va_list args;
+  va_start(args, verification_result);
+  int is_example = va_arg(args, int);
+  va_end(args);
+
+  const uint8_t* KID = is_example ? (uint8_t *) MOH_EXAMPLE_KID : (uint8_t *) MOH_LIVE_KID;
+  const char* TRUSTED_ISSUER = is_example ? MOH_EXAMPLE_TRUSTED_ISSUER : MOH_LIVE_TRUSTED_ISSUER;
+  static const sb_sw_public_t LIVE_PUB_KEY = MOH_LIVE_PUB_KEY;
+  static const sb_sw_public_t EXAMPLE_PUB_KEY = MOH_EXAMPLE_PUB_KEY;
+  const sb_sw_public_t PUB_KEY = is_example ? EXAMPLE_PUB_KEY : LIVE_PUB_KEY;
 
   // 
   // memory allocated variables:
