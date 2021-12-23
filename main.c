@@ -365,7 +365,6 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("state.cti: %s\n",state.cti);
       }
       else {
-        // TODO: in every map, put an else and advance the value further. like here.
         cbor_error = cbor_value_advance(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
       }
@@ -516,10 +515,10 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
               aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               pprintf("credential_subject_element_key: %s\n", credential_subject_element_key);
               pprintf("credential_subject_element_key_len: %lu\n", credential_subject_element_key_len);
-              cbor_error = cbor_value_advance(&credential_subject_element_value);
-              aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
               if (strcmp(credential_subject_element_key, "givenName") == 0) {
+                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_GIVEN_NAME);
@@ -531,7 +530,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.given_name, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
-              if (strcmp(credential_subject_element_key, "familyName") == 0) {
+              else if (strcmp(credential_subject_element_key, "familyName") == 0) {
+                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_FAMILY_NAME);
@@ -543,7 +544,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.family_name, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
-              if (strcmp(credential_subject_element_key, "dob") == 0) {
+              else if (strcmp(credential_subject_element_key, "dob") == 0) {
+                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_element_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_element_type: %d\n",credential_subject_element_type);
                 aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_DOB);
@@ -555,12 +558,20 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.dob, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
+              else {
+                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
+              }
 
               free(credential_subject_element_key);
               cbor_error = cbor_value_advance(&credential_subject_element_value);
               aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             } while(!cbor_value_at_end(&credential_subject_element_value));
 
+          }
+          else {
+            cbor_error = cbor_value_advance(&vc_element_value);
+            aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
           }
 
           free(vc_element_key);
