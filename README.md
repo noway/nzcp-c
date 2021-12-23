@@ -1,5 +1,5 @@
 # NZCP.c
-An implementation of the NZCP spec in C. Uses [TinyCBOR](https://github.com/intel/tinycbor) and [Sweet B](https://github.com/westerndigitalcorporation/sweet-b).
+An implementation of the [NZ COVID Pass](https://github.com/minhealthnz/nzcovidpass-spec) spec in C. Uses [TinyCBOR](https://github.com/intel/tinycbor) and [Sweet B](https://github.com/westerndigitalcorporation/sweet-b).
 
 Features
 - A fully implemented NZCP spec
