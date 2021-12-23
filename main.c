@@ -40,6 +40,7 @@ typedef struct nzcp_verification_result {
 } nzcp_verification_result;
 
 struct nzcp_state {
+  uint8_t *padded_base32_cwt;
   uint8_t *cwt;
   uint8_t *headers;
   uint8_t *kid;
@@ -68,6 +69,7 @@ struct nzcp_state {
 
 void destroy_state(struct nzcp_state* state) {
   // TODO: free() and set to NULL
+  free(state->padded_base32_cwt);
   free(state->cwt);
   free(state->headers);
   free(state->kid);
@@ -119,6 +121,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     NULL,
     NULL,
     NULL,
+    NULL,
   };
 
   CborError cbor_error = CborNoError;
@@ -129,17 +132,23 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   const uint8_t* claims_prefix = pass_uri;
   const uint8_t* version_identifier = pass_uri + token1_len + 1;
-  const uint8_t* base32_encoded_cwt = pass_uri + token1_len + 1 + token2_len + 1;
+  const uint8_t* base32_cwt = pass_uri + token1_len + 1 + token2_len + 1;
 
   // TODO: check state.claims prefix and state.version identifier
   pprintf("claims_prefix %s %lu\n", claims_prefix, token1_len);
   pprintf("version_identifier %s %lu\n", version_identifier, token2_len);
-  pprintf("base32_encoded_cwt %s %lu\n", base32_encoded_cwt, token3_len);
+  pprintf("base32_cwt %s %lu\n", base32_cwt, token3_len);
   
-  // TODO: add base32 padding
-  size_t cwt_max = strlen((char*) base32_encoded_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
+  int padded_len = token3_len % 8 == 0 ? token3_len : ((token3_len / 8) + 1) * 8;
+  state.padded_base32_cwt = mmalloc(padded_len + 1);
+  memset(state.padded_base32_cwt, '\0', padded_len + 1);
+  memset(state.padded_base32_cwt, '=', padded_len);
+  memcpy(state.padded_base32_cwt, base32_cwt, token3_len);
+  pprintf("state.padded_base32_cwt %s \n", state.padded_base32_cwt);
+
+  size_t cwt_max = strlen((char*) state.padded_base32_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
   state.cwt = mmalloc(cwt_max);
-  base32_decode(base32_encoded_cwt, state.cwt);
+  base32_decode(state.padded_base32_cwt, state.cwt);
   size_t cwt_len = strlen((char*) state.cwt);
   pprintf("strlen(cwt) %zu \n", cwt_len);
 
