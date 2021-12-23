@@ -68,31 +68,30 @@ struct nzcp_state {
 
 
 void destroy_state(struct nzcp_state* state) {
-  // TODO: free() and set to NULL
-  free(state->padded_base32_cwt);
-  free(state->cwt);
-  free(state->headers);
-  free(state->kid);
-  free(state->claims);
+  free_then_null(state->padded_base32_cwt);
+  free_then_null(state->cwt);
+  free_then_null(state->headers);
+  free_then_null(state->kid);
+  free_then_null(state->claims);
 
-  free(state->cti);
-  free(state->jti);
-  free(state->iss);
+  free_then_null(state->cti);
+  free_then_null(state->jti);
+  free_then_null(state->iss);
 
-  free(state->context_0);
-  free(state->context_1);
-  free(state->version);
-  free(state->type_0);
-  free(state->type_1);
+  free_then_null(state->context_0);
+  free_then_null(state->context_1);
+  free_then_null(state->version);
+  free_then_null(state->type_0);
+  free_then_null(state->type_1);
 
-  free(state->given_name);
-  free(state->family_name);
-  free(state->dob);
+  free_then_null(state->given_name);
+  free_then_null(state->family_name);
+  free_then_null(state->dob);
 
-  free(state->sign);
-  free(state->tobe_signed_buf);
-  free(state->sha256_state);
-  free(state->hash);
+  free_then_null(state->sign);
+  free_then_null(state->tobe_signed_buf);
+  free_then_null(state->sha256_state);
+  free_then_null(state->hash);
 }
 
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result) {

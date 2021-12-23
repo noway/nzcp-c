@@ -5,6 +5,8 @@
 #include <string.h>
 #define DEBUG false
 
+#define free_then_null(ptr) { if (ptr != NULL) { free(ptr); ptr = NULL; } }
+
 // FYI: allocates memory that consumer is responsible for
 void* mmalloc(size_t size) {
   void* ptr = malloc(size);
