@@ -1,5 +1,5 @@
 # NZCP.c
-An implementation of the NZCP spec in C. Uses TinyCBOR and Sweet B.
+An implementation of the NZCP spec in C. Uses [TinyCBOR](https://github.com/intel/tinycbor) and [Sweet B](https://github.com/westerndigitalcorporation/sweet-b).
 
 Not production ready. Stability or memory safety is not guaranteed.
 
