@@ -28,12 +28,12 @@ libnzcp.a: build_sweet_b build_tinycbor
 	cd objects && ar qc ../libnzcp.a *.o
 
 sweet-b:
-	git clone git@github.com:westerndigitalcorporation/sweet-b.git
+	git clone git@github.com:westerndigitalcorporation/sweet-b.git --depth 1 --single-branch
 	cd sweet-b && sed -i -e 's/SHARED/STATIC/g' CMakeLists.txt
 	cd sweet-b && sed -i -e 's/LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/ARCHIVE DESTINATION $${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/g' CMakeLists.txt
 
 tinycbor:
-	git clone git@github.com:intel/tinycbor.git
+	git clone git@github.com:intel/tinycbor.git --depth 1 --single-branch
 	cd tinycbor && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
 build_sweet_b: sweet-b
