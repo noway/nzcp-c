@@ -1,19 +1,27 @@
+prefix = /usr/local
+libdir = $(prefix)/lib
+includedir = $(prefix)/include
+
 CFLAGS = -Wall -Wextra -O3
-LIBRARY_PATH=$(PWD)/compiled/usr/local/lib:$(PWD)/build/lib
-CPATH=$(PWD)/compiled/usr/local/include:$(PWD)/build/include
+LIBRARY_PATH=$(PWD)/compiled/usr/local/lib
+CPATH=$(PWD)/compiled/usr/local/include
 
-.PHONY: clean build_sweet_b build_tinycbor
+.PHONY: clean build_sweet_b build_tinycbor install uninstall
 
-build: build/lib/libnzcp.dylib build/include/nzcp.h
-	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) main.c -o main -lnzcp
+build: libnzcp.dylib
 
-build/lib/libnzcp.dylib: build_sweet_b build_tinycbor
-	mkdir -p build/lib
-	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -dynamiclib -fPIC nzcp.c -o build/lib/libnzcp.dylib -ltinycbor -lsweet_b
+install:
+	install -d $(DESTDIR)$(libdir)
+	install -m 644 libnzcp.dylib $(DESTDIR)$(libdir)/libnzcp.dylib
+	install -d $(DESTDIR)$(includedir)
+	install -m 644 nzcp.h $(DESTDIR)$(includedir)/nzcp.h
 
-build/include/nzcp.h:
-	mkdir -p build/include
-	cp nzcp.h build/include/nzcp.h
+uninstall:
+	rm -f $(DESTDIR)$(libdir)/libnzcp.dylib
+	rm -f $(DESTDIR)$(includedir)/nzcp.h
+
+libnzcp.dylib: build_sweet_b build_tinycbor
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -dynamiclib -fPIC nzcp.c -o libnzcp.dylib -ltinycbor -lsweet_b
 
 sweet-b:
 	git clone git@github.com:westerndigitalcorporation/sweet-b.git
