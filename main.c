@@ -26,7 +26,7 @@ static const char* TRUSTED_ISSUER = MOH_EXAMPLE_TRUSTED_ISSUER;
 static const sb_sw_public_t PUB_KEY = MOH_EXAMPLE_PUB_KEY;
 #endif
 
-#define nzcp_error int
+typedef int nzcp_error;
 
 // caller is responsible for free()ing the strings
 typedef struct nzcp_verification_result {
