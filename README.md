@@ -19,8 +19,7 @@ MIT
 
 ## Roadmap
 Depends on my availability, but would be nice to:
-- Validate CWT claims
 - Specify public key as `x` and `y` base64 encoded values
 - Enforce C99 standard
-- Define an API on how to use the library
 - Package as a library
+- Tests
