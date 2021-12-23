@@ -130,14 +130,15 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   size_t token2_len = next_token_len(pass_uri, token1_len + 1);
   size_t token3_len = next_token_len(pass_uri, token1_len + 1 + token2_len + 1);
 
-  const uint8_t* claims_prefix = pass_uri;
+  const uint8_t* uri_prefix = pass_uri;
   const uint8_t* version_identifier = pass_uri + token1_len + 1;
   const uint8_t* base32_cwt = pass_uri + token1_len + 1 + token2_len + 1;
 
-  // TODO: check state.claims prefix and state.version identifier
-  pprintf("claims_prefix %s %lu\n", claims_prefix, token1_len);
+  pprintf("uri_prefix %s %lu\n", uri_prefix, token1_len);
   pprintf("version_identifier %s %lu\n", version_identifier, token2_len);
   pprintf("base32_cwt %s %lu\n", base32_cwt, token3_len);
+  aassert(strncmp((char*) uri_prefix, "NZCP:", token1_len) == 0, NZCP_E_BAD_URI_PREFIX);
+  aassert(strncmp((char*) version_identifier, "1", token2_len) == 0, NZCP_E_BAD_VERSION_IDENTIFIER);
   
   int padded_len = token3_len % 8 == 0 ? token3_len : ((token3_len / 8) + 1) * 8;
   state.padded_base32_cwt = mmalloc(padded_len + 1);
