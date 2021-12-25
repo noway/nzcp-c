@@ -219,7 +219,7 @@ static int decode_sequence(const unsigned char *coded, unsigned char *plain)
 	return 5;
 }
 
-size_t base32_decode(const unsigned char *coded, unsigned char *plain) 
+static inline size_t base32_decode(const unsigned char *coded, unsigned char *plain) 
 {
 	size_t written = 0;
 	for (size_t i = 0, j = 0; ; i += 8, j += 5) {

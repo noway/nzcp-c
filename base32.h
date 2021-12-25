@@ -63,6 +63,6 @@ void base32_encode(const unsigned char *plain, size_t len, unsigned char *coded)
  * expected due to padding. If an invalid base32 character is found
  * in the coded string, decoding will stop at that point.
  **/
-size_t base32_decode(const unsigned char *coded, unsigned char *plain);
+static inline size_t base32_decode(const unsigned char *coded, unsigned char *plain);
 
 #endif
