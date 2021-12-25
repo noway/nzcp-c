@@ -134,7 +134,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   aassert(strncmp((char*) uri_prefix, "NZCP:", token1_len) == 0, NZCP_E_BAD_URI_PREFIX);
   aassert(strncmp((char*) version_identifier, "1", token2_len) == 0, NZCP_E_BAD_VERSION_IDENTIFIER);
   
-  int padded_len = token3_len % 8 == 0 ? token3_len : ((token3_len / 8) + 1) * 8;
+  size_t padded_len = token3_len % 8 == 0 ? token3_len : ((token3_len / 8) + 1) * 8;
   state.padded_base32_cwt = mmalloc(padded_len + 1);
   memset(state.padded_base32_cwt, '\0', padded_len + 1);
   memset(state.padded_base32_cwt, '=', padded_len);
