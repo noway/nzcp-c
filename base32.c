@@ -219,7 +219,6 @@ static int decode_sequence(const unsigned char *coded, unsigned char *plain)
 	return 5;
 }
 
-// cppcheck-suppress unusedFunction
 size_t base32_decode(const unsigned char *coded, unsigned char *plain) 
 {
 	size_t written = 0;
