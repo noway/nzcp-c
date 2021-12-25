@@ -42,7 +42,7 @@ struct nzcp_state {
 };
 
 
-void nzcp_free_state(struct nzcp_state* state) {
+static inline void nzcp_free_state(struct nzcp_state* state) {
   free_then_null(state->padded_base32_cwt);
   free_then_null(state->cwt);
   free_then_null(state->headers);

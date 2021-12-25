@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include "utils.h"
 #define DEBUG 0
 
 #define free_then_null(ptr) { if (ptr != NULL) { free(ptr); ptr = NULL; } }
