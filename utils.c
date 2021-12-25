@@ -39,12 +39,7 @@ void sprint_jti(uint8_t* cti, char* out) {
 }
 
 size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
-  // TODO: don't need mmalloc
-  char *str_copy = mmalloc(strlen((char*) uri) + 1);
-  strcpy(str_copy, (char*) uri);
-  char *skipped_str_copy = (char*) (str_copy + skip_pos);
-  char *token = strtok(skipped_str_copy, "/");
-  size_t token_len = strlen(token);
-  free(str_copy);
+  char *skipped_str_copy = (char*) (uri + skip_pos);
+  size_t token_len = strcspn(skipped_str_copy, "/");
   return token_len;
 }
