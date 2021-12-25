@@ -2,7 +2,10 @@ prefix = /usr/local
 libdir = $(prefix)/lib
 includedir = $(prefix)/include
 
-CFLAGS = -Wall -Wextra -O3
+# TODO: add -Wconversion
+CFLAGS = -std=c99 \
+	-Werror -Wall -Wstrict-prototypes -Wmissing-prototypes -Wextra -Wshadow \
+	-Wno-typedef-redefinition -O3
 LIBRARY_PATH=$(PWD)/compiled/usr/local/lib
 CPATH=$(PWD)/compiled/usr/local/include
 

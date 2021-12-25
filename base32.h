@@ -50,7 +50,9 @@
  * contain characters from the [A-Z2-7=] set. The "len" arguments
  * define how many bytes will be read from the "plain" buffer.
  **/
+/*
 void base32_encode(const unsigned char *plain, size_t len, unsigned char *coded);
+*/
 
 /**
  * Decode the null terminated string pointed to by coded and write
@@ -61,6 +63,6 @@ void base32_encode(const unsigned char *plain, size_t len, unsigned char *coded)
  * expected due to padding. If an invalid base32 character is found
  * in the coded string, decoding will stop at that point.
  **/
-size_t base32_decode(const unsigned char *coded, unsigned char *plain);
+static inline size_t base32_decode(const unsigned char *coded, unsigned char *plain);
 
 #endif
