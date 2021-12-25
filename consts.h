@@ -1,3 +1,6 @@
+#ifndef __CONSTS_H_
+#define __CONSTS_H_
+
 #define MOH_LIVE_KID "z12Kf7UQ"
 #define MOH_LIVE_TRUSTED_ISSUER "did:web:nzcp.identity.health.nz"
 #define MOH_LIVE_PUB_KEY { \
@@ -29,3 +32,5 @@
     0x84, 0x23, 0x83, 0xF0, 0xB4, 0xA4, 0xDD, 0x3D, \
   } \
 }
+
+#endif
