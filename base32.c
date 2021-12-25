@@ -44,31 +44,37 @@
  * systems that don't have exactly 8 bits per (unsigned) char.
  **/
 
+/*
 static size_t min(size_t x, size_t y)
 {
 	return x < y ? x : y;
 }
+*/
 
 static const unsigned char PADDING_CHAR = '=';
+static const unsigned char base32[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 /**
  * Pad the given buffer with len padding characters.
  */
+/*
 static void pad(unsigned char *buf, int len)
 {
 	for (int i = 0; i < len; i++)
 		buf[i] = PADDING_CHAR;
 }
+*/
 
 /**
  * This convert a 5 bits value into a base32 character.
  * Only the 5 least significant bits are used.
  */
+/*
 static unsigned char encode_char(unsigned char c)
 {
-	static unsigned char base32[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 	return base32[c & 0x1F];  // 0001 1111
 }
+*/
 
 /**
  * Decode given character into a 5 bits value. 
@@ -152,6 +158,7 @@ static unsigned char shift_left(unsigned char byte, char offset)
  * sequences shorter than 5 octets is supported and padding will be added to the
  * output as per the specification.
  */
+/*
 static void encode_sequence(const unsigned char *plain, int len, unsigned char *coded)
 {
 	assert(CHAR_BIT == 8);  // not sure this would work otherwise
@@ -176,7 +183,9 @@ static void encode_sequence(const unsigned char *plain, int len, unsigned char *
 		coded[block] = encode_char(c);
 	}
 }
+*/
 
+/*
 void base32_encode(const unsigned char *plain, size_t len, unsigned char *coded)
 {
 	// All the hard work is done in encode_sequence(),
@@ -185,6 +194,7 @@ void base32_encode(const unsigned char *plain, size_t len, unsigned char *coded)
 		encode_sequence(&plain[i], min(len - i, 5), &coded[j]);
 	}
 }
+*/
 
 static int decode_sequence(const unsigned char *coded, unsigned char *plain)
 {
@@ -209,7 +219,8 @@ static int decode_sequence(const unsigned char *coded, unsigned char *plain)
 	return 5;
 }
 
-size_t base32_decode(const unsigned char *coded, unsigned char *plain)
+// cppcheck-suppress unusedFunction
+size_t base32_decode(const unsigned char *coded, unsigned char *plain) 
 {
 	size_t written = 0;
 	for (size_t i = 0, j = 0; ; i += 8, j += 5) {
