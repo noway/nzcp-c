@@ -9,13 +9,13 @@
 #define free_then_malloc(ptr, size) { free_then_null(ptr); ptr = mmalloc(size); }
 
 // FYI: allocates memory that consumer is responsible for
-inline void* mmalloc(size_t size) {
+static inline void* mmalloc(size_t size) {
   void* ptr = malloc(size);
   memset(ptr, 0, size);
   return ptr;
 }
 
-inline void pprintf(const char* fmt, ...) {
+static inline void pprintf(const char* fmt, ...) {
   if (DEBUG) {
     va_list args;
     va_start(args, fmt);
@@ -25,20 +25,20 @@ inline void pprintf(const char* fmt, ...) {
 }
 
 // FYI: allocates memory that consumer is responsible for
-inline char* qstrcopy(char* src) {
+static inline char* qstrcopy(char* src) {
   size_t len = strlen(src) + 1;
   char* dest = mmalloc(len);
   memset(dest, '\0', len);
   return strcpy(dest, src);
 }
 
-inline void sprint_jti(uint8_t* cti, char* out) {
+static inline void sprint_jti(uint8_t* cti, char* out) {
   sprintf(out, "urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
     *(cti+0),  *(cti+1),  *(cti+2),  *(cti+3),  *(cti+4),  *(cti+5),  *(cti+6),  *(cti+7), 
     *(cti+8),  *(cti+9), *(cti+10), *(cti+11), *(cti+12), *(cti+13), *(cti+14), *(cti+15));
 }
 
-inline size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
+static inline size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
   char *skipped_str_copy = (char*) (uri + skip_pos);
   size_t token_len = strcspn(skipped_str_copy, "/");
   return token_len;
