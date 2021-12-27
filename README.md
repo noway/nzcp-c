@@ -77,6 +77,5 @@ MIT
 ## Roadmap
 Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
-- Get GNU/Linux to compile
 - Tests
 - Check in Valgrind
