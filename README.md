@@ -8,22 +8,6 @@ Features
 
 Contributions welcome! 🥳
 
-## Example
-- `cd example`
-- `make`
-- `./main`
-
-```bash
-$ ./main
-error: 0
-jti: urn:uuid:60a4f54d-4e30-4332-be33-ad78b1eafa4b
-iss: did:web:nzcp.covid19.health.nz
-nbf: 1635883530
-exp: 1951416330
-given_name: Jack
-family_name: Sparrow
-dob: 1960-04-16
-```
 ## API
 ```c
   // initiate verification result on stack
@@ -58,6 +42,23 @@ See [example/main.c](example/main.c) for more.
 - `cmake` v3
 - `unzip`
 
+## Example
+- `cd example`
+- `make`
+- `./main`
+
+```bash
+$ ./main
+error: 0
+jti: urn:uuid:60a4f54d-4e30-4332-be33-ad78b1eafa4b
+iss: did:web:nzcp.covid19.health.nz
+nbf: 1635883530
+exp: 1951416330
+given_name: Jack
+family_name: Sparrow
+dob: 1960-04-16
+```
+
 ## Installation
 To install `libnzcp.a` and `nzcp.h`:
 - Run `make`
@@ -65,9 +66,6 @@ To install `libnzcp.a` and `nzcp.h`:
 
 ## Binary size
 [example/main.c](example/main.c) executable compiles to 95Kb on macOS 12 with `-O3` using Clang.
-
-## License
-MIT
 
 ## Caveats
 - Stability or memory safety is not fully guaranteed - best effort is made, but C is a language with an unsafe memory model.
@@ -79,3 +77,6 @@ Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
 - Tests
 - Check in Valgrind
+
+## License
+MIT
