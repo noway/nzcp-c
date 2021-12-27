@@ -7,18 +7,18 @@ CFLAGS = -std=c99 \
 	-Werror -Wall -Wstrict-prototypes -Wmissing-prototypes -Wextra -Wshadow \
 	-Wno-typedef-redefinition -O3
 
-COMPILED_SWEET_BIN=$(PWD)/compiled-sweet-b
+COMPILED_SWEET_B=$(PWD)/compiled-sweet-b
 COMPILED_TINYCBOR=$(PWD)/compiled-tinycbor
-LIB_PATH_SWEET_B=$(COMPILED_SWEET_BIN)/usr/local/lib
+LIB_PATH_SWEET_B=$(COMPILED_SWEET_B)/usr/local/lib
 LIB_PATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/lib
-CPATH_SWEET_B=$(COMPILED_SWEET_BIN)/usr/local/include
+CPATH_SWEET_B=$(COMPILED_SWEET_B)/usr/local/include
 CPATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/include
 LIBRARY_PATH=$(LIB_PATH_SWEET_B):$(LIB_PATH_TINYCBOR)
 CPATH=$(CPATH_SWEET_B):$(CPATH_TINYCBOR)
 
 .PHONY: clean install uninstall
 
-build: $(COMPILED_SWEET_BIN) $(COMPILED_TINYCBOR)
+build: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
 	mkdir -p objects
 	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
 	cd objects && ar x $(LIB_PATH_SWEET_B)/libsweet_b.a
@@ -48,15 +48,15 @@ tinycbor-main: tinycbor.zip
 	unzip tinycbor.zip
 	cd tinycbor-main && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
-$(COMPILED_SWEET_BIN): sweet-b-master
-	cd sweet-b-master && cmake . && make && DESTDIR=$(COMPILED_SWEET_BIN) make install
+$(COMPILED_SWEET_B): sweet-b-master
+	cd sweet-b-master && cmake . && make && DESTDIR=$(COMPILED_SWEET_B) make install
 
 $(COMPILED_TINYCBOR): tinycbor-main
 	cd tinycbor-main && make && DESTDIR=$(COMPILED_TINYCBOR) make install
 
 clean:
-	rm -rf $(PWD)/compiled-sweet-b
-	rm -rf $(PWD)/compiled-tinycbor
+	rm -rf $(COMPILED_SWEET_B)
+	rm -rf $(COMPILED_TINYCBOR)
 	rm -rf $(PWD)/sweet-b-master
 	rm -rf $(PWD)/tinycbor-main
 	rm -rf $(PWD)/objects
