@@ -35,7 +35,7 @@ sweet-b.zip:
 sweet-b-master: sweet-b.zip
 	unzip sweet-b.zip
 	cd sweet-b-master && sed -i -e 's/SHARED/STATIC/g' CMakeLists.txt
-	cd sweet-b-master && sed -i -e 's/LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/ARCHIVE DESTINATION $${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION $${CMAKE_INSTALL_LIBDIR}/g' CMakeLists.txt
+	cd sweet-b-master && sed -i -e 's/LIBRARY DESTINATION "lib"/ARCHIVE DESTINATION "lib" LIBRARY DESTINATION "lib"/g' CMakeLists.txt
 
 tinycbor.zip:
 	curl -Lo tinycbor.zip https://github.com/intel/tinycbor/archive/refs/heads/main.zip
