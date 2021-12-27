@@ -14,3 +14,4 @@ $(COMPILED):
 
 clean:
 	rm -rf $(COMPILED)
+	rm -f $(PWD)/main

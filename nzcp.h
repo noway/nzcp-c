@@ -2,6 +2,7 @@
 #define __NZCP_H_
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #define NZCP_E_SUCCESS 0
 #define NZCP_E_BAD_URI_PREFIX 1
