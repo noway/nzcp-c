@@ -77,6 +77,7 @@ Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
 - Tests
 - Check in Valgrind
+- Error description function
 
 ## License
 MIT
