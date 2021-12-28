@@ -15,7 +15,6 @@
 #define aassert(a, e) if (!(a)) { nzcp_free_state(&state); return e; }
 
 
-// TODO: use everywhere
 static inline CborError cbor_value_string_length(CborValue *value, size_t *len) {
   if (cbor_value_is_length_known(value)) {
     return cbor_value_get_string_length(value, len);
@@ -192,7 +191,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("type2: %d\n",type2);
 
   size_t headers_len;
-  cbor_error = cbor_value_calculate_string_length(&element_value, &headers_len);
+  cbor_error = cbor_value_string_length(&element_value, &headers_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   state.headers = mmalloc(headers_len + 1); // tinycbor adds null byte at the end
   cbor_error = cbor_value_copy_byte_string(&element_value, state.headers, &headers_len, &element_value); // TODO: i'd rather advance on my own
@@ -238,7 +237,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       pprintf("header_value_type: %d\n",header_value_type);
       aassert(header_value_type == CborByteStringType, NZCP_E_MALFORMED_CWT_HEADER);
 
-      cbor_error = cbor_value_calculate_string_length(&headers_element_value, &kid_len);
+      cbor_error = cbor_value_string_length(&headers_element_value, &kid_len);
       aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
       free_then_malloc(state.kid, kid_len + 1); // tinycbor adds null byte at the end
@@ -326,7 +325,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         size_t iss_len;
-        cbor_error = cbor_value_calculate_string_length(&cwt_claim_element_value, &iss_len);
+        cbor_error = cbor_value_string_length(&cwt_claim_element_value, &iss_len);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
         free_then_malloc(state.iss, iss_len + 1); // tinycbor adds null byte at the end
@@ -363,7 +362,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("cwt_claim_element_type: %d\n",cwt_claim_element_type);
 
         size_t cti_len;
-        cbor_error = cbor_value_calculate_string_length(&cwt_claim_element_value, &cti_len);
+        cbor_error = cbor_value_string_length(&cwt_claim_element_value, &cti_len);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         free_then_malloc(state.cti, cti_len + 1); // tinycbor adds null byte at the end
         cbor_error = cbor_value_copy_byte_string(&cwt_claim_element_value, state.cti, &cti_len, NULL);
@@ -401,7 +400,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
           aassert(vc_element_type == CborTextStringType, NZCP_E_MALFORMED_CWT_VC);
           
           size_t vc_element_key_len;
-          cbor_error = cbor_value_calculate_string_length(&vc_element_value, &vc_element_key_len);
+          cbor_error = cbor_value_string_length(&vc_element_value, &vc_element_key_len);
           aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
           char *vc_element_key = mmalloc(vc_element_key_len + 1); // tinycbor adds null byte at the end
           cbor_error = cbor_value_copy_text_string(&vc_element_value, vc_element_key, &vc_element_key_len, NULL);
@@ -431,7 +430,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             CborType context_0_element_type = cbor_value_get_type(&context_value);
             aassert(context_0_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_CONTEXT);
             size_t context_0_element_len;
-            cbor_error = cbor_value_calculate_string_length(&context_value, &context_0_element_len);
+            cbor_error = cbor_value_string_length(&context_value, &context_0_element_len);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             free_then_malloc(state.context_0, context_0_element_len + 1); // tinycbor adds null byte at the end
             cbor_error = cbor_value_copy_text_string(&context_value, state.context_0, &context_0_element_len, NULL);
@@ -444,7 +443,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             CborType context_1_element_type = cbor_value_get_type(&context_value);
             aassert(context_1_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_CONTEXT);
             size_t context_1_element_len;
-            cbor_error = cbor_value_calculate_string_length(&context_value, &context_1_element_len);
+            cbor_error = cbor_value_string_length(&context_value, &context_1_element_len);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             free_then_malloc(state.context_1, context_1_element_len + 1); // tinycbor adds null byte at the end
             cbor_error = cbor_value_copy_text_string(&context_value, state.context_1, &context_1_element_len, NULL);
@@ -460,7 +459,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             aassert(vc_element_type == CborTextStringType,  NZCP_E_MALFORMED_VC_VERSION);
 
             size_t version_len;
-            cbor_error = cbor_value_calculate_string_length(&vc_element_value, &version_len);
+            cbor_error = cbor_value_string_length(&vc_element_value, &version_len);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
             free_then_malloc(state.version, version_len + 1); // tinycbor adds null byte at the end
@@ -490,7 +489,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             CborType type_0_element_type = cbor_value_get_type(&type_value);
             aassert(type_0_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_TYPE);
             size_t type_0_element_len;
-            cbor_error = cbor_value_calculate_string_length(&type_value, &type_0_element_len);
+            cbor_error = cbor_value_string_length(&type_value, &type_0_element_len);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             free_then_malloc(state.type_0, type_0_element_len + 1); // tinycbor adds null byte at the end
             cbor_error = cbor_value_copy_text_string(&type_value, state.type_0, &type_0_element_len, NULL);
@@ -503,7 +502,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             CborType type_1_element_type = cbor_value_get_type(&type_value);
             aassert(type_1_element_type == CborTextStringType, NZCP_E_MALFORMED_VC_TYPE);
             size_t type_1_element_len;
-            cbor_error = cbor_value_calculate_string_length(&type_value, &type_1_element_len);
+            cbor_error = cbor_value_string_length(&type_value, &type_1_element_len);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             free_then_malloc(state.type_1, type_1_element_len + 1); // tinycbor adds null byte at the end
             cbor_error = cbor_value_copy_text_string(&type_value, state.type_1, &type_1_element_len, NULL);
@@ -527,7 +526,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
               aassert(credential_subject_element_type == CborTextStringType, NZCP_E_MALFORMED_CREDENTIAL_SUBJECT);
 
               size_t credential_subject_element_key_len;
-              cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_element_key_len);
+              cbor_error = cbor_value_string_length(&credential_subject_element_value, &credential_subject_element_key_len);
               aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               char *credential_subject_element_key = mmalloc(credential_subject_element_key_len + 1); // tinycbor adds null byte at the end
               cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, credential_subject_element_key, &credential_subject_element_key_len, NULL);
@@ -543,7 +542,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 aassert(credential_subject_field_type == CborTextStringType, NZCP_E_MALFORMED_GIVEN_NAME);
 
                 size_t credential_subject_field_len;
-                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_field_len);
+                cbor_error = cbor_value_string_length(&credential_subject_element_value, &credential_subject_field_len);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 free_then_malloc(state.given_name, credential_subject_field_len + 1); // tinycbor adds null byte at the end
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.given_name, &credential_subject_field_len, NULL);
@@ -557,7 +556,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 aassert(credential_subject_field_type == CborTextStringType, NZCP_E_MALFORMED_FAMILY_NAME);
 
                 size_t credential_subject_field_len;
-                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_field_len);
+                cbor_error = cbor_value_string_length(&credential_subject_element_value, &credential_subject_field_len);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 free_then_malloc(state.family_name, credential_subject_field_len + 1); // tinycbor adds null byte at the end
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.family_name, &credential_subject_field_len, NULL);
@@ -571,7 +570,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 aassert(credential_subject_field_type == CborTextStringType, NZCP_E_MALFORMED_DOB);
 
                 size_t credential_subject_field_len;
-                cbor_error = cbor_value_calculate_string_length(&credential_subject_element_value, &credential_subject_field_len);
+                cbor_error = cbor_value_string_length(&credential_subject_element_value, &credential_subject_field_len);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 free_then_malloc(state.dob, credential_subject_field_len + 1); // tinycbor adds null byte at the end
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.dob, &credential_subject_field_len, NULL);
