@@ -3,6 +3,8 @@
 #include <nzcp.h>
 #include <assert.h>
 
+#define assert_eq(a, b) { if (a == b) { printf("pass\n"); } else { printf("fail, %d != " #b "\n", a); } }
+
 #define EXAMPLE_PASS "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX"
 
 #define BAD_PUBLIC_KEY_PASS "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAY73U6TCQ3KF5KFML5LRCS5D3PCYIB2D3EOIIZRPXPUA2OR3NIYCBMGYRZUMBNBDMIA5BUOZKVOMSVFS246AMU7ADZXWBYP7N4QSKNQ4TETIF4VIRGLHOXWYMR4HGQ7KYHHU"
@@ -33,54 +35,52 @@ int main(void) {
   int error;
 
   error = nzcp_verify_pass_uri((uint8_t *)EXAMPLE_PASS, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_SUCCESS);
+  assert_eq(error, NZCP_E_SUCCESS);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)BAD_PUBLIC_KEY_PASS, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)PUBLIC_KEY_NOT_FOUND_PASS, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_WRONG_KID);
+  assert_eq(error, NZCP_E_WRONG_KID);
+  nzcp_free_verification_result(&verification_result);
 
-  // error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_SIGNATURE_PASS, &verification_result, 1);
-  // printf("%d\n",error);
-  // assert(error == NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_SIGNATURE_PASS, &verification_result, 1);
+  assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  nzcp_free_verification_result(&verification_result);
 
-  // error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_PAYLOAD_PASS, &verification_result, 1);
-  // printf("%d\n",error);
-  // assert(error == NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_PAYLOAD_PASS, &verification_result, 1);
+  assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  nzcp_free_verification_result(&verification_result);
 
-  // error = nzcp_verify_pass_uri((uint8_t *)EXPIRED_PASS, &verification_result, 1);
-  // printf("error %d\n",error);
-  // assert(error == NZCP_E_PASS_EXPIRED);
+  error = nzcp_verify_pass_uri((uint8_t *)EXPIRED_PASS, &verification_result, 1);
+  assert_eq(error, NZCP_E_PASS_EXPIRED);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)NOT_ACTIVE_PASS, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_PASS_NOT_ACTIVE);
+  assert_eq(error, NZCP_E_PASS_NOT_ACTIVE);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)NOT_BASE32_URI, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_CBOR_ERROR);
+  assert_eq(error, NZCP_E_CBOR_ERROR);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)WRONG_PREFIX_URI, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_BAD_URI_PREFIX);
+  assert_eq(error, NZCP_E_BAD_URI_PREFIX);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)WRONG_VERSION_URI, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_BAD_VERSION_IDENTIFIER);
+  assert_eq(error, NZCP_E_BAD_VERSION_IDENTIFIER);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_PASS, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_CBOR_ERROR);
+  assert_eq(error, NZCP_E_CBOR_ERROR);
+  nzcp_free_verification_result(&verification_result);
 
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_URI, &verification_result, 1);
-  printf("%d\n",error);
-  assert(error == NZCP_E_BAD_URI_PREFIX);
-
-
+  assert_eq(error, NZCP_E_BAD_URI_PREFIX);
+  nzcp_free_verification_result(&verification_result);
 
   return 0;
 }
