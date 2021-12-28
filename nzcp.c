@@ -282,7 +282,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("type4: %d\n",type4);
 
   size_t claims_len;
-  cbor_error = cbor_value_calculate_string_length(&element_value, &claims_len);
+  cbor_error = cbor_value_string_length(&element_value, &claims_len);
   pprintf("claims_len: %lu\n", claims_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   state.claims = mmalloc(claims_len + 1); // tinycbor adds null byte at the end
