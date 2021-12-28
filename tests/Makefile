@@ -1,2 +1,2 @@
 build:
-	clang -I ../ -L ../ nzcp_tests.c -lnzcp 
+	$(CC) -I ../ -L ../ nzcp_tests.c -lnzcp 
