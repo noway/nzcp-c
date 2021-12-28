@@ -14,6 +14,17 @@
 #define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
 #define aassert(a, e) if (!(a)) { nzcp_free_state(&state); return e; }
 
+
+// TODO: use everywhere
+static inline CborError cbor_value_string_length(CborValue *value, size_t *len) {
+  if (cbor_value_is_length_known(value)) {
+    return cbor_value_get_string_length(value, len);
+  }
+  else {
+    return cbor_value_calculate_string_length(value, len);
+  }
+}
+
 struct nzcp_state {
   uint8_t *padded_base32_cwt;
   uint8_t *cwt;
@@ -595,7 +606,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   // Get signature
   size_t sign_len;
-  cbor_error = cbor_value_calculate_string_length(&element_value, &sign_len);
+  cbor_error = cbor_value_string_length(&element_value, &sign_len);
   pprintf("sign_len: %lu\n", sign_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   state.sign = mmalloc(sign_len + 1); // tinycbor adds null byte at the end
