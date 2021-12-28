@@ -6,11 +6,13 @@ export INCL_2=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
 cppcheck \
     -I $INCL_1 \
     -I $INCL_2 \
-    -I compiled/usr/local/include \
+    -I compiled-sweet-b/usr/local/include \
+    -I compiled-tinycbor/usr/local/include \
     -I . \
     -isweet-b-master\
     -itinycbor-main\
-    --suppress=*:compiled/usr/local/include/* \
+    --suppress=*:compiled-sweet-b/usr/local/include/* \
+    --suppress=*:compiled-tinycbor/usr/local/include/* \
     --inline-suppr \
     --enable=all --inconclusive --library=posix \
     -U __WINT_TYPE__\
