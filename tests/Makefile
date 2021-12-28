@@ -1,7 +1,7 @@
 .PHONY: clean
 
 all: ../libnzcp.a
-	$(CC) -I ../ -L ../ nzcp_tests.c -lnzcp 
+	$(CC) -I ../ -L ../ nzcp_tests.c -o nzcp_tests -lnzcp 
 
 ../libnzcp.a:
 	cd .. && make
