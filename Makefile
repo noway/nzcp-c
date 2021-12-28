@@ -46,6 +46,7 @@ tinycbor.zip:
 	curl -Lo tinycbor.zip https://github.com/intel/tinycbor/archive/refs/heads/main.zip
 tinycbor-main: tinycbor.zip
 	unzip tinycbor.zip
+	patch --forward -p 0 < tinycbor-copy-byte-string.patch
 	cd tinycbor-main && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
 $(COMPILED_SWEET_B): sweet-b-master
