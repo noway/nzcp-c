@@ -72,10 +72,14 @@ To install `libnzcp.a` and `nzcp.h`:
 - The library was not audited.
 - The library was not fuzzed.
 
+## Tests
+- `cd tests`
+- `make`
+- `./nzcp_tests`
+
 ## Roadmap
 Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
-- Tests
 - Check in Valgrind
 - Error description function
 
