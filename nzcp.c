@@ -287,6 +287,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   state.claims = mmalloc(claims_len + 1); // tinycbor adds null byte at the end
   cbor_error = cbor_value_copy_byte_string(&element_value, state.claims, &claims_len, &element_value); // TODO: i'd rather advance on my own
+
+  pprintf("state.claims: %s\n", state.claims);
+  pprintf("cbor_error: %s\n", cbor_error_string(cbor_error));
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
   CborParser claims_parser;
