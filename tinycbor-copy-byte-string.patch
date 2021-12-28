@@ -1,0 +1,14 @@
+--- tinycbor-main/src/cborinternal_p.h	2021-12-29 03:15:35.000000000 +1300
++++ tinycbor-main/src/cborinternal_p.h	2021-12-29 03:15:46.000000000 +1300
+@@ -218,11 +218,9 @@
+     }
+ 
+     it->source.ptr += offset;
+-    if (can_read_bytes(it, len)) {
+         *CONST_CAST(const void **, ptr) = it->source.ptr;
+         it->source.ptr += len;
+         return CborNoError;
+-    }
+     return CborErrorUnexpectedEOF;
+ }
+ 

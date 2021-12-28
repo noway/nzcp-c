@@ -16,7 +16,7 @@ CPATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/include
 LIBRARY_PATH=$(LIB_PATH_SWEET_B):$(LIB_PATH_TINYCBOR)
 CPATH=$(CPATH_SWEET_B):$(CPATH_TINYCBOR)
 
-.PHONY: clean install uninstall
+.PHONY: clean-compiled clean-downloaded install uninstall
 
 build: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
 	mkdir -p objects
@@ -46,6 +46,7 @@ tinycbor.zip:
 	curl -Lo tinycbor.zip https://github.com/intel/tinycbor/archive/refs/heads/main.zip
 tinycbor-main: tinycbor.zip
 	unzip tinycbor.zip
+	patch --forward -p 0 < tinycbor-copy-byte-string.patch
 	cd tinycbor-main && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
 $(COMPILED_SWEET_B): sweet-b-master
@@ -54,14 +55,18 @@ $(COMPILED_SWEET_B): sweet-b-master
 $(COMPILED_TINYCBOR): tinycbor-main
 	cd tinycbor-main && make && DESTDIR=$(COMPILED_TINYCBOR) make install
 
-clean:
+clean-compiled:
 	rm -rf $(COMPILED_SWEET_B)
 	rm -rf $(COMPILED_TINYCBOR)
-	rm -rf $(PWD)/sweet-b-master
-	rm -rf $(PWD)/tinycbor-main
 	rm -rf $(PWD)/objects
 	rm -f $(PWD)/main
 	rm -f $(PWD)/libnzcp.dylib
 	rm -f $(PWD)/libnzcp.a
+
+clean-downloaded:
+	rm -rf $(PWD)/sweet-b-master
+	rm -rf $(PWD)/tinycbor-main
 	rm -f $(PWD)/sweet-b.zip
 	rm -f $(PWD)/tinycbor.zip
+
+clean: clean-compiled clean-downloaded
