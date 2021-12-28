@@ -257,7 +257,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("state.kid: %s\n", state.kid);
   pprintf("alg: %d\n", alg);
 
-  aassert(memcmp(KID, state.kid, kid_len) == 0, NZCP_E_WRONG_KID);
+  aassert(kid_len > 0 && memcmp(KID, state.kid, kid_len) == 0, NZCP_E_WRONG_KID);
   aassert(alg == -7, NZCP_E_WRONG_ALG);
 
   CborType type3 = cbor_value_get_type(&element_value);
