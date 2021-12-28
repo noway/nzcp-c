@@ -16,7 +16,7 @@ CPATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/include
 LIBRARY_PATH=$(LIB_PATH_SWEET_B):$(LIB_PATH_TINYCBOR)
 CPATH=$(CPATH_SWEET_B):$(CPATH_TINYCBOR)
 
-.PHONY: clean install uninstall
+.PHONY: clean clean-light install uninstall
 
 build: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
 	mkdir -p objects
@@ -53,6 +53,14 @@ $(COMPILED_SWEET_B): sweet-b-master
 
 $(COMPILED_TINYCBOR): tinycbor-main
 	cd tinycbor-main && make && DESTDIR=$(COMPILED_TINYCBOR) make install
+
+clean-light:
+	rm -rf $(COMPILED_SWEET_B)
+	rm -rf $(COMPILED_TINYCBOR)
+	rm -rf $(PWD)/objects
+	rm -f $(PWD)/main
+	rm -f $(PWD)/libnzcp.dylib
+	rm -f $(PWD)/libnzcp.a
 
 clean:
 	rm -rf $(COMPILED_SWEET_B)
