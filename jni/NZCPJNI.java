@@ -1,3 +1,5 @@
+import java.nio.file.Paths;
+
 public class NZCPJNI {
 
     public static final int E_SUCCESS = 0;
@@ -46,7 +48,7 @@ public class NZCPJNI {
     public String dob;
 
     static {
-        System.load(System.getProperty("user.dir") + "/libnzcpjni.so"); // TODO: proper path concat
+        System.load(Paths.get(System.getProperty("user.dir"), "libnzcpjni.so").toString());
     }
     public native int verify_pass_uri(String pass_uri, boolean is_example);
 
