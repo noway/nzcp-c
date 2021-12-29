@@ -43,6 +43,7 @@ extern "C" {
 #define NZCP_E_BAD_GIVEN_NAME 32
 #define NZCP_E_BAD_DOB 33
 #define NZCP_E_FAILED_SIGNATURE_VERIFICATION 34
+#define NZCP_E_BAD_INTEGRATION 35
 
 typedef int nzcp_error;
 
