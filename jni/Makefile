@@ -1,9 +1,12 @@
+CFLAGS = -Wall -Wextra -O3 
 OPENJDK=$(shell brew --prefix openjdk@11)
 
 all:
 	javac -h . NZCPJNI.java
-	clang -fPIC -shared \
-		-I "$(OPENJDK)/include"\
-		-I .\
-		-o libnzcpjni.so\
-		NZCPJNI.cpp
+	$(CC) $(CFLAGS) \
+		-fPIC -shared \
+		-I "$(OPENJDK)/include" -I ../ \
+		-L ../ \
+		NZCPJNI.cpp \
+		-o libnzcpjni.so \
+		-lnzcp

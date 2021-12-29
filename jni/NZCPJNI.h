@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     NZCPJNI
  * Method:    verify_pass_uri
- * Signature: (Ljava/lang/String;)I
+ * Signature: (Ljava/lang/String;Z)I
  */
 JNIEXPORT jint JNICALL Java_NZCPJNI_verify_1pass_1uri
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jstring, jboolean);
 
 #ifdef __cplusplus
 }

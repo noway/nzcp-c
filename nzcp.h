@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define NZCP_E_SUCCESS 0
 #define NZCP_E_BAD_URI_PREFIX 1
 #define NZCP_E_BAD_VERSION_IDENTIFIER 2
@@ -55,5 +59,9 @@ typedef struct nzcp_verification_result {
 
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, ...);
 void nzcp_free_verification_result(struct nzcp_verification_result* verification_result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
