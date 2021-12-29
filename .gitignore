@@ -53,3 +53,6 @@ compiled-sweet-b
 compiled-tinycbor
 compiled
 objects
+
+# JNI
+*.class
