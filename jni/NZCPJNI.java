@@ -1,12 +1,12 @@
 public class NZCPJNI {
 
-    private String jti;
-    private String iss;
-    private Integer nbf;
-    private Integer exp;
-    private String given_name;
-    private String family_name;
-    private String dob;
+    public String jti;
+    public String iss;
+    public Integer nbf;
+    public Integer exp;
+    public String given_name;
+    public String family_name;
+    public String dob;
 
     static {
         System.load(System.getProperty("user.dir") + "/libnzcpjni.so"); // TODO: proper path concat
