@@ -83,6 +83,7 @@ Depends on my availability, but would be nice to:
 - Check in Valgrind
 - Error description function
 - Live pass test
+- Online DID fetching using CURL
 
 ## License
 MIT
