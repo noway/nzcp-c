@@ -42,6 +42,9 @@
 main
 nzcp_tests
 
+# tests
+tests/live_pass.txt
+
 # vendor
 sweet-b-master
 tinycbor-main
