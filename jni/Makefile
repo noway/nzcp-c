@@ -1,5 +1,5 @@
 CFLAGS = -Wall -Wextra -O3 
-CPATH=$(JAVA_HOME)/include:../
+CPATH=$(JAVA_HOME)/include:$(JAVA_HOME)/include/linux:../
 LIBRARY_PATH=../
 
 .PHONY: clean

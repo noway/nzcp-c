@@ -52,10 +52,10 @@ tinycbor-main: tinycbor.zip
 	cd tinycbor-main && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
 $(COMPILED_SWEET_B): sweet-b-master
-	cd sweet-b-master && cmake . && make && DESTDIR=$(COMPILED_SWEET_B) make install
+	cd sweet-b-master && CFLAGS="-fPIC" cmake . && make && DESTDIR=$(COMPILED_SWEET_B) make install
 
 $(COMPILED_TINYCBOR): tinycbor-main
-	cd tinycbor-main && make && DESTDIR=$(COMPILED_TINYCBOR) make install
+	cd tinycbor-main && CPPFLAGS="-fPIC" make && DESTDIR=$(COMPILED_TINYCBOR) make install
 
 clean-compiled:
 	rm -rf $(COMPILED_SWEET_B)
