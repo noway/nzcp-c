@@ -100,16 +100,16 @@ int main(void) {
   nzcp_free_verification_result(&verification_result);
 
   // open live pass from a file
-  FILE *f = fopen("live_pass.txt", "rb");
-  assert(f != NULL);
-  fseek(f, 0, SEEK_END);
-  size_t file_size = ftell(f);
-  fseek(f, 0, SEEK_SET);
+  FILE *live_pass_file_descriptor = fopen("live_pass.txt", "rb");
+  assert(live_pass_file_descriptor != NULL);
+  fseek(live_pass_file_descriptor, 0, SEEK_END);
+  size_t file_size = ftell(live_pass_file_descriptor);
+  fseek(live_pass_file_descriptor, 0, SEEK_SET);
   uint8_t *file_contents = malloc(file_size);
   assert(file_contents != NULL);
-  size_t bytes_read = fread(file_contents, 1, file_size, f);
+  size_t bytes_read = fread(file_contents, 1, file_size, live_pass_file_descriptor);
   assert(bytes_read == file_size);
-  fclose(f);
+  fclose(live_pass_file_descriptor);
   error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
   assert_eq(error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
