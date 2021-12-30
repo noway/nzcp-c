@@ -6,7 +6,8 @@ all: ../libnzcp.a
 	javac -h . NZCPJNI.java
 	$(CC) $(CFLAGS) \
 		-fPIC -shared \
-		-I "$(JAVA_HOME)/include" -I ../ \
+		-I "$(JAVA_HOME)/include" \
+		-I ../ \
 		-L ../ \
 		NZCPJNI.cpp \
 		-o libnzcpjni.so \
