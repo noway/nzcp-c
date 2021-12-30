@@ -18,4 +18,4 @@ dob: 1960-04-16
 ```
 
 ## API
-See [example/main.c](example/main.c).
+See [main.c](main.c).
