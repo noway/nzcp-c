@@ -3,6 +3,7 @@ CFLAGS = -Wall -Wextra -O3
 .PHONY: all clean
 
 all: ../libnzcp.a
+	cpp -P NZCPJNI.java.in NZCPJNI.java
 	javac -h . NZCPJNI.java
 	$(CC) $(CFLAGS) \
 		-fPIC -shared \
@@ -18,4 +19,4 @@ all: ../libnzcp.a
 
 clean:
 	cd .. && make clean
-	rm -rf *.class libnzcpjni.so
+	rm -rf *.class NZCPJNI.java libnzcpjni.so

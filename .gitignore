@@ -56,3 +56,4 @@ objects
 
 # JNI
 *.class
+jni/NZCPJNI.java
