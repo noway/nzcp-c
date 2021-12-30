@@ -1,22 +1,21 @@
 CFLAGS = -Wall -Wextra -O3 
+CPATH=$(JAVA_HOME)/include:../
+LIBRARY_PATH=../
 
-.PHONY: all clean
+.PHONY: clean
 
-all: ../libnzcp.a
-	cpp -P NZCPJNI.java.in NZCPJNI.java
-	javac -h . NZCPJNI.java
-	$(CC) $(CFLAGS) \
-		-fPIC -shared \
-		-I "$(JAVA_HOME)/include" \
-		-I ../ \
-		-L ../ \
-		NZCPJNI.cpp \
-		-o libnzcpjni.so \
-		-lnzcp
+libnzcpjni.so: ../libnzcp.a NZCPJNI.h
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -fPIC -shared NZCPJNI.cpp -o $@ -lnzcp
+
+NZCPJNI.h: NZCPJNI.java
+	javac -h . $<
+
+NZCPJNI.java: NZCPJNI.java.in
+	cpp -P $< > $@
 
 ../libnzcp.a:
 	cd .. && make
 
 clean:
 	cd .. && make clean
-	rm -rf *.class NZCPJNI.java libnzcpjni.so
+	rm -rf *.class NZCPJNI.java NZCPJNI.h libnzcpjni.so
