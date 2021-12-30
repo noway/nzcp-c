@@ -8,4 +8,4 @@ all: ../libnzcp.a
 
 clean:
 	cd .. && make clean
-	rm -f a.out
+	rm -f nzcp_tests
