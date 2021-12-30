@@ -34,52 +34,84 @@ int main(void) {
   nzcp_verification_result verification_result;
   int error;
 
+  // test example pass with live pub key
+  error = nzcp_verify_pass_uri((uint8_t *)EXAMPLE_PASS, &verification_result, 0);
+  assert_eq(error, NZCP_E_WRONG_KID);
+  nzcp_free_verification_result(&verification_result);
+
+  // test example_pass
   error = nzcp_verify_pass_uri((uint8_t *)EXAMPLE_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
 
+  // test bad_public_key_pass
   error = nzcp_verify_pass_uri((uint8_t *)BAD_PUBLIC_KEY_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
   nzcp_free_verification_result(&verification_result);
 
+  // test public_key_not_found_pass
   error = nzcp_verify_pass_uri((uint8_t *)PUBLIC_KEY_NOT_FOUND_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_WRONG_KID);
   nzcp_free_verification_result(&verification_result);
 
+  // test modified_signature_pass
   error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_SIGNATURE_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
   nzcp_free_verification_result(&verification_result);
 
+  // test modified_payload_pass
   error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_PAYLOAD_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
   nzcp_free_verification_result(&verification_result);
 
+  // test expired_pass
   error = nzcp_verify_pass_uri((uint8_t *)EXPIRED_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_PASS_EXPIRED);
   nzcp_free_verification_result(&verification_result);
 
+  // test not_active_pass
   error = nzcp_verify_pass_uri((uint8_t *)NOT_ACTIVE_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_PASS_NOT_ACTIVE);
   nzcp_free_verification_result(&verification_result);
 
+  // test not_base32_uri
   error = nzcp_verify_pass_uri((uint8_t *)NOT_BASE32_URI, &verification_result, 1);
   assert_eq(error, NZCP_E_CBOR_ERROR);
   nzcp_free_verification_result(&verification_result);
 
+  // test wrong_prefix_uri
   error = nzcp_verify_pass_uri((uint8_t *)WRONG_PREFIX_URI, &verification_result, 1);
   assert_eq(error, NZCP_E_BAD_URI_PREFIX);
   nzcp_free_verification_result(&verification_result);
 
+  // test wrong_version_uri
   error = nzcp_verify_pass_uri((uint8_t *)WRONG_VERSION_URI, &verification_result, 1);
   assert_eq(error, NZCP_E_BAD_VERSION_IDENTIFIER);
   nzcp_free_verification_result(&verification_result);
 
+  // test empty_pass
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_PASS, &verification_result, 1);
   assert_eq(error, NZCP_E_CBOR_ERROR);
   nzcp_free_verification_result(&verification_result);
 
+  // test empty_uri
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_URI, &verification_result, 1);
   assert_eq(error, NZCP_E_BAD_URI_PREFIX);
+  nzcp_free_verification_result(&verification_result);
+
+  // open live pass from a file
+  FILE *f = fopen("live_pass.txt", "rb");
+  assert(f != NULL);
+  fseek(f, 0, SEEK_END);
+  size_t file_size = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  uint8_t *file_contents = malloc(file_size);
+  assert(file_contents != NULL);
+  size_t bytes_read = fread(file_contents, 1, file_size, f);
+  assert(bytes_read == file_size);
+  fclose(f);
+  error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
+  assert_eq(error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
 
   return 0;
