@@ -35,32 +35,15 @@ Contributions welcome! 🥳
   nzcp_free_verification_result(&verification_result);
 ```
 
-See [example/main.c](example/main.c) for more.
+See [example/](example/) for more.
 
 ## Requirements
 - Development Tools (gcc or clang, etc)
 - `cmake` v3
 - `unzip`
 
-## Example
-- `cd example`
-- `make`
-- `./main`
-
-```bash
-$ ./main
-error: 0
-jti: urn:uuid:60a4f54d-4e30-4332-be33-ad78b1eafa4b
-iss: did:web:nzcp.covid19.health.nz
-nbf: 1635883530
-exp: 1951416330
-given_name: Jack
-family_name: Sparrow
-dob: 1960-04-16
-```
-
 ## Installation
-To install `libnzcp.a` and `nzcp.h`:
+To install the library and the includes:
 - Run `make`
 - Run `make install` to install globally or `DESTDIR=$PWD/mydir make install` to install locally
 
@@ -72,10 +55,10 @@ To install `libnzcp.a` and `nzcp.h`:
 - The library was not audited.
 - The library was not fuzzed.
 
+## Java integration 
+See [jni/](jni/).
 ## Tests
-- `cd tests`
-- `make`
-- `./nzcp_tests`
+See [tests/](tests/).
 
 ## Roadmap
 Depends on my availability, but would be nice to:
@@ -83,6 +66,7 @@ Depends on my availability, but would be nice to:
 - Check in Valgrind
 - Error description function
 - Live pass test
+- Online DID fetching using CURL
 
 ## License
 MIT

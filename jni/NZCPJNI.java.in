@@ -1,0 +1,21 @@
+import java.nio.file.Paths;
+
+public class NZCPJNI {
+
+#define ERROR_DEF(a, b) public static final int a = b;
+#include "../nzcp_errors.h"
+
+    public String jti;
+    public String iss;
+    public Integer nbf;
+    public Integer exp;
+    public String given_name;
+    public String family_name;
+    public String dob;
+
+    static {
+        System.load(Paths.get(System.getProperty("user.dir"), "libnzcpjni.so").toString());
+    }
+    public native int verify_pass_uri(String pass_uri, boolean is_example);
+
+}
