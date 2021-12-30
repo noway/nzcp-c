@@ -101,6 +101,14 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   static const sb_sw_public_t EXAMPLE_PUB_KEY = MOH_EXAMPLE_PUB_KEY;
   const sb_sw_public_t PUB_KEY = is_example ? EXAMPLE_PUB_KEY : LIVE_PUB_KEY;
 
+  verification_result->jti = NULL;
+  verification_result->iss = NULL;
+  verification_result->nbf = 0;
+  verification_result->exp = 0;
+  verification_result->given_name = NULL;
+  verification_result->family_name = NULL;
+  verification_result->dob = NULL;
+
   // 
   // memory allocated variables:
   // 
