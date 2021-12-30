@@ -60,7 +60,7 @@ dob: 1960-04-16
 ```
 
 ## Installation
-To install `libnzcp.a` and `nzcp.h`:
+To install the library and the includes:
 - Run `make`
 - Run `make install` to install globally or `DESTDIR=$PWD/mydir make install` to install locally
 
