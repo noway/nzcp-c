@@ -716,7 +716,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
 const char* nzcp_error_string(nzcp_error error) {
   switch (error) {
-    #define ERROR_DEF(a, b, c) case NZCP_##a: return c;
+    #define ERROR_DEF(a, b, c) case b: return c;
     #include "nzcp_errors.inc"
     #undef ERROR_DEF
     default:
