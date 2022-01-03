@@ -8,9 +8,10 @@
 extern "C" {
 #endif
 
-#define ERROR_DEF(a, b) static const int NZCP_##a = b;
 
+#define ERROR_DEF(a, b, c) static const int NZCP_##a = b;
 #include "nzcp_errors.inc"
+#undef ERROR_DEF
 
 typedef int nzcp_error;
 
@@ -27,6 +28,7 @@ typedef struct nzcp_verification_result {
 
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, ...);
 void nzcp_free_verification_result(struct nzcp_verification_result* verification_result);
+const char* nzcp_error_string(nzcp_error error);
 
 #ifdef __cplusplus
 }

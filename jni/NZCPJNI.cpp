@@ -7,6 +7,7 @@ enum jni_error { JNI_SUCCESS, JNI_BAD_POINTER };
 
 #define ERROR_TRY_RETURN(x, e) { jni_error err = x; if (err != JNI_SUCCESS) { return e; } }
 #define NULL_TRY_RETURN(x, e) { if (x == NULL) { return e; } }
+#define UNUSED(x) (void)(x)
 
 static inline jni_error SetFieldString(JNIEnv* env, jobject obj, const char* name, const char* value) {
     jclass cls = env->GetObjectClass(obj);
@@ -41,6 +42,9 @@ JNIEXPORT jint JNICALL Java_NZCPJNI_verify_1pass_1uri(JNIEnv * env, jobject obj,
 
     nzcp_verification_result verification_result;
     int error = nzcp_verify_pass_uri((uint8_t *) pass_uri_native, &verification_result, is_example_native);
+    if (error != NZCP_E_SUCCESS) {
+        return error;
+    }
 
     ERROR_TRY_RETURN(SetFieldString(env, obj, "jti", verification_result.jti), NZCP_E_BAD_INTEGRATION);
     ERROR_TRY_RETURN(SetFieldString(env, obj, "iss", verification_result.iss), NZCP_E_BAD_INTEGRATION);
@@ -53,4 +57,10 @@ JNIEXPORT jint JNICALL Java_NZCPJNI_verify_1pass_1uri(JNIEnv * env, jobject obj,
     nzcp_free_verification_result(&verification_result);
     env->ReleaseStringUTFChars(pass_uri, pass_uri_native);
     return error;
+}
+
+JNIEXPORT jstring JNICALL Java_NZCPJNI_error_1string(JNIEnv * env, jclass cls, jint error) {
+    UNUSED(cls);
+    jstring jstr = env->NewStringUTF(nzcp_error_string(error));
+    return jstr;
 }
