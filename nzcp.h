@@ -10,7 +10,7 @@ extern "C" {
 
 #define ERROR_DEF(a, b) static const int NZCP_##a = b;
 
-#include "nzcp_errors.h"
+#include "nzcp_errors.inc"
 
 typedef int nzcp_error;
 

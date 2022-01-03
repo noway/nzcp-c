@@ -3,7 +3,7 @@ import java.nio.file.Paths;
 public class NZCPJNI {
 
 #define ERROR_DEF(a, b) public static final int a = b;
-#include "../nzcp_errors.h"
+#include "../nzcp_errors.inc"
 
     public String jti;
     public String iss;
