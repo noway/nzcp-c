@@ -13,7 +13,7 @@ class Main {
             System.out.printf("[JAVA] dob: %s\n", nzcp.dob);
         }
         else {
-            System.out.printf("[JAVA] error code %d\n", error);
+            System.out.printf("[JAVA] error %s\n", nzcp.error_string(error));
         }
     }
 }

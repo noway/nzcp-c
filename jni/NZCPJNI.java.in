@@ -17,5 +17,6 @@ public class NZCPJNI {
         System.load(Paths.get(System.getProperty("user.dir"), "libnzcpjni.so").toString());
     }
     public native int verify_pass_uri(String pass_uri, boolean is_example);
+    public native String error_string(int error);
 
 }
