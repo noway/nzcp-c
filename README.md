@@ -64,9 +64,7 @@ See [tests/](tests/).
 Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
 - Check in Valgrind
-- Error description function
 - Online DID fetching using CURL
-- Better API
 
 ## License
 MIT
