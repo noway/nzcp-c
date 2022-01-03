@@ -30,12 +30,12 @@ install:
 	install -m 644 libnzcp.a $(DESTDIR)$(libdir)/libnzcp.a
 	install -d $(DESTDIR)$(includedir)
 	install -m 644 nzcp.h $(DESTDIR)$(includedir)/nzcp.h
-	install -m 644 nzcp_errors.h $(DESTDIR)$(includedir)/nzcp_errors.h
+	install -m 644 nzcp_errors.inc $(DESTDIR)$(includedir)/nzcp_errors.inc
 
 uninstall:
 	rm -f $(DESTDIR)$(libdir)/libnzcp.a
 	rm -f $(DESTDIR)$(includedir)/nzcp.h
-	rm -f $(DESTDIR)$(includedir)/nzcp_errors.h
+	rm -f $(DESTDIR)$(includedir)/nzcp_errors.inc
 
 sweet-b.zip:
 	curl -Lo sweet-b.zip https://github.com/westerndigitalcorporation/sweet-b/archive/refs/heads/master.zip
