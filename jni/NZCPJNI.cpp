@@ -8,7 +8,7 @@ enum jni_error { JNI_SUCCESS, JNI_BAD_POINTER };
 #define ERROR_TRY_RETURN(x, e) { jni_error err = x; if (err != JNI_SUCCESS) { return e; } }
 #define NULL_TRY_RETURN(x, e) { if (x == NULL) { return e; } }
 
-jni_error SetFieldString(JNIEnv* env, jobject obj, const char* name, const char* value) {
+static inline jni_error SetFieldString(JNIEnv* env, jobject obj, const char* name, const char* value) {
     jclass cls = env->GetObjectClass(obj);
     NULL_TRY_RETURN(cls, JNI_BAD_POINTER);
     jfieldID fid = env->GetFieldID(cls, name, "Ljava/lang/String;");
@@ -19,7 +19,7 @@ jni_error SetFieldString(JNIEnv* env, jobject obj, const char* name, const char*
     return JNI_SUCCESS;
 }
 
-jni_error SetFieldInteger(JNIEnv* env, jobject obj, const char* name, int value) {
+static inline jni_error SetFieldInteger(JNIEnv* env, jobject obj, const char* name, int value) {
     jclass cls = env->GetObjectClass(obj);
     NULL_TRY_RETURN(cls, JNI_BAD_POINTER);
     jfieldID fid = env->GetFieldID(cls, name, "Ljava/lang/Integer;");
