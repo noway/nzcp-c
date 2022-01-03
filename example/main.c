@@ -18,7 +18,7 @@ int main(void) {
     printf("dob: %s\n", verification_result.dob);
   }
   else {
-    printf("error code: %d\n", error);
+    printf("error: %s\n", nzcp_error_string(error));
   }
   nzcp_free_verification_result(&verification_result);
   return 0;
