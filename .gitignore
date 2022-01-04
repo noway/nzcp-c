@@ -41,6 +41,7 @@
 # outs
 main
 nzcp_tests
+nzcp_tests_chunk_overruns
 
 # tests
 tests/live_pass.txt
