@@ -607,6 +607,12 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       }
 
     }
+    bool is_valid0 = cbor_value_is_valid(&cwt_claim_element_value);
+    pprintf("%d\n", is_valid0);
+    if (!is_valid0) { // TODO: add for every cbor_value_advance
+      pprintf("cbor_value_is_valid returned false\n");
+      break;
+    }
     cbor_error = cbor_value_advance(&cwt_claim_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
     bool is_valid = cbor_value_is_valid(&cwt_claim_element_value);
