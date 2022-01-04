@@ -1,0 +1,5 @@
+#!/bin/bash
+for i in {1..100}
+do
+    zzuf -s$i < live_pass.txt > live_pass_$i.txt
+done
