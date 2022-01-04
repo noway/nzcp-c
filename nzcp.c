@@ -336,6 +336,8 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         cbor_error = cbor_value_string_length(&cwt_claim_element_value, &iss_len);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
+        aassert(claims_len > iss_len, NZCP_E_CBOR_ERROR); // TODO: check in all the places
+
         free_then_malloc(state.iss, iss_len + 1); // tinycbor adds null byte at the end
         cbor_error = cbor_value_copy_text_string(&cwt_claim_element_value, state.iss, &iss_len, NULL);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
