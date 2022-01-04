@@ -133,7 +133,7 @@ int main(void) {
   nzcp_free_verification_result(&verification_result);
 
 
-  for (size_t i = 1; i <= 100; i++)
+  for (size_t i = 1; i <= 10000; i++)
   {
     char str[80]; // TODO: dynamically allocate
     sprintf(str, "live_pass_%zu.txt", i);
