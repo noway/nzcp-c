@@ -4,9 +4,9 @@
 #include <assert.h>
 #include <string.h>
 
-#define assert_eq(a, b) { if (a == b) { printf("pass\n"); } else { printf("fail, %d != " #b "\n", a); } }
-#define assert_neq(a, b) { if (a != b) { printf("pass\n"); } else { printf("fail, %d == " #b "\n", a); } }
-#define assert_eqs(a, b) { if (strcmp(a, b) == 0) { printf("pass\n"); } else { printf("fail, \"%s\" != " #b "\n", a); } }
+#define assert_eq(d, a, b) { if (a == b) { printf("pass - %s\n", d); } else { printf("fail - %s, %d != " #b "\n", d, a); } }
+#define assert_neq(d, a, b) { if (a != b) { printf("pass - %s\n", d); } else { printf("fail - %s, %d == " #b "\n", d, a); } }
+#define assert_eqs(d, a, b) { if (strcmp(a, b) == 0) { printf("pass - %s\n", d); } else { printf("fail - %s, \"%s\" != " #b "\n", d, a); } }
 
 #define EXAMPLE_PASS "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX"
 
@@ -39,67 +39,67 @@ int main(void) {
 
   // test example pass with live pub key
   error = nzcp_verify_pass_uri((uint8_t *)EXAMPLE_PASS, &verification_result, 0);
-  assert_eq(error, NZCP_E_WRONG_KID);
+  assert_eq("test example pass with live pub key", error, NZCP_E_WRONG_KID);
   nzcp_free_verification_result(&verification_result);
 
   // test example_pass
   error = nzcp_verify_pass_uri((uint8_t *)EXAMPLE_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_SUCCESS);
+  assert_eq("test example_pass", error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
 
   // test bad_public_key_pass
   error = nzcp_verify_pass_uri((uint8_t *)BAD_PUBLIC_KEY_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  assert_eq("test bad_public_key_pass", error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
   nzcp_free_verification_result(&verification_result);
 
   // test public_key_not_found_pass
   error = nzcp_verify_pass_uri((uint8_t *)PUBLIC_KEY_NOT_FOUND_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_WRONG_KID);
+  assert_eq("test public_key_not_found_pass", error, NZCP_E_WRONG_KID);
   nzcp_free_verification_result(&verification_result);
 
   // test modified_signature_pass
   error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_SIGNATURE_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  assert_eq("test modified_signature_pass", error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
   nzcp_free_verification_result(&verification_result);
 
   // test modified_payload_pass
   error = nzcp_verify_pass_uri((uint8_t *)MODIFIED_PAYLOAD_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
+  assert_eq("test modified_payload_pass", error, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
   nzcp_free_verification_result(&verification_result);
 
   // test expired_pass
   error = nzcp_verify_pass_uri((uint8_t *)EXPIRED_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_PASS_EXPIRED);
+  assert_eq("test expired_pass", error, NZCP_E_PASS_EXPIRED);
   nzcp_free_verification_result(&verification_result);
 
   // test not_active_pass
   error = nzcp_verify_pass_uri((uint8_t *)NOT_ACTIVE_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_PASS_NOT_ACTIVE);
+  assert_eq("test not_active_pass", error, NZCP_E_PASS_NOT_ACTIVE);
   nzcp_free_verification_result(&verification_result);
 
   // test not_base32_uri
   error = nzcp_verify_pass_uri((uint8_t *)NOT_BASE32_URI, &verification_result, 1);
-  assert_eq(error, NZCP_E_CBOR_ERROR);
+  assert_eq("test not_base32_uri", error, NZCP_E_CBOR_ERROR);
   nzcp_free_verification_result(&verification_result);
 
   // test wrong_prefix_uri
   error = nzcp_verify_pass_uri((uint8_t *)WRONG_PREFIX_URI, &verification_result, 1);
-  assert_eq(error, NZCP_E_BAD_URI_PREFIX);
+  assert_eq("test wrong_prefix_uri", error, NZCP_E_BAD_URI_PREFIX);
   nzcp_free_verification_result(&verification_result);
 
   // test wrong_version_uri
   error = nzcp_verify_pass_uri((uint8_t *)WRONG_VERSION_URI, &verification_result, 1);
-  assert_eq(error, NZCP_E_BAD_VERSION_IDENTIFIER);
+  assert_eq("test wrong_version_uri", error, NZCP_E_BAD_VERSION_IDENTIFIER);
   nzcp_free_verification_result(&verification_result);
 
   // test empty_pass
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_PASS, &verification_result, 1);
-  assert_eq(error, NZCP_E_CBOR_ERROR);
+  assert_eq("test empty_pass", error, NZCP_E_CBOR_ERROR);
   nzcp_free_verification_result(&verification_result);
 
   // test empty_uri
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_URI, &verification_result, 1);
-  assert_eq(error, NZCP_E_BAD_URI_PREFIX);
+  assert_eq("test empty_uri", error, NZCP_E_BAD_URI_PREFIX);
   nzcp_free_verification_result(&verification_result);
 
   // open live pass from a file
@@ -114,22 +114,22 @@ int main(void) {
   assert(bytes_read == file_size);
   fclose(live_pass_file_descriptor);
   error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
-  assert_eq(error, NZCP_E_SUCCESS);
+  assert_eq("open live pass from a file", error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
 
   // test nzcp_error_string
   error = NZCP_E_SUCCESS;
-  assert_eqs(nzcp_error_string(error), "Success");
+  assert_eqs("test nzcp_error_string", nzcp_error_string(error), "Success");
   nzcp_free_verification_result(&verification_result);
 
   // test nzcp_error_string
   error = NZCP_E_FAILED_SIGNATURE_VERIFICATION;
-  assert_eqs(nzcp_error_string(error), "Failed signature verification");
+  assert_eqs("test nzcp_error_string", nzcp_error_string(error), "Failed signature verification");
   nzcp_free_verification_result(&verification_result);
 
   // test nzcp_error_string
   error = 12345;
-  assert_eqs(nzcp_error_string(error), "Unknown");
+  assert_eqs("test nzcp_error_string", nzcp_error_string(error), "Unknown");
   nzcp_free_verification_result(&verification_result);
 
 
@@ -148,11 +148,8 @@ int main(void) {
     assert(bytes_read == file_size);
     fclose(live_pass_file_descriptor);
     error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
-    assert_neq(error, NZCP_E_SUCCESS);
+    assert_neq(str, error, NZCP_E_SUCCESS);
     nzcp_free_verification_result(&verification_result);
-    printf("%zu done\n", i);
-
-    /* code */
   }
   
 
