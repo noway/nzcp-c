@@ -53,7 +53,6 @@ To install the library and the includes:
 ## Caveats
 - Stability or memory safety is not fully guaranteed - best effort is made, but C is a language with an unsafe memory model.
 - The library was not audited.
-- The library was not fuzzed.
 
 ## Java integration 
 See [jni/](jni/).
@@ -65,7 +64,7 @@ Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
 - Check in Valgrind
 - Online DID fetching using CURL
-- Fuzzing
+- Fuzzing with more options (e.g. ratio) and also example passes
 - Fuzzing on raw binary pass
 
 ## License
