@@ -4,9 +4,9 @@
 #include <assert.h>
 #include <string.h>
 
-#define assert_eq(d, a, b) { if (a == b) { printf("pass - %s\n", d); } else { printf("fail - %s, %d != " #b "\n", d, a); } }
-#define assert_neq(d, a, b) { if (a != b) { printf("pass - %s\n", d); } else { printf("fail - %s, %d == " #b "\n", d, a); } }
-#define assert_eqs(d, a, b) { if (strcmp(a, b) == 0) { printf("pass - %s\n", d); } else { printf("fail - %s, \"%s\" != " #b "\n", d, a); } }
+#define assert_eq(d, a, b) { if (a == b) { printf("pass - %s\n", d); passed++; } else { printf("fail - %s, %d != " #b "\n", d, a); } all++; }
+#define assert_neq(d, a, b) { if (a != b) { printf("pass - %s\n", d); passed++; } else { printf("fail - %s, %d == " #b "\n", d, a); } all++; }
+#define assert_eqs(d, a, b) { if (strcmp(a, b) == 0) { printf("pass - %s\n", d); passed++; } else { printf("fail - %s, \"%s\" != " #b "\n", d, a); } all++; }
 
 #define EXAMPLE_PASS "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX"
 
@@ -34,6 +34,10 @@
 
 
 int main(void) {
+
+  int all = 0;
+  int passed = 0;
+
   nzcp_verification_result verification_result;
   int error;
 
@@ -152,6 +156,7 @@ int main(void) {
     nzcp_free_verification_result(&verification_result);
   }
   
+  printf("%d/%d passed\n", passed, all);
 
   return 0;
 }
