@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define assert_eq(a, b) { if (a == b) { printf("pass\n"); } else { printf("fail, %d != " #b "\n", a); } }
+#define assert_neq(a, b) { if (a != b) { printf("pass\n"); } else { printf("fail, %d == " #b "\n", a); } }
 #define assert_eqs(a, b) { if (strcmp(a, b) == 0) { printf("pass\n"); } else { printf("fail, \"%s\" != " #b "\n", a); } }
 
 #define EXAMPLE_PASS "NZCP:/1/2KCEVIQEIVVWK6JNGEASNICZAEP2KALYDZSGSZB2O5SWEOTOPJRXALTDN53GSZBRHEXGQZLBNR2GQLTOPICRUYMBTIFAIGTUKBAAUYTWMOSGQQDDN5XHIZLYOSBHQJTIOR2HA4Z2F4XXO53XFZ3TGLTPOJTS6MRQGE4C6Y3SMVSGK3TUNFQWY4ZPOYYXQKTIOR2HA4Z2F4XW46TDOAXGG33WNFSDCOJONBSWC3DUNAXG46RPMNXW45DFPB2HGL3WGFTXMZLSONUW63TFGEXDALRQMR2HS4DFQJ2FMZLSNFTGSYLCNRSUG4TFMRSW45DJMFWG6UDVMJWGSY2DN53GSZCQMFZXG4LDOJSWIZLOORUWC3CTOVRGUZLDOSRWSZ3JOZSW4TTBNVSWISTBMNVWUZTBNVUWY6KOMFWWKZ2TOBQXE4TPO5RWI33CNIYTSNRQFUYDILJRGYDVAYFE6VGU4MCDGK7DHLLYWHVPUS2YIDJOA6Y524TD3AZRM263WTY2BE4DPKIF27WKF3UDNNVSVWRDYIYVJ65IRJJJ6Z25M2DO4YZLBHWFQGVQR5ZLIWEQJOZTS3IQ7JTNCFDX"
@@ -130,6 +131,30 @@ int main(void) {
   error = 12345;
   assert_eqs(nzcp_error_string(error), "Unknown");
   nzcp_free_verification_result(&verification_result);
+
+
+  for (size_t i = 1; i <= 100; i++)
+  {
+    char str[80]; // TODO: dynamically allocate
+    sprintf(str, "live_pass_%zu.txt", i);
+    FILE *live_pass_file_descriptor = fopen(str, "rb");
+    assert(live_pass_file_descriptor != NULL);
+    fseek(live_pass_file_descriptor, 0, SEEK_END);
+    size_t file_size = ftell(live_pass_file_descriptor);
+    fseek(live_pass_file_descriptor, 0, SEEK_SET);
+    uint8_t *file_contents = malloc(file_size);
+    assert(file_contents != NULL);
+    size_t bytes_read = fread(file_contents, 1, file_size, live_pass_file_descriptor);
+    assert(bytes_read == file_size);
+    fclose(live_pass_file_descriptor);
+    error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
+    assert_neq(error, NZCP_E_SUCCESS);
+    nzcp_free_verification_result(&verification_result);
+    printf("%zu done\n", i);
+
+    /* code */
+  }
+  
 
   return 0;
 }
