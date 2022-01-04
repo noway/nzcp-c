@@ -292,6 +292,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   cbor_error = cbor_value_string_length(&element_value, &claims_len);
   pprintf("claims_len: %lu\n", claims_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
+
+  aassert(cwt_len > claims_len, NZCP_E_CBOR_ERROR); // TODO: check other pieces of cwt containers are less than cwt_len
+
   state.claims = mmalloc(claims_len + 1); // tinycbor adds null byte at the end
   cbor_error = cbor_value_copy_byte_string(&element_value, state.claims, &claims_len, &element_value); // TODO: i'd rather advance on my own
 
