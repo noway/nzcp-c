@@ -116,14 +116,17 @@ int main(void) {
   assert_eq(error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
 
+  // test nzcp_error_string
   error = NZCP_E_SUCCESS;
   assert_eqs(nzcp_error_string(error), "Success");
   nzcp_free_verification_result(&verification_result);
 
+  // test nzcp_error_string
   error = NZCP_E_FAILED_SIGNATURE_VERIFICATION;
   assert_eqs(nzcp_error_string(error), "Failed signature verification");
   nzcp_free_verification_result(&verification_result);
 
+  // test nzcp_error_string
   error = 12345;
   assert_eqs(nzcp_error_string(error), "Unknown");
   nzcp_free_verification_result(&verification_result);
