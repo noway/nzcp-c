@@ -66,6 +66,7 @@ Depends on my availability, but would be nice to:
 - Check in Valgrind
 - Online DID fetching using CURL
 - Fuzzing
+- Fuzzing on raw binary pass
 
 ## License
 MIT
