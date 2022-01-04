@@ -638,7 +638,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   state.sign = mmalloc(sign_len + 1); // tinycbor adds null byte at the end
   cbor_error = cbor_value_copy_byte_string(&element_value, state.sign, &sign_len, &element_value); // TODO: i'd rather advance on my own
-  aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
+  aassert(cbor_error == CborNoError, NZCP_E_FAILED_SIGNATURE_VERIFICATION);
 
   pprintf("time(NULL): %ld\n", time(NULL));
   pprintf("state.version: %s\n", state.version);
