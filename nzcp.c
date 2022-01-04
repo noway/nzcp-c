@@ -609,10 +609,15 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     }
     cbor_error = cbor_value_advance(&cwt_claim_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
+    bool is_valid = cbor_value_is_valid(&cwt_claim_element_value);
+    if (!is_valid) { // TODO: add for every cbor_value_at_end
+      pprintf("cbor_value_is_valid returned false\n");
+      break;
+    }
   } while(!cbor_value_at_end(&cwt_claim_element_value));
 
   // Validate state.iss is correct before checking signature.
-  aassert(strcmp(state.iss, TRUSTED_ISSUER) == 0, NZCP_E_WRONG_TRUSTED_ISSUER);
+  aassert(state.iss != NULL && strcmp(state.iss, TRUSTED_ISSUER) == 0, NZCP_E_WRONG_TRUSTED_ISSUER); // TODO: check for NULL for other state.iss fields
 
   // Get signature
   size_t sign_len;
