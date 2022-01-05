@@ -1,5 +1,5 @@
 #!/bin/bash
 for i in {1..10000}
 do
-    zzuf -s$i < live_pass.txt > live_pass_$i.txt
+    zzuf -s$i < live_pass.txt > fuzz/live_pass_$i.txt
 done

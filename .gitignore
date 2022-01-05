@@ -45,7 +45,7 @@ nzcp_tests_chunk_overruns
 
 # tests
 tests/live_pass.txt
-tests/live_pass_*.txt
+tests/fuzz
 
 # vendor
 sweet-b-master

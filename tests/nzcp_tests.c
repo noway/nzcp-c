@@ -140,7 +140,7 @@ int main(void) {
   for (size_t i = 1; i <= 10000; i++)
   {
     char str[80]; // TODO: dynamically allocate
-    sprintf(str, "live_pass_%zu.txt", i);
+    sprintf(str, "fuzz/live_pass_%zu.txt", i);
     FILE *live_pass_file_descriptor = fopen(str, "rb");
     assert(live_pass_file_descriptor != NULL);
     fseek(live_pass_file_descriptor, 0, SEEK_END);
