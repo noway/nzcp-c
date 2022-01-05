@@ -1,5 +1,15 @@
 #!/bin/bash
+
+mkdir -p fuzz
+
+echo "generating live pass fuzz"
 for i in {1..10000}
 do
     zzuf -s$i < live_pass.txt > fuzz/live_pass_$i.txt
+done
+
+echo "generating example pass fuzz"
+for i in {1..10000}
+do
+    zzuf -s$i < example_pass.txt > fuzz/example_pass_$i.txt
 done
