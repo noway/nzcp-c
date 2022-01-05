@@ -156,6 +156,28 @@ int main(void) {
     nzcp_free_verification_result(&verification_result);
   }
   
+
+  for (size_t i = 1; i <= 10000; i++)
+  {
+    char str[80]; // TODO: dynamically allocate
+    sprintf(str, "fuzz/example_pass_%zu.txt", i);
+    FILE *example_pass_file_descriptor = fopen(str, "rb");
+    assert(example_pass_file_descriptor != NULL);
+    fseek(example_pass_file_descriptor, 0, SEEK_END);
+    size_t file_size = ftell(example_pass_file_descriptor);
+    fseek(example_pass_file_descriptor, 0, SEEK_SET);
+    uint8_t *file_contents = malloc(file_size);
+    assert(file_contents != NULL);
+    size_t bytes_read = fread(file_contents, 1, file_size, example_pass_file_descriptor);
+    assert(bytes_read == file_size);
+    fclose(example_pass_file_descriptor);
+    error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
+    assert_neq(str, error, NZCP_E_SUCCESS);
+    nzcp_free_verification_result(&verification_result);
+  }
+
+  // TODO: fclose and free
+  
   printf("%d/%d passed\n", passed, all);
 
   return 0;
