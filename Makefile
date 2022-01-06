@@ -83,7 +83,10 @@ doc: nzcp.h
 clean-compiled:
 	rm -rf $(COMPILED_SWEET_B)
 	rm -rf $(COMPILED_TINYCBOR)
+	rm -rf $(PWD)/compiled-nzcp
 	rm -rf $(PWD)/objects
+	rm -rf $(PWD)/html
+	rm -rf $(PWD)/latex
 	rm -f $(PWD)/main
 	rm -f $(PWD)/libnzcp.dylib
 	rm -f $(PWD)/libnzcp.a
