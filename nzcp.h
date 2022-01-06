@@ -9,18 +9,6 @@
 extern "C" {
 #endif
 
-/**
- * @brief The nzcp_error enum.
- *
- * This is the type used to represent NZCP errors.
- * @see nzcp_errors.inc
- */
-typedef enum nzcp_error {
-  #define ERROR_DEF(a, b, c) NZCP_##a = b,
-  #include "nzcp_errors.inc"
-  #undef ERROR_DEF
-} nzcp_error;
-
 
 /**
  * @brief The nzcp_verification_result structure.
@@ -85,6 +73,18 @@ typedef struct nzcp_verification_result {
  * @addtogroup NZCPVerifying
  * @{
  */
+
+/**
+ * @brief The nzcp_error enum.
+ *
+ * This is the type used to represent NZCP errors.
+ * @see nzcp_errors.inc
+ */
+typedef enum nzcp_error {
+  #define ERROR_DEF(a, b, c) NZCP_##a = b,
+  #include "nzcp_errors.inc"
+  #undef ERROR_DEF
+} nzcp_error;
 
 /**
  * @brief Verifies New Zealand COVID Pass URI.
