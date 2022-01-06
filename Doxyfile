@@ -1,7 +1,6 @@
 PROJECT_NAME           = "NZCP.c"
 PROJECT_BRIEF          = "An implementation of the New Zealand COVID Pass specification in C"
-INPUT                  = nzcp.h nzcp.dox README.md
+INPUT                  = nzcp.h nzcp.dox
 FILE_PATTERNS          = *.h \
-                         *.md \
                          *.dox \
                          *.a
