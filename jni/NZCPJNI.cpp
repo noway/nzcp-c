@@ -41,7 +41,7 @@ JNIEXPORT jint JNICALL Java_NZCPJNI_verify_1pass_1uri(JNIEnv * env, jobject obj,
     bool is_example_native = is_example == JNI_TRUE;
 
     nzcp_verification_result verification_result;
-    int error = nzcp_verify_pass_uri((uint8_t *) pass_uri_native, &verification_result, is_example_native);
+    nzcp_error error = nzcp_verify_pass_uri((uint8_t *) pass_uri_native, &verification_result, is_example_native);
     if (error != NZCP_E_SUCCESS) {
         return error;
     }
@@ -61,6 +61,6 @@ JNIEXPORT jint JNICALL Java_NZCPJNI_verify_1pass_1uri(JNIEnv * env, jobject obj,
 
 JNIEXPORT jstring JNICALL Java_NZCPJNI_error_1string(JNIEnv * env, jclass cls, jint error) {
     UNUSED(cls);
-    jstring jstr = env->NewStringUTF(nzcp_error_string(error));
+    jstring jstr = env->NewStringUTF(nzcp_error_string((nzcp_error) error));
     return jstr;
 }

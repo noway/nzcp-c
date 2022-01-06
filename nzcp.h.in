@@ -1,0 +1,113 @@
+###ifndef __NZCP_H_
+###define __NZCP_H_
+
+###include <stdlib.h>
+###include <stdint.h>
+###include <stdbool.h>
+
+###ifdef __cplusplus
+extern "C" {
+###endif
+
+
+/**
+ * @brief The nzcp_verification_result structure.
+ * 
+ * A structure used in @ref nzcp_verify_pass_uri to return the result of the verification
+ * 
+ * @see nzcp_verify_pass_uri
+ * @see nzcp_free_verification_result
+ */
+typedef struct nzcp_verification_result {
+  /** The JWT ID */ char* jti;
+  /** The issuer */ char* iss;
+  /** The not before time */ int nbf;
+  /** The expiration time */ int exp;
+  /** The given name */ char* given_name;
+  /** The family name */ char* family_name;
+  /** The date of birth */ char* dob;
+} nzcp_verification_result;
+
+/**
+ * @defgroup nzcp_verify Verify a New Zealand COVID Pass
+ * @brief A group of functions for verifying New Zealand COVID Passes
+ * @section example_usage Example Usage
+ * @code
+ * #include <nzcp.h>
+ * 
+ * // initiate verification result on stack
+ * nzcp_verification_result verification_result;
+ *
+ * // verify pass
+ * // last argument determines if it's example or live MOH DID document
+ * nzcp_error error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
+ *
+ * // check for error
+ * if (error == NZCP_E_SUCCESS) {
+ *   printf("jti: %s\n", verification_result.jti);
+ *   printf("iss: %s\n", verification_result.iss);
+ *   printf("nbf: %d\n", verification_result.nbf);
+ *   printf("exp: %d\n", verification_result.exp);
+ *   printf("given_name: %s\n", verification_result.given_name);
+ *   printf("family_name: %s\n", verification_result.family_name);
+ *   printf("dob: %s\n", verification_result.dob);
+ * }
+ * else {
+ *   printf("error: %s\n", nzcp_error_string(error));
+ * }
+ *
+ * // free memory of verification result properties
+ * nzcp_free_verification_result(&verification_result);
+ * @endcode
+ */
+
+/**
+ * @addtogroup nzcp_verify
+ * @{
+ */
+
+/**
+ * @brief The nzcp_error enum used for verfication errors.
+ *
+ * This is the type used to represent NZCP errors in the @ref nzcp_verify_pass_uri function.
+ */
+typedef enum nzcp_error {
+#define ERROR_DEF(a, b, c) %# ##c #% NZCP_##a = b,
+
+#include "nzcp_errors.h"
+#undef ERROR_DEF
+} nzcp_error;
+
+/**
+ * @brief Verifies New Zealand COVID Pass URI.
+ * 
+ * @param[in] pass_uri Null-terminted buffer with the URI 
+ * @param[out] verification_result Pointer to verification result struct
+ * @param[in] is_example Whether the pass_uri uses example or live MOH DID document
+ * @return nzcp_error
+ */
+nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, bool is_example);
+
+/**
+ * 
+ * @brief Frees nzcp_verification_result struct. Run this after you're done with the result.
+ * 
+ * @param[in] verification_result  Pointer to verification result struct
+ */
+void nzcp_free_verification_result(nzcp_verification_result* verification_result);
+
+/**
+ * @brief Returns the error description for the given error code.
+ * 
+ * @param[in] error error code
+ * @return const char* 
+ */
+const char* nzcp_error_string(nzcp_error error);
+
+/** @} */
+
+###ifdef __cplusplus
+}
+###endif
+
+###endif

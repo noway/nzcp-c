@@ -55,10 +55,17 @@ tinycbor.zip
 # build
 compiled-sweet-b
 compiled-tinycbor
-compiled
+compiled-nzcp
 objects
 
 # JNI
 *.class
 jni/NZCPJNI.java
 jni/NZCPJNI.h
+
+# generated headers
+nzcp.h
+
+# docs
+html
+latex

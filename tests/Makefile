@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -fsanitize=address,undefined -fsanitize-recover=address,undefined
+CFLAGS = -Wall -Wextra -fsanitize=address,undefined -fsanitize-recover=address,undefined -fsanitize-address-use-after-scope
 
 .PHONY: clean nzcp_tests
 

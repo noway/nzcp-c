@@ -16,26 +16,33 @@ CPATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/include
 LIBRARY_PATH=$(LIB_PATH_SWEET_B):$(LIB_PATH_TINYCBOR)
 CPATH=$(CPATH_SWEET_B):$(CPATH_TINYCBOR)
 
-.PHONY: clean-compiled clean-downloaded install uninstall
+.PHONY: clean-compiled clean-downloaded install uninstall objects
 
-build: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
-	mkdir -p objects
-	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
-	cd objects && ar x $(LIB_PATH_SWEET_B)/libsweet_b.a
-	cd objects && ar x $(LIB_PATH_TINYCBOR)/libtinycbor.a
+all: libnzcp.a
+
+libnzcp.a: objects/libnzcp.o
 	cd objects && ar qc ../libnzcp.a *.o
 
-install:
+objects/libnzcp.o: objects nzcp.h
+	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
+
+nzcp.h:
+	cpp -E -CC -P nzcp.h.in | sed 's/##//g' | sed 's/%#/\/\*\*/g'| sed 's/#%/\*\//g' > nzcp.h
+
+objects: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
+	mkdir -p objects
+	cd objects && ar x $(LIB_PATH_SWEET_B)/libsweet_b.a
+	cd objects && ar x $(LIB_PATH_TINYCBOR)/libtinycbor.a
+
+install: libnzcp.a nzcp.h
 	install -d $(DESTDIR)$(libdir)
 	install -m 644 libnzcp.a $(DESTDIR)$(libdir)/libnzcp.a
 	install -d $(DESTDIR)$(includedir)
 	install -m 644 nzcp.h $(DESTDIR)$(includedir)/nzcp.h
-	install -m 644 nzcp_errors.inc $(DESTDIR)$(includedir)/nzcp_errors.inc
 
 uninstall:
 	rm -f $(DESTDIR)$(libdir)/libnzcp.a
 	rm -f $(DESTDIR)$(includedir)/nzcp.h
-	rm -f $(DESTDIR)$(includedir)/nzcp_errors.inc
 
 sweet-b.zip:
 	curl -Lo sweet-b.zip https://github.com/westerndigitalcorporation/sweet-b/archive/refs/heads/master.zip
@@ -59,6 +66,9 @@ $(COMPILED_SWEET_B): sweet-b-master
 $(COMPILED_TINYCBOR): tinycbor-main
 	cd tinycbor-main && CPPFLAGS="-fPIC" make && DESTDIR=$(COMPILED_TINYCBOR) make install
 
+doc: nzcp.h
+	doxygen
+
 clean-compiled:
 	rm -rf $(COMPILED_SWEET_B)
 	rm -rf $(COMPILED_TINYCBOR)
@@ -66,6 +76,7 @@ clean-compiled:
 	rm -f $(PWD)/main
 	rm -f $(PWD)/libnzcp.dylib
 	rm -f $(PWD)/libnzcp.a
+	rm -f $(PWD)nzcp.h
 
 clean-downloaded:
 	rm -rf $(PWD)/sweet-b-master
