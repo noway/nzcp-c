@@ -159,7 +159,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   CborError cbor_error = CborNoError;
 
-  aassert(slength((char*) pass_uri) > 0, NZCP_E_BAD_URI_PREFIX); // TODO: better error code and check in next_token_len?
+  aassert(slength((char*) pass_uri) > 0, NZCP_E_EMPTY_URI);
 
   size_t token1_len = slength("NZCP:");
   size_t token2_len = slength("1");

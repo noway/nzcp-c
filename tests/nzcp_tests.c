@@ -103,7 +103,7 @@ int main(void) {
 
   // test empty_uri
   error = nzcp_verify_pass_uri((uint8_t *)EMPTY_URI, &verification_result, 1);
-  assert_eq("test empty_uri", error, NZCP_E_BAD_URI_PREFIX);
+  assert_eq("test empty_uri", error, NZCP_E_EMPTY_URI);
   nzcp_free_verification_result(&verification_result);
 
   // open live pass from a file
