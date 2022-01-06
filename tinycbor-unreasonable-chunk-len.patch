@@ -1,0 +1,18 @@
+--- tinycbor-main/src/cborparser.c	2022-01-05 00:08:15.000000000 +1300
++++ tinycbor-main/src/cborparser.c-orig	2022-01-05 00:10:20.000000000 +1300
+@@ -1197,11 +1197,15 @@
+     err = _cbor_value_begin_string_iteration(next);
+     if (err)
+         return err;
++    size_t containerLen = next->parser->source.end - next->source.ptr;
+ 
+     while (1) {
+         size_t newTotal;
+         size_t chunkLen;
+         err = get_string_chunk(next, &ptr, &chunkLen);
++        if (chunkLen > containerLen) {
++            return CborErrorDataTooLarge;
++        }
+         if (err == CborErrorNoMoreStringChunks)
+             break;
+         if (err)

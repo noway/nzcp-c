@@ -44,6 +44,7 @@ nzcp_tests
 
 # tests
 tests/live_pass.txt
+tests/fuzz
 
 # vendor
 sweet-b-master

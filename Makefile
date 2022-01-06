@@ -48,7 +48,9 @@ tinycbor.zip:
 	curl -Lo tinycbor.zip https://github.com/intel/tinycbor/archive/refs/heads/main.zip
 tinycbor-main: tinycbor.zip
 	unzip tinycbor.zip
-	patch --forward -p 0 < tinycbor-copy-byte-string.patch
+	# TODO: more elegant patch which doesn't require removing can_read_bytes
+	patch --forward -p 0 < tinycbor-copy-byte-string.patch # tinycbor refuses to copy string fully and fails prematurely
+	patch --forward -p 0 < tinycbor-unreasonable-chunk-len.patch # tinycbor segfaults on unreasonable chunk length
 	cd tinycbor-main && sed -i -e 's/BUILD_SHARED = .*/BUILD_SHARED = 0/g' Makefile
 
 $(COMPILED_SWEET_B): sweet-b-master
