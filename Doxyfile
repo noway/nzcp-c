@@ -1,7 +1,6 @@
 PROJECT_NAME           = "NZCP.c"
 PROJECT_BRIEF          = An implementation of the New Zealand COVID Pass specification in C.
-STRIP_FROM_PATH        = compiled-nzcp
-INPUT                  = compiled-nzcp/usr/local/include compiled-nzcp/usr/local/lib nzcp.dox README.md
+INPUT                  = nzcp.h nzcp.dox README.md
 FILE_PATTERNS          = *.h \
                          *.md \
                          *.dox \
