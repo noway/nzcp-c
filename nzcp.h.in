@@ -37,7 +37,7 @@ typedef struct nzcp_verification_result {
 } nzcp_verification_result;
 
 /**
- * @defgroup NZCPVerifying NZCP Verifying
+ * @defgroup nzcp_verify Verify a New Zealand COVID Pass
  * @brief A group of functions for verifying New Zealand COVID Passes
  * @section example_usage Example Usage
  * @code
@@ -70,7 +70,7 @@ typedef struct nzcp_verification_result {
  */
 
 /**
- * @addtogroup NZCPVerifying
+ * @addtogroup nzcp_verify
  * @{
  */
 
