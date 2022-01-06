@@ -24,6 +24,15 @@ static inline CborError cbor_value_string_length(CborValue *value, size_t *len) 
   }
 }
 
+static inline CborError cbor_value_advance_safe(CborValue *value) {
+  if (cbor_value_is_valid(value)) {
+      return cbor_value_advance(value);
+  }
+  else {
+      return CborErrorImproperValue;
+  }
+}
+
 struct nzcp_state {
   uint8_t *padded_base32_cwt;
   uint8_t *cwt;
@@ -238,7 +247,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
     if (header_key == 4) {
       pprintf("cwt_header_kid\n");
-      cbor_error = cbor_value_advance(&headers_element_value);
+      cbor_error = cbor_value_advance_safe(&headers_element_value);
       aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
       CborType header_value_type = cbor_value_get_type(&headers_element_value);
@@ -254,7 +263,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     }
     else if (header_key == 1) {
       pprintf("cwt_header_alg\n");
-      cbor_error = cbor_value_advance(&headers_element_value);
+      cbor_error = cbor_value_advance_safe(&headers_element_value);
       aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
       CborType header_value_type = cbor_value_get_type(&headers_element_value);
@@ -265,10 +274,10 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
     }
     else {
-      cbor_error = cbor_value_advance(&headers_element_value);
+      cbor_error = cbor_value_advance_safe(&headers_element_value);
       aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
     }
-    cbor_error = cbor_value_advance(&headers_element_value);
+    cbor_error = cbor_value_advance_safe(&headers_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   } while (!cbor_value_at_end(&headers_element_value));
 
@@ -282,7 +291,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   aassert(type3 == CborMapType, NZCP_E_MALFORMED_CWT); // empty map
   pprintf("type3: %d\n",type3);
 
-  cbor_error = cbor_value_advance(&element_value);
+  cbor_error = cbor_value_advance_safe(&element_value);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
   CborType type4 = cbor_value_get_type(&element_value);
   aassert(type4 == CborByteStringType, NZCP_E_MALFORMED_CWT); // cwt state.claims
@@ -329,7 +338,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
       pprintf("cwt_claim_key: %d\n",cwt_claim_key);
 
       if (cwt_claim_key == 1) {
-        cbor_error = cbor_value_advance(&cwt_claim_element_value);
+        cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
         aassert(cwt_claim_element_type == CborTextStringType, NZCP_E_MALFORMED_CWT_ISSUER);
@@ -346,7 +355,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
       }
       else if (cwt_claim_key == 5) {
-        cbor_error = cbor_value_advance(&cwt_claim_element_value);
+        cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
         aassert(cwt_claim_element_type == CborIntegerType, NZCP_E_MALFORMED_CWT_NBF);
@@ -357,7 +366,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("nbf: %d\n",nbf);
       }
       else if (cwt_claim_key == 4) {
-        cbor_error = cbor_value_advance(&cwt_claim_element_value);
+        cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
         aassert(cwt_claim_element_type == CborIntegerType, NZCP_E_MALFORMED_CWT_EXP);
@@ -368,7 +377,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("exp: %d\n",exp);
       }
       else if (cwt_claim_key == 7) {
-        cbor_error = cbor_value_advance(&cwt_claim_element_value);
+        cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
         aassert(cwt_claim_element_type == CborByteStringType, NZCP_E_MALFORMED_CWT_CTI);
@@ -386,7 +395,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         pprintf("state.cti: %s\n",state.cti);
       }
       else {
-        cbor_error = cbor_value_advance(&cwt_claim_element_value);
+        cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
       }
     }
@@ -397,7 +406,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
       if (is_vc) {
         pprintf("is_vc: %d\n",is_vc);
-        cbor_error = cbor_value_advance(&cwt_claim_element_value);
+        cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         cwt_claim_element_type = cbor_value_get_type(&cwt_claim_element_value);
         aassert(cwt_claim_element_type == CborMapType, NZCP_E_MALFORMED_CWT_VC);
@@ -422,7 +431,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
           pprintf("vc_element_key_len: %lu\n", vc_element_key_len);
 
           if (strcmp(vc_element_key, "@context") == 0) {
-            cbor_error = cbor_value_advance(&vc_element_value);
+            cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
             vc_element_type = cbor_value_get_type(&vc_element_value);
@@ -449,7 +458,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             cbor_error = cbor_value_copy_text_string(&context_value, state.context_0, &context_0_element_len, NULL);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
-            cbor_error = cbor_value_advance(&context_value);
+            cbor_error = cbor_value_advance_safe(&context_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
             // get state.context_1
@@ -464,7 +473,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
           }
           else if (strcmp(vc_element_key, "version") == 0) {
-            cbor_error = cbor_value_advance(&vc_element_value);
+            cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
             vc_element_type = cbor_value_get_type(&vc_element_value);
@@ -481,7 +490,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
           }
           else if (strcmp(vc_element_key, "type") == 0) {
-            cbor_error = cbor_value_advance(&vc_element_value);
+            cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
             vc_element_type = cbor_value_get_type(&vc_element_value);
@@ -508,7 +517,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             cbor_error = cbor_value_copy_text_string(&type_value, state.type_0, &type_0_element_len, NULL);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
-            cbor_error = cbor_value_advance(&type_value);
+            cbor_error = cbor_value_advance_safe(&type_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
             // get state.type_1
@@ -523,7 +532,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
           }
           else if (strcmp(vc_element_key, "credentialSubject") == 0) {
 
-            cbor_error = cbor_value_advance(&vc_element_value);
+            cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             vc_element_type = cbor_value_get_type(&vc_element_value);
             aassert(vc_element_type == CborMapType, NZCP_E_MALFORMED_CREDENTIAL_SUBJECT);
@@ -548,7 +557,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
               pprintf("credential_subject_element_key_len: %lu\n", credential_subject_element_key_len);
 
               if (strcmp(credential_subject_element_key, "givenName") == 0) {
-                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_field_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_field_type: %d\n",credential_subject_field_type);
@@ -562,7 +571,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
               else if (strcmp(credential_subject_element_key, "familyName") == 0) {
-                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_field_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_field_type: %d\n",credential_subject_field_type);
@@ -576,7 +585,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
               else if (strcmp(credential_subject_element_key, "dob") == 0) {
-                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_field_type = cbor_value_get_type(&credential_subject_element_value);
                 pprintf("credential_subject_field_type: %d\n",credential_subject_field_type);
@@ -590,35 +599,29 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
               else {
-                cbor_error = cbor_value_advance(&credential_subject_element_value);
+                cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
 
               free(credential_subject_element_key);
-              cbor_error = cbor_value_advance(&credential_subject_element_value);
+              cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
               aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
             } while(!cbor_value_at_end(&credential_subject_element_value));
 
           }
           else {
-            cbor_error = cbor_value_advance(&vc_element_value);
+            cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
           }
 
           free(vc_element_key);
-          cbor_error = cbor_value_advance(&vc_element_value);
+          cbor_error = cbor_value_advance_safe(&vc_element_value);
           aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
         } while (!cbor_value_at_end(&vc_element_value));
       }
 
     }
-    bool is_valid0 = cbor_value_is_valid(&cwt_claim_element_value);
-    pprintf("%d\n", is_valid0);
-    if (!is_valid0) { // TODO: add for every cbor_value_advance
-      pprintf("cbor_value_is_valid returned false\n");
-      break;
-    }
-    cbor_error = cbor_value_advance(&cwt_claim_element_value);
+    cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
     bool is_valid = cbor_value_is_valid(&cwt_claim_element_value);
     if (!is_valid) { // TODO: add for every cbor_value_at_end
