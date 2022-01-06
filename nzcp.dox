@@ -5,7 +5,7 @@
  *
  * @section api_reference API Reference
  *  - @ref NZCPVerifying
- *
- * @section github_repo GitHub Repository
- *  - [NZCP.c](https://github.com/noway/nzcp-c)
+ * @section links Links
+ *  - [GitHub Repository](https://github.com/noway/nzcp-c)
+ *  - @ref README.md README file
  */
