@@ -39,12 +39,6 @@ static inline void sprint_jti(uint8_t* cti, char* out) {
     *(cti+8),  *(cti+9), *(cti+10), *(cti+11), *(cti+12), *(cti+13), *(cti+14), *(cti+15));
 }
 
-static inline size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
-  char *skipped_str_copy = (char*) (uri + skip_pos);
-  size_t token_len = strcspn(skipped_str_copy, "/");
-  return token_len;
-}
-
 static inline bool sequals(const char* a, const char* b) {
   if (a == NULL || b == NULL) {
     return false;
