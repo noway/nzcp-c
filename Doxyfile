@@ -1,5 +1,6 @@
 PROJECT_NAME           = "NZCP.c"
 PROJECT_BRIEF          = "An implementation of the New Zealand COVID Pass specification in C"
+PROJECT_NUMBER         = $(VERSION)
 INPUT                  = nzcp.h nzcp.dox
 FILE_PATTERNS          = *.h \
                          *.dox \

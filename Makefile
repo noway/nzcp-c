@@ -67,7 +67,7 @@ $(COMPILED_TINYCBOR): tinycbor-main
 	cd tinycbor-main && CPPFLAGS="-fPIC" make && DESTDIR=$(COMPILED_TINYCBOR) make install
 
 doc: nzcp.h
-	doxygen
+	VERSION=$(shell cat VERSION) doxygen
 
 clean-compiled:
 	rm -rf $(COMPILED_SWEET_B)
