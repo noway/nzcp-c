@@ -5,6 +5,10 @@
 ###include <stdint.h>
 ###include <stdbool.h>
 
+###define NZCP_VERSION_MAJOR _NZCP_VERSION_MAJOR
+###define NZCP_VERSION_MINOR _NZCP_VERSION_MINOR
+###define NZCP_VERSION_PATCH _NZCP_VERSION_PATCH
+
 ###ifdef __cplusplus
 extern "C" {
 ###endif

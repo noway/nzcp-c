@@ -15,6 +15,9 @@ CPATH_SWEET_B=$(COMPILED_SWEET_B)/usr/local/include
 CPATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/include
 LIBRARY_PATH=$(LIB_PATH_SWEET_B):$(LIB_PATH_TINYCBOR)
 CPATH=$(CPATH_SWEET_B):$(CPATH_TINYCBOR)
+NZCP_VERSION_MAJOR=$(shell cat VERSION | cut -d "." -f 1)
+NZCP_VERSION_MINOR=$(shell cat VERSION | cut -d "." -f 2)
+NZCP_VERSION_PATCH=$(shell cat VERSION | cut -d "." -f 3)
 
 .PHONY: clean-compiled clean-downloaded install uninstall objects
 
@@ -27,7 +30,15 @@ objects/libnzcp.o: objects nzcp.h
 	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
 
 nzcp.h:
-	cpp -E -CC -P nzcp.h.in | sed 's/##//g' | sed 's/%#/\/\*\*/g'| sed 's/#%/\*\//g' > nzcp.h
+	cpp \
+		-D'_NZCP_VERSION_MAJOR=$(NZCP_VERSION_MAJOR)' \
+		-D'_NZCP_VERSION_MINOR=$(NZCP_VERSION_MINOR)' \
+		-D'_NZCP_VERSION_PATCH=$(NZCP_VERSION_PATCH)' \
+		-E -CC -P \
+		nzcp.h.in \
+		| sed 's/##//g' \
+		| sed 's/%#/\/\*\*/g' \
+		| sed 's/#%/\*\//g' > nzcp.h
 
 objects: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
 	mkdir -p objects
