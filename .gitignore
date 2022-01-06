@@ -55,7 +55,7 @@ tinycbor.zip
 # build
 compiled-sweet-b
 compiled-tinycbor
-compiled
+compiled-nzcp
 objects
 
 # JNI

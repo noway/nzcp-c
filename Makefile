@@ -65,6 +65,10 @@ $(COMPILED_SWEET_B): sweet-b-master
 $(COMPILED_TINYCBOR): tinycbor-main
 	cd tinycbor-main && CPPFLAGS="-fPIC" make && DESTDIR=$(COMPILED_TINYCBOR) make install
 
+doc:
+	DESTDIR=$(PWD)/compiled-nzcp make install
+	doxygen
+
 clean-compiled:
 	rm -rf $(COMPILED_SWEET_B)
 	rm -rf $(COMPILED_TINYCBOR)
