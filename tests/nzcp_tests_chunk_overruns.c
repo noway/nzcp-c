@@ -49,7 +49,8 @@ int main(void) {
     fseek(live_pass_file_descriptor, 0, SEEK_END);
     size_t file_size = ftell(live_pass_file_descriptor);
     fseek(live_pass_file_descriptor, 0, SEEK_SET);
-    uint8_t *file_contents = malloc(file_size);
+    uint8_t *file_contents = malloc(file_size + 1);
+    *(file_contents + file_size) = '\0';
     assert(file_contents != NULL);
     size_t bytes_read = fread(file_contents, 1, file_size, live_pass_file_descriptor);
     assert(bytes_read == file_size);
