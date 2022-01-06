@@ -172,6 +172,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("uri_prefix %s %lu\n", uri_prefix, token1_len);
   pprintf("version_identifier %s %lu\n", version_identifier, token2_len);
   pprintf("base32_cwt %s %lu\n", base32_cwt, token3_len);
+  // TODO: use stringnmatches
   aassert(token1_len > 0 && strncmp((char*) uri_prefix, "NZCP:", token1_len) == 0, NZCP_E_BAD_URI_PREFIX);
   aassert(token2_len > 0 && strncmp((char*) version_identifier, "1", token2_len) == 0, NZCP_E_BAD_VERSION_IDENTIFIER);
   
@@ -298,6 +299,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("state.kid: %s\n", state.kid);
   pprintf("alg: %d\n", alg);
 
+  // TODO: use strcmp
   aassert(kid_len > 0 && memcmp(KID, state.kid, kid_len) == 0, NZCP_E_WRONG_KID);
   aassert(alg == -7, NZCP_E_WRONG_ALG);
 
