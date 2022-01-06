@@ -1,0 +1,11 @@
+
+/**
+ * @mainpage
+ * API Reference for [NZCP.c](https://github.com/noway/nzcp-c)
+ *
+ * @section api_reference API Reference
+ *  - @ref NZCPVerifying
+ *
+ * @section github_repo GitHub Repository
+ *  - [NZCP.c](https://github.com/noway/nzcp-c)
+ */

@@ -8,8 +8,10 @@ Features
 
 Contributions welcome! 🥳
 
-## API
+## Example Usage
 ```c
+  #include <nzcp.h>
+
   // initiate verification result on stack
   nzcp_verification_result verification_result;
 
@@ -36,6 +38,9 @@ Contributions welcome! 🥳
 ```
 
 See [example/](example/) for more.
+
+## API Reference
+See [localhost:8000](http://localhost:8000/).
 
 ## Requirements
 - Development Tools (gcc or clang, etc)
