@@ -62,3 +62,7 @@ objects
 *.class
 jni/NZCPJNI.java
 jni/NZCPJNI.h
+
+# docs
+html
+latex
