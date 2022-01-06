@@ -49,13 +49,13 @@ int main(void) {
     fseek(live_pass_file_descriptor, 0, SEEK_END);
     size_t file_size = ftell(live_pass_file_descriptor);
     fseek(live_pass_file_descriptor, 0, SEEK_SET);
-    uint8_t *file_contents = malloc(file_size + 1);
-    *(file_contents + file_size) = '\0';
-    assert(file_contents != NULL);
-    size_t bytes_read = fread(file_contents, 1, file_size, live_pass_file_descriptor);
+    uint8_t *pass = malloc(file_size + 1);
+    *(pass + file_size) = '\0';
+    assert(pass != NULL);
+    size_t bytes_read = fread(pass, 1, file_size, live_pass_file_descriptor);
     assert(bytes_read == file_size);
     fclose(live_pass_file_descriptor);
-    error = nzcp_verify_pass_uri((uint8_t *)file_contents, &verification_result, 0);
+    error = nzcp_verify_pass_uri((uint8_t *)pass, &verification_result, 0);
     assert_neq(str, error, NZCP_E_SUCCESS);
     nzcp_free_verification_result(&verification_result);
   }
