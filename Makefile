@@ -27,7 +27,7 @@ objects/libnzcp.o: objects nzcp.h
 	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
 
 nzcp.h:
-	cpp -E -C -P nzcp.h.in | sed 's/##//' > nzcp.h
+	cpp -E -CC -P nzcp.h.in | sed 's/##//g' | sed 's/%#/\/\*\*/g'| sed 's/#%/\*\//g' > nzcp.h
 
 objects: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
 	mkdir -p objects

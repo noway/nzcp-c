@@ -75,13 +75,14 @@ typedef struct nzcp_verification_result {
  */
 
 /**
- * @brief The nzcp_error enum.
+ * @brief The nzcp_error enum used for verfication errors.
  *
- * This is the type used to represent NZCP errors.
+ * This is the type used to represent NZCP errors in the @ref nzcp_verify_pass_uri function.
  * @see nzcp_errors.inc
  */
 typedef enum nzcp_error {
-#define ERROR_DEF(a, b, c) NZCP_##a = b,
+#define ERROR_DEF(a, b, c) %# ##c #% NZCP_##a = b,
+
 #include "nzcp_errors.h"
 #undef ERROR_DEF
 } nzcp_error;
