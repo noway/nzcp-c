@@ -3,6 +3,7 @@ PROJECT_BRIEF          = An implementation of the New Zealand COVID Pass specifi
 STRIP_FROM_PATH        = compiled-nzcp
 INPUT                  = compiled-nzcp/usr/local/include compiled-nzcp/usr/local/lib nzcp.dox README.md
 FILE_PATTERNS          = *.h \
+                         *.inc \
                          *.md \
                          *.dox \
                          *.a
