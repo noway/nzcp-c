@@ -63,6 +63,9 @@ objects
 jni/NZCPJNI.java
 jni/NZCPJNI.h
 
+# generated headers
+nzcp.h
+
 # docs
 html
 latex
