@@ -302,7 +302,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("claims_len: %lu\n", claims_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
-  aassert(cwt_len > claims_len, NZCP_E_CBOR_ERROR); // TODO: check other pieces of cwt containers are less than cwt_len
+  aassert(cwt_len > claims_len, NZCP_E_CBOR_ERROR); // TODO: fuzz: check other pieces of cwt containers are less than cwt_len
 
   state.claims = mmalloc(claims_len + 1); // tinycbor adds null byte at the end
   cbor_error = cbor_value_copy_byte_string(&element_value, state.claims, &claims_len, &element_value); // TODO: i'd rather advance on my own
@@ -348,7 +348,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
         cbor_error = cbor_value_string_length(&cwt_claim_element_value, &iss_len);
         aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
-        aassert(claims_len > iss_len, NZCP_E_CBOR_ERROR); // TODO: check in all the places
+        aassert(claims_len > iss_len, NZCP_E_CBOR_ERROR); // TODO: fuzz: check in all the places
 
         free_then_malloc(state.iss, iss_len + 1); // tinycbor adds null byte at the end
         cbor_error = cbor_value_copy_text_string(&cwt_claim_element_value, state.iss, &iss_len, NULL);
@@ -624,18 +624,18 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
     bool is_valid = cbor_value_is_valid(&cwt_claim_element_value);
-    if (!is_valid) { // TODO: add for every cbor_value_at_end
+    if (!is_valid) { // TODO: fuzz: add for every cbor_value_at_end
       pprintf("cbor_value_is_valid returned false\n");
       break;
     }
   } while(!cbor_value_at_end(&cwt_claim_element_value));
 
   // Validate state.iss is correct before checking signature.
-  aassert(state.iss != NULL && strcmp(state.iss, TRUSTED_ISSUER) == 0, NZCP_E_WRONG_TRUSTED_ISSUER); // TODO: check for NULL for other state.iss fields
+  aassert(state.iss != NULL && strcmp(state.iss, TRUSTED_ISSUER) == 0, NZCP_E_WRONG_TRUSTED_ISSUER); // TODO: fuzz: check for NULL for other state.iss fields
 
   // Get signature
   size_t sign_len;
-  aassert(cbor_value_is_byte_string(&element_value) || cbor_value_is_text_string(&element_value), NZCP_E_CBOR_ERROR); // TODO: add for every cbor_value_string_length
+  aassert(cbor_value_is_byte_string(&element_value) || cbor_value_is_text_string(&element_value), NZCP_E_CBOR_ERROR); // TODO: fuzz: add for every cbor_value_string_length
   cbor_error = cbor_value_string_length(&element_value, &sign_len);
   pprintf("sign_len: %lu\n", sign_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
