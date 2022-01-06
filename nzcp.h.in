@@ -15,25 +15,17 @@ extern "C" {
  * 
  * A structure used in @ref nzcp_verify_pass_uri to return the result of the verification
  * 
- * @param jti The JWT ID.
- * @param iss The issuer.
- * @param nbf The not before time.
- * @param exp The expiration time.
- * @param given_name The given name.
- * @param family_name The family name.
- * @param dob The date of birth.
- * 
  * @see nzcp_verify_pass_uri
  * @see nzcp_free_verification_result
  */
 typedef struct nzcp_verification_result {
-  char* jti;
-  char* iss;
-  int nbf;
-  int exp;
-  char* given_name;
-  char* family_name;
-  char* dob;
+  /** The JWT ID */ char* jti;
+  /** The issuer */ char* iss;
+  /** The not before time */ int nbf;
+  /** The expiration time */ int exp;
+  /** The given name */ char* given_name;
+  /** The family name */ char* family_name;
+  /** The date of birth */ char* dob;
 } nzcp_verification_result;
 
 /**
