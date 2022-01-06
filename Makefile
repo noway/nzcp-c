@@ -16,14 +16,20 @@ CPATH_TINYCBOR=$(COMPILED_TINYCBOR)/usr/local/include
 LIBRARY_PATH=$(LIB_PATH_SWEET_B):$(LIB_PATH_TINYCBOR)
 CPATH=$(CPATH_SWEET_B):$(CPATH_TINYCBOR)
 
-.PHONY: clean-compiled clean-downloaded install uninstall
+.PHONY: clean-compiled clean-downloaded install uninstall objects
 
-build: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
-	mkdir -p objects
+all: libnzcp.a
+
+libnzcp.a: objects/libnzcp.o
+	cd objects && ar qc ../libnzcp.a *.o
+
+objects/libnzcp.o: objects
 	LIBRARY_PATH=$(LIBRARY_PATH) CPATH=$(CPATH) $(CC) $(CFLAGS) -c -fPIC nzcp.c -o objects/libnzcp.o 
+
+objects: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
+	mkdir -p objects
 	cd objects && ar x $(LIB_PATH_SWEET_B)/libsweet_b.a
 	cd objects && ar x $(LIB_PATH_TINYCBOR)/libtinycbor.a
-	cd objects && ar qc ../libnzcp.a *.o
 
 install:
 	install -d $(DESTDIR)$(libdir)
