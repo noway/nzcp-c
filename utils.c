@@ -52,6 +52,13 @@ static inline bool sequals(const char* a, const char* b) {
   return strcmp(a, b) == 0;
 }
 
+static inline bool sstartswith(const char* a, const char* b) {
+  if (a == NULL || b == NULL) {
+    return false;
+  }
+  return strncmp(a, b, slength(b)) == 0;
+}
+
 static inline int slength(const char* a) {
   if (a == NULL) {
     return 0;
