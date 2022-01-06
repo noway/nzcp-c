@@ -64,6 +64,9 @@ See [jni/](jni/).
 ## Tests
 See [tests/](tests/).
 
+## Address Santization
+Tests are run with `-fsanitize=address,undefined` and `-fsanitize-address-use-after-scope` flags.
+
 ## Roadmap
 Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
