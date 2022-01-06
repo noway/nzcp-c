@@ -167,9 +167,9 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   aassert(slength((char*) pass_uri) > 0, NZCP_E_BAD_URI_PREFIX); // TODO: better error code and check in next_token_len?
 
-  size_t token1_len = next_token_len(pass_uri, 0);
-  size_t token2_len = next_token_len(pass_uri, token1_len + 1);
-  size_t token3_len = next_token_len(pass_uri, token1_len + 1 + token2_len + 1);
+  size_t token1_len = slength("NZCP:");
+  size_t token2_len = slength("1");
+  size_t token3_len = slength((char*) pass_uri) - (token1_len + 1 + token2_len + 1);
 
   const uint8_t* uri_prefix = pass_uri;
   const uint8_t* version_identifier = pass_uri + token1_len + 1;
