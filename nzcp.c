@@ -38,6 +38,15 @@ static inline CborError cbor_value_advance_safe(CborValue *value) {
   }
 }
 
+static inline bool cbor_value_at_end_safe(CborValue *value) {
+  if (cbor_value_is_valid(value)) {
+      return cbor_value_at_end(value);
+  }
+  else {
+      return true;
+  }
+}
+
 struct nzcp_state {
   uint8_t *padded_base32_cwt;
   uint8_t *cwt;
@@ -284,7 +293,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
     }
     cbor_error = cbor_value_advance_safe(&headers_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-  } while (!cbor_value_at_end(&headers_element_value));
+  } while (!cbor_value_at_end_safe(&headers_element_value));
 
   pprintf("state.kid: %s\n", state.kid);
   pprintf("alg: %d\n", alg);
@@ -611,7 +620,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
               free(credential_subject_element_key);
               cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
               aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-            } while(!cbor_value_at_end(&credential_subject_element_value));
+            } while(!cbor_value_at_end_safe(&credential_subject_element_value));
 
           }
           else {
@@ -622,18 +631,13 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
           free(vc_element_key);
           cbor_error = cbor_value_advance_safe(&vc_element_value);
           aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-        } while (!cbor_value_at_end(&vc_element_value));
+        } while (!cbor_value_at_end_safe(&vc_element_value));
       }
 
     }
     cbor_error = cbor_value_advance_safe(&cwt_claim_element_value);
     aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
-    bool is_valid = cbor_value_is_valid(&cwt_claim_element_value);
-    if (!is_valid) { // TODO: fuzz: add for every cbor_value_at_end
-      pprintf("cbor_value_is_valid returned false\n");
-      break;
-    }
-  } while(!cbor_value_at_end(&cwt_claim_element_value));
+  } while(!cbor_value_at_end_safe(&cwt_claim_element_value));
 
   // Validate state.iss is correct before checking signature.
   aassert(state.iss != NULL && strcmp(state.iss, TRUSTED_ISSUER) == 0, NZCP_E_WRONG_TRUSTED_ISSUER); // TODO: fuzz: check for NULL for other state.iss fields
