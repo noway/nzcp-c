@@ -16,11 +16,16 @@
 
 
 static inline CborError cbor_value_string_length(CborValue *value, size_t *len) {
-  if (cbor_value_is_length_known(value)) {
-    return cbor_value_get_string_length(value, len);
+  if (cbor_value_is_byte_string(value) || cbor_value_is_text_string(value)) {
+    if (cbor_value_is_length_known(value)) {
+      return cbor_value_get_string_length(value, len);
+    }
+    else {
+      return cbor_value_calculate_string_length(value, len);
+    }
   }
   else {
-    return cbor_value_calculate_string_length(value, len);
+    return CborErrorUnknownType;
   }
 }
 
@@ -635,7 +640,6 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   // Get signature
   size_t sign_len;
-  aassert(cbor_value_is_byte_string(&element_value) || cbor_value_is_text_string(&element_value), NZCP_E_CBOR_ERROR); // TODO: fuzz: add for every cbor_value_string_length
   cbor_error = cbor_value_string_length(&element_value, &sign_len);
   pprintf("sign_len: %lu\n", sign_len);
   aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
