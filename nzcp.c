@@ -118,7 +118,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   int is_example = va_arg(args, int);
   va_end(args);
 
-  const uint8_t* KID = is_example ? (uint8_t *) MOH_EXAMPLE_KID : (uint8_t *) MOH_LIVE_KID;
+  const char* KID = is_example ? MOH_EXAMPLE_KID : MOH_LIVE_KID;
   const char* TRUSTED_ISSUER = is_example ? MOH_EXAMPLE_TRUSTED_ISSUER : MOH_LIVE_TRUSTED_ISSUER;
   static const sb_sw_public_t LIVE_PUB_KEY = MOH_LIVE_PUB_KEY;
   static const sb_sw_public_t EXAMPLE_PUB_KEY = MOH_EXAMPLE_PUB_KEY;
@@ -299,8 +299,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("state.kid: %s\n", state.kid);
   pprintf("alg: %d\n", alg);
 
-  // TODO: use strcmp
-  aassert(kid_len > 0 && memcmp(KID, state.kid, kid_len) == 0, NZCP_E_WRONG_KID);
+  aassert(strmatches((char*) state.kid, KID), NZCP_E_WRONG_KID);
   aassert(alg == -7, NZCP_E_WRONG_ALG);
 
   CborType type3 = cbor_value_get_type(&element_value);
