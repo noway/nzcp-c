@@ -45,7 +45,7 @@ static inline size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
   return token_len;
 }
 
-static inline bool strmatches(const char* a, const char* b) {
+static inline bool sequals(const char* a, const char* b) {
   if (a == NULL || b == NULL) {
     return false;
   }

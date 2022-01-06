@@ -299,7 +299,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   pprintf("state.kid: %s\n", state.kid);
   pprintf("alg: %d\n", alg);
 
-  aassert(strmatches((char*) state.kid, KID), NZCP_E_WRONG_KID);
+  aassert(sequals((char*) state.kid, KID), NZCP_E_WRONG_KID);
   aassert(alg == -7, NZCP_E_WRONG_ALG);
 
   CborType type3 = cbor_value_get_type(&element_value);
@@ -445,7 +445,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
           pprintf("vc_element_key: %s\n", vc_element_key);
           pprintf("vc_element_key_len: %lu\n", vc_element_key_len);
 
-          if (strmatches(vc_element_key, "@context")) {
+          if (sequals(vc_element_key, "@context")) {
             cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
@@ -487,7 +487,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
           }
-          else if (strmatches(vc_element_key, "version")) {
+          else if (sequals(vc_element_key, "version")) {
             cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
@@ -504,7 +504,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
           }
-          else if (strmatches(vc_element_key, "type")) {
+          else if (sequals(vc_element_key, "type")) {
             cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
 
@@ -545,7 +545,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
             cbor_error = cbor_value_copy_text_string(&type_value, state.type_1, &type_1_element_len, NULL);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
           }
-          else if (strmatches(vc_element_key, "credentialSubject")) {
+          else if (sequals(vc_element_key, "credentialSubject")) {
 
             cbor_error = cbor_value_advance_safe(&vc_element_value);
             aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
@@ -571,7 +571,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
               pprintf("credential_subject_element_key: %s\n", credential_subject_element_key);
               pprintf("credential_subject_element_key_len: %lu\n", credential_subject_element_key_len);
 
-              if (strmatches(credential_subject_element_key, "givenName")) {
+              if (sequals(credential_subject_element_key, "givenName")) {
                 cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_field_type = cbor_value_get_type(&credential_subject_element_value);
@@ -585,7 +585,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.given_name, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
-              else if (strmatches(credential_subject_element_key, "familyName")) {
+              else if (sequals(credential_subject_element_key, "familyName")) {
                 cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_field_type = cbor_value_get_type(&credential_subject_element_value);
@@ -599,7 +599,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
                 cbor_error = cbor_value_copy_text_string(&credential_subject_element_value, state.family_name, &credential_subject_field_len, NULL);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
               }
-              else if (strmatches(credential_subject_element_key, "dob")) {
+              else if (sequals(credential_subject_element_key, "dob")) {
                 cbor_error = cbor_value_advance_safe(&credential_subject_element_value);
                 aassert(cbor_error == CborNoError, NZCP_E_CBOR_ERROR);
                 CborType credential_subject_field_type = cbor_value_get_type(&credential_subject_element_value);
@@ -641,7 +641,7 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   } while(!cbor_value_at_end_safe(&cwt_claim_element_value));
 
   // Validate state.iss is correct before checking signature.
-  aassert(strmatches(state.iss, TRUSTED_ISSUER), NZCP_E_WRONG_TRUSTED_ISSUER);
+  aassert(sequals(state.iss, TRUSTED_ISSUER), NZCP_E_WRONG_TRUSTED_ISSUER);
 
   // Get signature
   size_t sign_len;
@@ -723,11 +723,11 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   aassert(exp != 0, NZCP_E_BAD_EXP);
   aassert(time(NULL) >= nbf, NZCP_E_PASS_NOT_ACTIVE);
   aassert(time(NULL) < exp, NZCP_E_PASS_EXPIRED);
-  aassert(strmatches(state.context_0, "https://www.w3.org/2018/credentials/v1"), NZCP_E_BAD_VC_CONTEXT);
-  aassert(strmatches(state.context_1, "https://nzcp.covid19.health.nz/contexts/v1"), NZCP_E_BAD_VC_CONTEXT);
-  aassert(strmatches(state.type_0, "VerifiableCredential"), NZCP_E_BAD_VC_TYPE);
-  aassert(strmatches(state.type_1, "PublicCovidPass"), NZCP_E_BAD_VC_TYPE);
-  aassert(strmatches(state.version, "1.0.0"), NZCP_E_BAD_VC_VERSION);
+  aassert(sequals(state.context_0, "https://www.w3.org/2018/credentials/v1"), NZCP_E_BAD_VC_CONTEXT);
+  aassert(sequals(state.context_1, "https://nzcp.covid19.health.nz/contexts/v1"), NZCP_E_BAD_VC_CONTEXT);
+  aassert(sequals(state.type_0, "VerifiableCredential"), NZCP_E_BAD_VC_TYPE);
+  aassert(sequals(state.type_1, "PublicCovidPass"), NZCP_E_BAD_VC_TYPE);
+  aassert(sequals(state.version, "1.0.0"), NZCP_E_BAD_VC_VERSION);
   aassert(slength(state.given_name) > 0, NZCP_E_BAD_GIVEN_NAME);
   aassert(slength(state.dob) > 0, NZCP_E_BAD_DOB);
 
