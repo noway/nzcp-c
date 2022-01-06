@@ -37,8 +37,8 @@ nzcp.h:
 		-E -CC -P \
 		nzcp.h.in \
 		| sed 's/##//g' \
-		| sed 's/%#/\/\*\*/g' \
-		| sed 's/#%/\*\//g' > nzcp.h
+		| sed 's/\/\*{\*\//\/\*\*/g' \
+		| sed 's/\/\*}\*\//\*\//g' > nzcp.h
 
 objects: $(COMPILED_SWEET_B) $(COMPILED_TINYCBOR)
 	mkdir -p objects
