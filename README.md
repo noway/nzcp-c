@@ -64,7 +64,7 @@ Depends on my availability, but would be nice to:
 - Specify public key as `x` and `y` base64 encoded values
 - Check in Valgrind
 - Online DID fetching using CURL
-- Fuzzing with more options (e.g. ratio) and also example passes
+- Fuzzing with more options (e.g. ratio)
 - Fuzzing on raw binary pass
 
 ## License
