@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdbool.h>
 #include "utils.h"
 #define DEBUG 0
 
@@ -42,4 +43,11 @@ static inline size_t next_token_len(const uint8_t *uri, size_t skip_pos) {
   char *skipped_str_copy = (char*) (uri + skip_pos);
   size_t token_len = strcspn(skipped_str_copy, "/");
   return token_len;
+}
+
+static inline bool strmatches(const char* a, const char* b) {
+  if (a == NULL || b == NULL) {
+    return false;
+  }
+  return strcmp(a, b) == 0;
 }
