@@ -9,18 +9,18 @@
 extern "C" {
 #endif
 
-
-#define ERROR_DEF(a, b, c) static const int NZCP_##a = b;
-#include "nzcp_errors.inc"
-#undef ERROR_DEF
-
 /**
- * @brief The nzcp_error type.
+ * @brief The nzcp_error enum.
  *
  * This is the type used to represent NZCP errors.
  * @see nzcp_errors.inc
  */
-typedef int nzcp_error;
+typedef enum nzcp_error {
+  #define ERROR_DEF(a, b, c) NZCP_##a = b,
+  #include "nzcp_errors.inc"
+  #undef ERROR_DEF
+} nzcp_error;
+
 
 /**
  * @brief The nzcp_verification_result structure.
@@ -60,7 +60,7 @@ typedef struct nzcp_verification_result {
  *
  * // verify pass
  * // last argument determines if it's example or live MOH DID document
- * int error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
+ * nzcp_error error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
  *
  * // check for error
  * if (error == NZCP_E_SUCCESS) {
@@ -89,9 +89,9 @@ typedef struct nzcp_verification_result {
 /**
  * @brief Verifies New Zealand COVID Pass URI.
  * 
- * @param pass_uri Null-terminted buffer with the URI 
- * @param verification_result Pointer to verification result struct
- * @param is_example Whether the pass_uri uses example or live MOH DID document
+ * @param[in] pass_uri Null-terminted buffer with the URI 
+ * @param[out] verification_result Pointer to verification result struct
+ * @param[in] is_example Whether the pass_uri uses example or live MOH DID document
  * @return nzcp_error
  */
 nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, bool is_example);
@@ -100,14 +100,14 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
  * 
  * @brief Frees nzcp_verification_result struct. Run this after you're done with the result.
  * 
- * @param verification_result  Pointer to verification result struct
+ * @param[in] verification_result  Pointer to verification result struct
  */
 void nzcp_free_verification_result(nzcp_verification_result* verification_result);
 
 /**
  * @brief Returns the error description for the given error code.
  * 
- * @param error error code
+ * @param[in] error error code
  * @return const char* 
  */
 const char* nzcp_error_string(nzcp_error error);

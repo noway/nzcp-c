@@ -17,7 +17,7 @@ Contributions welcome! 🥳
 
   // verify pass
   // last argument determines if it's example or live MOH DID document
-  int error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
+  nzcp_error error = nzcp_verify_pass_uri(PASS_URI, &verification_result, 1);
 
   // check for error
   if (error == NZCP_E_SUCCESS) {

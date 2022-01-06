@@ -39,7 +39,7 @@ int main(void) {
   int passed = 0;
 
   nzcp_verification_result verification_result;
-  int error;
+  nzcp_error error;
 
   // test example pass with live pub key
   error = nzcp_verify_pass_uri((uint8_t *)EXAMPLE_PASS, &verification_result, 0);
