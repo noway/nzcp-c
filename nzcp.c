@@ -11,7 +11,7 @@
 #include "utils.c"
 
 #define TO_BE_SIGNED_MAX_LEN 1024 // TODO: dynamic? usually 320 bytes or so depending on family_name and given_name
-#define JTI_LEN strlen("urn:uuid:00000000-0000-0000-0000-000000000000")
+#define JTI_LEN slength("urn:uuid:00000000-0000-0000-0000-000000000000")
 #define aassert(a, e) if (!(a)) { nzcp_free_state(&state); return e; }
 
 
@@ -183,11 +183,11 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   memcpy(state.padded_base32_cwt, base32_cwt, token3_len);
   pprintf("state.padded_base32_cwt %s \n", state.padded_base32_cwt);
 
-  size_t cwt_max = strlen((char*) state.padded_base32_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
+  size_t cwt_max = slength((char*) state.padded_base32_cwt) + 1; // TODO: FIX: this is the length of stringified base32, not the binary length
   state.cwt = mmalloc(cwt_max);
   base32_decode(state.padded_base32_cwt, state.cwt);
-  size_t cwt_len = strlen((char*) state.cwt);
-  pprintf("strlen(cwt) %zu \n", cwt_len);
+  size_t cwt_len = slength((char*) state.cwt);
+  pprintf("cwt_len %zu \n", cwt_len);
 
   CborParser parser;
   CborValue value;
@@ -718,7 +718,8 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
 
   // Validating CWT state.claims
   aassert(state.cti != NULL, NZCP_E_BAD_CTI);
-  aassert(state.iss != NULL && strlen(state.iss) > 0, NZCP_E_BAD_ISS);
+  aassert(slength(state.jti) > 0, NZCP_E_BAD_CTI);
+  aassert(slength(state.iss) > 0, NZCP_E_BAD_ISS);
   aassert(nbf != 0, NZCP_E_BAD_NBF);
   aassert(exp != 0, NZCP_E_BAD_EXP);
   aassert(time(NULL) >= nbf, NZCP_E_PASS_NOT_ACTIVE);
@@ -728,8 +729,8 @@ nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* ver
   aassert(strmatches(state.type_0, "VerifiableCredential"), NZCP_E_BAD_VC_TYPE);
   aassert(strmatches(state.type_1, "PublicCovidPass"), NZCP_E_BAD_VC_TYPE);
   aassert(strmatches(state.version, "1.0.0"), NZCP_E_BAD_VC_VERSION);
-  aassert(state.given_name != NULL && strlen(state.given_name) > 0, NZCP_E_BAD_GIVEN_NAME);
-  aassert(state.dob != NULL && strlen(state.dob) > 0, NZCP_E_BAD_DOB);
+  aassert(slength(state.given_name) > 0, NZCP_E_BAD_GIVEN_NAME);
+  aassert(slength(state.dob) > 0, NZCP_E_BAD_DOB);
 
   verification_result->jti = qstrcopy(state.jti);
   verification_result->iss = qstrcopy(state.iss);

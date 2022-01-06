@@ -27,7 +27,7 @@ static inline void pprintf(const char* fmt, ...) {
 
 // FYI: allocates memory that consumer is responsible for
 static inline char* qstrcopy(char* src) {
-  size_t len = strlen(src) + 1;
+  size_t len = slength(src) + 1;
   char* dest = mmalloc(len);
   memset(dest, '\0', len);
   return strcpy(dest, src);
@@ -50,4 +50,11 @@ static inline bool strmatches(const char* a, const char* b) {
     return false;
   }
   return strcmp(a, b) == 0;
+}
+
+static inline int slength(const char* a) {
+  if (a == NULL) {
+    return 0;
+  }
+  return strlen(a);
 }
