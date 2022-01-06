@@ -182,8 +182,6 @@ int main(void) {
     free(file_contents);
   }
 
-  // TODO: fclose and free
-  
   printf("%d/%d passed\n", passed, all);
 
   return 0;
