@@ -106,7 +106,6 @@ static inline void nzcp_free_state(struct nzcp_state* state) {
   free_then_null(state->hash);
 }
 
-
 void nzcp_free_verification_result(nzcp_verification_result* verification_result) {
   free_then_null(verification_result->jti);
   free_then_null(verification_result->iss);
@@ -115,12 +114,7 @@ void nzcp_free_verification_result(nzcp_verification_result* verification_result
   free_then_null(verification_result->dob);
 }
 
-nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, ...) {
-
-  va_list args;
-  va_start(args, verification_result);
-  int is_example = va_arg(args, int);
-  va_end(args);
+nzcp_error nzcp_verify_pass_uri(uint8_t* pass_uri, nzcp_verification_result* verification_result, bool is_example) {
 
   const char* KID = is_example ? MOH_EXAMPLE_KID : MOH_LIVE_KID;
   const char* TRUSTED_ISSUER = is_example ? MOH_EXAMPLE_TRUSTED_ISSUER : MOH_LIVE_TRUSTED_ISSUER;
