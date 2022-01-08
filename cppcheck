@@ -1,9 +1,13 @@
 #!/bin/bash
 export INCL_1=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.0.0/include
 export INCL_2=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+export JINCL="$JAVA_HOME/include"
 
+
+mkdir -p ./cppcheck-build
 
 cppcheck \
+    --cppcheck-build-dir=./cppcheck-build \
     -I $INCL_1 \
     -I $INCL_2 \
     -I compiled-sweet-b/usr/local/include \
@@ -11,6 +15,7 @@ cppcheck \
     -I . \
     -isweet-b-master\
     -itinycbor-main\
+    -ijni\
     --suppress=*:compiled-tinycbor/usr/local/include/* \
     --inline-suppr \
     --enable=all --inconclusive --library=posix \
@@ -20,3 +25,22 @@ cppcheck \
     -U __PTRDIFF_TYPE__\
     --force \
     .
+
+cppcheck \
+    -I $INCL_1 \
+    -I $JINCL \
+    -I . \
+    -U __INT8_TYPE__ \
+    -U __INT16_TYPE__ \
+    -U __INT24_TYPE__ \
+    -U __INT32_TYPE__ \
+    -U __INT40_TYPE__ \
+    -U __INT48_TYPE__ \
+    -U __INT56_TYPE__ \
+    -U __INT64_TYPE__ \
+    --enable=all --inconclusive --library=posix \
+    --force \
+    --suppress=missingIncludeSystem:* \
+    --suppress=*:$JINCL* \
+    --suppress=unusedFunction:* \
+    jni/
