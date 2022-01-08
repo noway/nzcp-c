@@ -107,21 +107,21 @@ int main(void) {
   nzcp_free_verification_result(&verification_result);
 
   // open live pass from a file
-  FILE *live_pass_file_descriptor = fopen("live_pass.txt", "rb");
-  assert(live_pass_file_descriptor != NULL);
-  fseek(live_pass_file_descriptor, 0, SEEK_END);
-  size_t file_size = ftell(live_pass_file_descriptor);
-  fseek(live_pass_file_descriptor, 0, SEEK_SET);
-  uint8_t *file_contents = malloc(file_size + 1);
-  *(file_contents + file_size) = '\0'; // null-terminate the pass
-  assert(file_contents != NULL);
-  size_t bytes_read = fread(file_contents, 1, file_size, live_pass_file_descriptor);
-  assert(bytes_read == file_size);
-  fclose(live_pass_file_descriptor);
-  error = nzcp_verify_pass_uri(file_contents, &verification_result, 0);
+  FILE *live_pass_fd = fopen("live_pass.txt", "rb");
+  assert(live_pass_fd != NULL);
+  fseek(live_pass_fd, 0, SEEK_END);
+  size_t live_pass_fsize = ftell(live_pass_fd);
+  fseek(live_pass_fd, 0, SEEK_SET);
+  uint8_t *live_pass = malloc(live_pass_fsize + 1);
+  *(live_pass + live_pass_fsize) = '\0'; // null-terminate the pass
+  assert(live_pass != NULL);
+  size_t live_pass_bytes = fread(live_pass, 1, live_pass_fsize, live_pass_fd);
+  assert(live_pass_bytes == live_pass_fsize);
+  fclose(live_pass_fd);
+  error = nzcp_verify_pass_uri(live_pass, &verification_result, 0);
   assert_eq("open live pass from a file", error, NZCP_E_SUCCESS);
   nzcp_free_verification_result(&verification_result);
-  free(file_contents);
+  free(live_pass);
 
   // test nzcp_error_string
   error = NZCP_E_SUCCESS;
@@ -143,21 +143,21 @@ int main(void) {
   {
     char str[80]; // TODO: dynamically allocate
     sprintf(str, "fuzz/live_pass_%zu.txt", i);
-    FILE *live_pass_file_descriptor = fopen(str, "rb");
-    assert(live_pass_file_descriptor != NULL);
-    fseek(live_pass_file_descriptor, 0, SEEK_END);
-    size_t file_size = ftell(live_pass_file_descriptor);
-    fseek(live_pass_file_descriptor, 0, SEEK_SET);
-    uint8_t *file_contents = malloc(file_size + 1);
-    *(file_contents + file_size) = '\0'; // null-terminate the pass
-    assert(file_contents != NULL);
-    size_t bytes_read = fread(file_contents, 1, file_size, live_pass_file_descriptor);
-    assert(bytes_read == file_size);
-    fclose(live_pass_file_descriptor);
-    error = nzcp_verify_pass_uri(file_contents, &verification_result, 0);
+    FILE *live_passz_fd = fopen(str, "rb");
+    assert(live_passz_fd != NULL);
+    fseek(live_passz_fd, 0, SEEK_END);
+    size_t live_passz_fsize = ftell(live_passz_fd);
+    fseek(live_passz_fd, 0, SEEK_SET);
+    uint8_t *live_passz = malloc(live_passz_fsize + 1);
+    *(live_passz + live_passz_fsize) = '\0'; // null-terminate the pass
+    assert(live_passz != NULL);
+    size_t live_passz_bytes = fread(live_passz, 1, live_passz_fsize, live_passz_fd);
+    assert(live_passz_bytes == live_passz_fsize);
+    fclose(live_passz_fd);
+    error = nzcp_verify_pass_uri(live_passz, &verification_result, 0);
     assert_neq(str, error, NZCP_E_SUCCESS);
     nzcp_free_verification_result(&verification_result);
-    free(file_contents);
+    free(live_passz);
   }
   
 
@@ -165,21 +165,21 @@ int main(void) {
   {
     char str[80]; // TODO: dynamically allocate
     sprintf(str, "fuzz/example_pass_%zu.txt", i);
-    FILE *example_pass_file_descriptor = fopen(str, "rb");
-    assert(example_pass_file_descriptor != NULL);
-    fseek(example_pass_file_descriptor, 0, SEEK_END);
-    size_t file_size = ftell(example_pass_file_descriptor);
-    fseek(example_pass_file_descriptor, 0, SEEK_SET);
-    uint8_t *file_contents = malloc(file_size + 1);
-    *(file_contents + file_size) = '\0'; // null-terminate the pass
-    assert(file_contents != NULL);
-    size_t bytes_read = fread(file_contents, 1, file_size, example_pass_file_descriptor);
-    assert(bytes_read == file_size);
-    fclose(example_pass_file_descriptor);
-    error = nzcp_verify_pass_uri(file_contents, &verification_result, 0);
+    FILE *example_passz_fd = fopen(str, "rb");
+    assert(example_passz_fd != NULL);
+    fseek(example_passz_fd, 0, SEEK_END);
+    size_t example_passz_fsize = ftell(example_passz_fd);
+    fseek(example_passz_fd, 0, SEEK_SET);
+    uint8_t *example_passz = malloc(example_passz_fsize + 1);
+    *(example_passz + example_passz_fsize) = '\0'; // null-terminate the pass
+    assert(example_passz != NULL);
+    size_t example_passz_bytes = fread(example_passz, 1, example_passz_fsize, example_passz_fd);
+    assert(example_passz_bytes == example_passz_fsize);
+    fclose(example_passz_fd);
+    error = nzcp_verify_pass_uri(example_passz, &verification_result, 0);
     assert_neq(str, error, NZCP_E_SUCCESS);
     nzcp_free_verification_result(&verification_result);
-    free(file_contents);
+    free(example_passz);
   }
 
   printf("%d/%d passed\n", passed, all);

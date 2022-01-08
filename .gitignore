@@ -57,6 +57,7 @@ compiled-sweet-b
 compiled-tinycbor
 compiled-nzcp
 objects
+cppcheck-build
 
 # JNI
 *.class
