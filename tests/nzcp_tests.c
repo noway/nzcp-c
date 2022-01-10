@@ -107,7 +107,7 @@ int main(void) {
   nzcp_free_verification_result(&verification_result);
 
   // open live pass from a file
-  FILE *live_pass_fd = fopen("live_pass.txt", "rb");
+  FILE *live_pass_fd = fopen("live_pass_1.txt", "rb");
   assert(live_pass_fd != NULL);
   fseek(live_pass_fd, 0, SEEK_END);
   size_t live_pass_fsize = ftell(live_pass_fd);
