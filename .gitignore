@@ -43,7 +43,7 @@ main
 nzcp_tests
 
 # tests
-tests/live_pass.txt
+tests/live_pass_*.txt
 tests/fuzz
 
 # vendor
