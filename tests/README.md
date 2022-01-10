@@ -4,7 +4,7 @@
 - `zzuf`
 
 ## Setup
-- `touch live_pass.txt`
+- `touch live_pass_1.txt`
 - Paste your live pass in the file above
 
 ## Run
